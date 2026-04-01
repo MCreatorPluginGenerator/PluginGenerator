@@ -1,0 +1,4 @@
+rootProject.name = 'PluginGenerator'
+
+include ":MCreator"
+project(":MCreator").projectDir = file(mcreator_path)

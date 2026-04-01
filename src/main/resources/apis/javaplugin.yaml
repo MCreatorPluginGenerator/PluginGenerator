@@ -1,0 +1,6 @@
+name: Java Plugin
+quilt-1.7.10:
+  gradle: |
+      dependencies {
+        implementation fileTree(dir: "libs", includes: ["*.jar"])
+      }

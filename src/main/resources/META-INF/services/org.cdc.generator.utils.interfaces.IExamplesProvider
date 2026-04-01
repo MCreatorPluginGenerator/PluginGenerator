@@ -1,0 +1,3 @@
+org.cdc.generator.services.CommonGradleExamplesProvider
+org.cdc.generator.services.CurseMavenExamplesProvider
+org.cdc.generator.services.VarImplExamplesProvider

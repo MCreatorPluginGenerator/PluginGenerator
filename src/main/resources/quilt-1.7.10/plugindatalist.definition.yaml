@@ -1,0 +1,9 @@
+templates:
+  - template: datalist.yaml.ftl
+    writer: file
+    condition: generateDataList
+    name: "@RESROOT/datalists/@registryname.yaml"
+
+localizationkeys:
+  - key: dialog.selector.@registryname.message
+    mapto: getDialogMessage()

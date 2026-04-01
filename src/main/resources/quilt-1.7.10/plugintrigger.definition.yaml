@@ -1,0 +1,8 @@
+templates:
+  - template: trigger.json.ftl
+    writer: json
+    name: "@RESROOT/triggers/@registryname.json"
+
+localizationkeys:
+  - key: trigger.@registryname
+    mapto: getSuggestedName()

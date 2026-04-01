@@ -1,0 +1,4 @@
+templates:
+  - template: api.yaml.ftl
+    writer: file
+    name: "@RESROOT/apis/@registryname.yaml"

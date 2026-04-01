@@ -1,0 +1,15 @@
+{
+  "id": "plugin_generator",
+  "supportedversions": [
+    202600199999,
+    2026001
+  ],
+  "weight": 0,
+  "javaplugin": "org.cdc.generator.PluginMain",
+  "info": {
+    "name": "MCreator plugin generator",
+    "version": "1.0",
+    "description": "make your mcreator",
+    "author": "cdc12345"
+  }
+}

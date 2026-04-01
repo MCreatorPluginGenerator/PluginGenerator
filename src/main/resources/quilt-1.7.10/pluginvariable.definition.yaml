@@ -1,0 +1,5 @@
+templates:
+  - template: variable.json.ftl
+    condition: generate
+    writer: json
+    name: "@RESROOT/variables/@[getName()].json"

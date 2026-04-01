@@ -1,0 +1,4 @@
+templates:
+  - template: mapping.yaml.ftl
+    writer: file
+    name: "@RESROOT/@[getGeneratorName()]/mappings/@[getDatalistName()].yaml"

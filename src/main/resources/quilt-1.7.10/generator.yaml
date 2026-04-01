@@ -1,0 +1,56 @@
+name: Plugin maker @buildfileversion
+status: experimental
+buildfileversion: 1.7.10
+is_plugin_maker: true
+
+# gradle task definitions
+gradle:
+  export_file: "build/libs/demo-plugin.zip"
+  # this will keep the resource tab still exist.
+  run_client: exportToMCreator
+
+import_formatter:
+  duplicates_whitelist:
+    - java.util
+    - net.minecraft
+  priority_imports:
+    Logger: org.apache.logging.log4j
+    Nullable: javax.annotation
+    Codec: com.mojang.serialization
+    SoundEvent: net.minecraft.sounds
+    Blocks: net.minecraft.world.level.block
+    Items: net.minecraft.world.item
+    Multimap: com.google.common.collect
+    ImmutableSet: com.google.common.collect
+    Iterables: com.google.common.collect
+    Attributes: net.minecraft.world.entity.ai.attributes
+    Keyframe: net.minecraft.client.animation
+    Potion: net.minecraft.world.item.alchemy
+    AttachmentType: net.neoforged.neoforge.attachment
+    MapColor: net.minecraft.world.level.material
+
+# base generator roots
+source_root: "@WORKSPACEROOT/src/main/java"
+res_root: "@WORKSPACEROOT/src/main/resources"
+mod_assets_root: "@RESROOT"
+
+base_templates:
+  - template: pluginbase/plugin.json.ftl
+    writer: json
+    name: "@RESROOT/plugin.json"
+  - template: pluginbase/plugin.java.ftl
+    writer: java
+    name: "@SRCROOT/@BASEPACKAGEPATH/PluginMain.java"
+    condition: "${settings.getMCreatorDependenciesRaw().contains(\"javaplugin\")}"
+  - template: pluginbase/.placeholder
+    writer: file
+    name: "@SRCROOT/.placeholder"
+    condition: "${!settings.getMCreatorDependenciesRaw().contains(\"javaplugin\")}"
+  - template: pluginbase/update.json.ftl
+    writer: json
+    name: "@WORKSPACEROOT/update.json"
+
+language_file:
+  format: keyvalue
+  root_folder: "@RESROOT/lang/"
+  langfile_name: "texts_@lang_NAME.properties"

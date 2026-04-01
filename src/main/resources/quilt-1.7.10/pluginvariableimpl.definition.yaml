@@ -1,0 +1,4 @@
+templates:
+  - template: variableimpl.yaml.ftl
+    writer: file
+    name: "@RESROOT/@[getGeneratorName()]/variables/@[getVariableName()].yaml"

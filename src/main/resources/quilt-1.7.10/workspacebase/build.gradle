@@ -1,0 +1,39 @@
+plugins {
+    id "java"
+}
+
+group = 'net.mcreator.demojavaplugin'
+version = '1.0'
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+configurations {
+    implementation.extendsFrom export
+}
+
+tasks.jar {
+    archiveFileName.set("demo-plugin.zip")
+    // ensure that name is right
+    rename { String fileName ->
+        fileName == "texts_en_US.properties" ? "texts.properties" : fileName
+    }
+}
+
+tasks.register('exportToMyMCreator', Copy) {
+    dependsOn jar
+    from("build/libs/demo-plugin.zip")
+    destinationDir(new File(getUserFolder(), "plugins"))
+    doLast {
+        println("You can restart your mcreator with folder: " + destinationDir)
+    }
+}
+
+private File getUserFolder() {
+    if (System.getenv("MCREATOR_HOME") != null) {
+        return new File(System.getenv("MCREATOR_HOME"))
+    }
+
+    return new File(System.getProperty("user.home") + "/.mcreator/")
+}
+
+apply from: 'mcreator.gradle'

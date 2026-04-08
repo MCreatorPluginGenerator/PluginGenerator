@@ -12,6 +12,7 @@ import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.ProcedureCategoryModElement;
 import org.cdc.generator.init.ModElementTypes;
+import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.Rules;
 import org.jspecify.annotations.NonNull;
 
@@ -58,6 +59,7 @@ public class ProcedureCategoryModElementGUI
 
         addConfigurationWithHelpEntry("color", color);
 
+        parentCategory.setSelectedItem(Constants.NONE);
         addConfigurationWithHelpEntry("parent_category", parentCategory);
 
         addConfigurationWithHelpEntry("custom_parent_category", customCategory);
@@ -105,6 +107,7 @@ public class ProcedureCategoryModElementGUI
                 stringArrayList.add(a.getToolboxCategoryRaw());
             }
         });
+        stringArrayList.add(Constants.NONE);
         ComboBoxUtil.updateComboBoxContents(parentCategory, stringArrayList.stream().sorted().toList());
     }
 }

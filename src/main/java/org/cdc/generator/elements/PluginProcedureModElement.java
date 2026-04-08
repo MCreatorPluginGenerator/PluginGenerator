@@ -10,17 +10,18 @@ import org.cdc.generator.utils.YamlUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PluginProcedureModElement extends GeneratableElement implements IBlocklyElement {
 
-    public List<JsonObject> arg0 = new ArrayList<>();
+    public List<JsonObject> arg0;
     public boolean inputsInline;
     public String previousStatement;
     public String nextStatement;
     public Color colour;
-    public List<String> outputs = new ArrayList<>();
+    public List<String> outputs;
 
     // mcreator:
     // parent category
@@ -42,7 +43,10 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
         return Utils.convertColor(colour);
     }
 
-    public String getOutputs() {
+    @UsedByReflection public String getOutputs() {
+        if (outputs.isEmpty()){
+            return null;
+        }
         if (outputs.size() == 1) {
             return outputs.getFirst();
         }

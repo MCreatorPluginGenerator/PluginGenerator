@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.VariableImplementationModElement;
 import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.init.ModElementTypes;
-import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.YamlUtils;

@@ -1,6 +1,6 @@
 {
   "color": ${data.getColor()}
-  <#if data.getParentCategory()??>
+  <#if data.getParentCategory() != "None">
   ,"parent_category": "${data.getParentCategory()}"
   </#if>
   <#if data.api>

@@ -1,21 +1,33 @@
 package org.cdc.generator.ui.elements;
 
 import com.google.gson.JsonObject;
+import net.mcreator.blockly.data.BlocklyLoader;
+import net.mcreator.element.GeneratableElement;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.JColor;
 import net.mcreator.ui.component.JStringListField;
+import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
+import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.ArrayListListModel;
 import net.mcreator.workspace.elements.ModElement;
+import net.mcreator.workspace.elements.VariableTypeLoader;
+import org.cdc.framework.utils.BuiltInToolBoxId;
 import org.cdc.generator.elements.PluginProcedureModElement;
+import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.services.types.NoneArgType;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Rules;
+import org.cdc.generator.utils.Utils;
+import org.cdc.generator.utils.VariableType;
 import org.cdc.generator.utils.interfaces.IArg0Type;
+import org.cdc.generator.utils.ioc.Container;
+import org.cdc.generator.utils.ioc.Inject;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -23,6 +35,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -55,11 +68,13 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
 
     public List<PluginProcedureModElement.Dependency> dependencies;
 
+    @Inject private Container container;
+
     public PluginProceduresElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
         this.inputsInline = createDefaultCheckBox();
         this.color = new JColor(mcreator, false, false);
-        this.outputs = new JStringListField(mcreator, a -> Rules.getFileNameValidator(a::getText));
+        this.outputs = new JStringListField(mcreator, null);
         this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);
         this.requiredApis = new JStringListField(mcreator, a -> Rules.getFileNameValidator(a::getText));
         this.model = new ArrayListListModel<>();
@@ -91,6 +106,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         addConfigurationWithHelpEntry("outputs", outputs);
 
         toolboxId.setEditable(true);
+        toolboxId.setSelectedItem("other");
         addConfigurationWithHelpEntry("toolbox_id", toolboxId);
         addConfigurationWithHelpEntry("group", group);
         addConfigurationWithHelpEntry("warnings", warnings);
@@ -99,7 +115,41 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         addConfigurationWithHelpEntry("fields", fields);
         addConfigurationWithHelpEntry("toolboxInit", toolboxInit);
 
+        var typeComboBox = new VComboBox<String>();
+        typeComboBox.setOpaque(false);
+        typeComboBox.setEditable(true);
+
         initTable(new DependenciesTableModule());
+        jTable.setDefaultRenderer(String.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+                var label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+                        column);
+                label.setForeground(Theme.current().getForegroundColor());
+                if (columns[column].equals("Type")) {
+                    if (VariableTypeLoader.INSTANCE.doesVariableTypeExist(label.getText())) {
+                        label.setForeground(VariableTypeLoader.INSTANCE.fromName(label.getText()).getBlocklyColor());
+                    }
+                }
+                return label;
+            }
+        });
+        jTable.setDefaultEditor(String.class, new DefaultCellEditor(typeComboBox) {
+
+            @Override
+            public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowIndex,
+                    int columnIndex) {
+                var columnName = columns[columnIndex];
+                typeComboBox.removeAllItems();
+                if (columnName.equals("Type")) {
+                    for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
+                        typeComboBox.addItem(supportedType.name());
+                    }
+                }
+                return super.getTableCellEditorComponent(table, value, isSelected, rowIndex, columnIndex);
+            }
+        });
 
         JToolBar bar = new JToolBar();
         bar.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
@@ -169,6 +219,10 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         rightComponent.removeAll();
         var proxy = arg0List.getSelectedValue();
         if (proxy != null) {
+            //inject
+            container.registerTemporaryObject("modElementGui", () -> this);
+            container.inject(proxy);
+            //inject
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("type", proxy.getArg0Type().getName());
             var configurationPanel = new JPanel(new GridLayout(1, 2));
@@ -178,11 +232,11 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             typeName.setSelectedItem(proxy.getArg0Type().getName());
             typeName.addItemListener(a -> {
                 jsonObject.addProperty("type", typeName.getSelectedItem());
-                if (proxy.getArg0Type().getType() == Arg0InputType.INPUT){
+                if (proxy.getArg0Type().getType() == Arg0InputType.INPUT) {
                     var newList = new ArrayList<>(inputs.getTextList());
                     newList.add(proxy.getUniqueName());
                     inputs.setTextList(newList);
-                } else if (proxy.getArg0Type().getType() == Arg0InputType.FIELD){
+                } else if (proxy.getArg0Type().getType() == Arg0InputType.FIELD) {
                     var newList = new ArrayList<>(fields.getTextList());
                     newList.add(proxy.getUniqueName());
                     fields.setTextList(newList);
@@ -244,6 +298,21 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             }
         }).toList();
         return element;
+    }
+
+    @Override public void reloadDataLists() {
+        var stringArrayList = new HashSet<String>();
+        for (ModElement element : mcreator.getWorkspaceInfo()
+                .getElementsOfType(ModElementTypes.PROCEDURE_CATEGORY.getRegistryName())) {
+            stringArrayList.add(element.getRegistryName());
+        }
+        stringArrayList.addAll(BlocklyLoader.getBuiltinCategories());
+        BlocklyLoader.INSTANCE.getBlockLoader(BlocklyEditorType.PROCEDURE).getDefinedBlocks().values().forEach(a -> {
+            if (a.getToolboxCategory() != null) {
+                stringArrayList.add(a.getToolboxCategoryRaw());
+            }
+        });
+        ComboBoxUtil.updateComboBoxContents(toolboxId, stringArrayList.stream().sorted().toList());
     }
 
     @Override @Nullable public URI contextURL() throws URISyntaxException {

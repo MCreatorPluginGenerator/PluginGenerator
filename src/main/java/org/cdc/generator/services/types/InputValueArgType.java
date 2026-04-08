@@ -4,15 +4,19 @@ import com.google.gson.JsonObject;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
+import org.cdc.generator.ui.elements.PluginProceduresElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.VariableType;
+import org.cdc.generator.utils.ioc.Inject;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class InputValueArgType extends AbstractArgType {
+    @Inject PluginProceduresElementGUI modElementGui;
+
     public InputValueArgType() {
         super(3, 2);
     }
@@ -25,6 +29,19 @@ public class InputValueArgType extends AbstractArgType {
         JPanel configurationPanel = super.getEditor(jsonObject, newJsonObject);
 
         var name = new VTextField();
+        if (jsonObject.has("name")) {
+            name.setText(jsonObject.get("name").getAsString());
+        }
+        addConfiguration("name", name);
+        var check = new VComboBox<String>();
+        for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
+            check.addItem(supportedType.blocklyTypeName());
+        }
+        if (jsonObject.has("check")) {
+            check.setSelectedItem(jsonObject.get("check").getAsString());
+        }
+        addConfiguration("check", check);
+
         name.getDocument().addDocumentListener(new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent documentEvent) {
                 newJsonObject.addProperty("name", name.getText());
@@ -38,22 +55,10 @@ public class InputValueArgType extends AbstractArgType {
                 newJsonObject.addProperty("name", name.getText());
             }
         });
-        if (jsonObject.has("name")) {
-            name.setText(jsonObject.get("name").getAsString());
-        }
-        addConfiguration("name", name);
-
-        var check = new VComboBox<String>();
-        for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
-            check.addItem(supportedType.blocklyTypeName());
-        }
         check.addItemListener(a -> {
             newJsonObject.addProperty("check", check.getSelectedItem());
         });
-        if (jsonObject.has("check")) {
-            check.setSelectedItem(jsonObject.get("check").getAsString());
-        }
-        addConfiguration("check", check);
+
         return PanelUtils.totalCenterInPanel(configurationPanel);
     }
 

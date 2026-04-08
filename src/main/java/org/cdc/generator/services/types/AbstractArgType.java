@@ -30,4 +30,8 @@ public abstract class AbstractArgType implements IArg0Type {
         configurationPanel.add(L10N.label("elementgui.arg0." + name));
         configurationPanel.add(component);
     }
+
+    protected JCheckBox createDefaultCheckBox() {
+        return L10N.checkbox("elementgui.common.enable");
+    }
 }

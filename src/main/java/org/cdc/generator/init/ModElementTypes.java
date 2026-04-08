@@ -29,13 +29,15 @@ import javax.annotation.Nullable;
             null, VariableImplementationModElementGUI::new, VariableImplementationModElement.class);
     public static final ModElementType<ProcedureCategoryModElement> PROCEDURE_CATEGORY = register(
             "pluginprocedurecategory", null, ProcedureCategoryModElementGUI::new, ProcedureCategoryModElement.class);
+    public static final ModElementType<PluginProcedureModElement> PROCEDURE = register("pluginprocedure", null,
+            PluginProceduresElementGUI::new, PluginProcedureModElement.class);
 
     private static <E extends GeneratableElement> ModElementType<E> register(String registryName,
             @Nullable Character shortcut, ModElementType.ModElementGUIProvider<E> modElementGUIProvider,
             Class<E> modElementStorageClass) {
         var modElementType = new ModElementType<>(registryName, shortcut,
-                (mcreator, modElement, editingMode) -> Container.getInstance().inject(modElementGUIProvider.get(mcreator, modElement, editingMode)),
-                modElementStorageClass);
+                (mcreator, modElement, editingMode) -> Container.getInstance()
+                        .inject(modElementGUIProvider.get(mcreator, modElement, editingMode)), modElementStorageClass);
         ModElementTypeLoader.register(modElementType);
         return modElementType;
     }

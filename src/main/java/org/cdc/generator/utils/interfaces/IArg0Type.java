@@ -1,8 +1,10 @@
 package org.cdc.generator.utils.interfaces;
 
 import com.google.gson.JsonObject;
+import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.utils.Arg0InputType;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ServiceLoader;
 
@@ -12,7 +14,9 @@ public interface IArg0Type {
 
     String getName();
 
-    Component getEditor(JsonObject jsonObject);
+    Component getEditor(JsonObject oldJsonObject, JsonObject newJsonObject);
 
     Arg0InputType getType();
+
+    String getUniqueName(JsonObject jsonObject);
 }

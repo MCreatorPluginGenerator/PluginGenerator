@@ -14,6 +14,7 @@ import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
+import org.cdc.generator.utils.VariableType;
 import org.cdc.generator.utils.validators.DuplicatedElementValidator;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -117,8 +118,8 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
                 var columnName = columns[columnIndex];
                 typeComboBox.removeAllItems();
                 if (columnName.equals("Type")) {
-                    for (String supportedType : Utils.getAllSupportedVariableTypes()) {
-                        typeComboBox.addItem(supportedType);
+                    for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
+                        typeComboBox.addItem(supportedType.name());
                     }
                 }
                 return super.getTableCellEditorComponent(table, value, isSelected, rowIndex, columnIndex);

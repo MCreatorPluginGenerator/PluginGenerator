@@ -34,9 +34,9 @@ public class Utils {
         return Generator.GENERATOR_CACHE.keySet();
     }
 
-    public static Set<String> getAllSupportedVariableTypes() {
+    public static Set<org.cdc.generator.utils.VariableType> getAllSupportedVariableTypes() {
         // remove duplicated strs.
-        var set = new HashSet<String>();
+        var set = new HashSet<org.cdc.generator.utils.VariableType>();
         ITypeProvider.serviceLoader.stream().forEach(a -> {
             set.addAll(a.get().provide());
         });

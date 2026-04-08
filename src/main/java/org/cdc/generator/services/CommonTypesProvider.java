@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommonTypesProvider implements ITypeProvider {
-    @Override public List<String> provide() {
-        var list = new ArrayList<String>();
+    @Override public List<org.cdc.generator.utils.VariableType> provide() {
+        var list = new ArrayList<org.cdc.generator.utils.VariableType>();
         for (VariableType allVariableType : VariableTypeLoader.INSTANCE.getAllVariableTypes()) {
-            list.add(allVariableType.getName());
+            list.add(new org.cdc.generator.utils.VariableType(allVariableType.getName(),allVariableType.getBlocklyVariableType()));
         }
-        list.add("world");
+        list.add(new org.cdc.generator.utils.VariableType("world","World"));
         //TODO: use prefergenerator to load hidden types.
         return list;
     }

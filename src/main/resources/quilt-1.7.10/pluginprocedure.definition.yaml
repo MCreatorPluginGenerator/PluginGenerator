@@ -1,0 +1,4 @@
+templates:
+  - template: pluginproecedure.json.ftl
+    writer: json
+    name: "@RESROOT/@[getBlocklyFolder()]/$@registryname.json"

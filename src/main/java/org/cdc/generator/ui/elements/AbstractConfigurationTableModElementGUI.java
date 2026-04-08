@@ -89,6 +89,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         component.setOpaque(false);
         configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(modElement.getTypeString() + "/" + name),
                 L10N.label("elementgui." + modElement.getTypeString() + "." + name)));
+        System.out.println("elementgui." + modElement.getTypeString() + "." + name);
         configurationPanel.add(component);
     }
 

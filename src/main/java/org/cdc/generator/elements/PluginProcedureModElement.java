@@ -9,17 +9,18 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.YamlUtils;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class PluginProcedureModElement extends GeneratableElement implements IBlocklyElement {
 
-    public List<JsonObject> arg0;
+    public List<JsonObject> arg0 = new ArrayList<>();
     public boolean inputsInline;
     public String previousStatement;
     public String nextStatement;
     public Color colour;
-    public List<String> outputs;
+    public List<String> outputs = new ArrayList<>();
 
     // mcreator:
     // parent category
@@ -52,9 +53,37 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
         return "procedures";
     }
 
-    public record Dependency(String name, String type) {
+    public static class Dependency implements Cloneable {
+        private String name;
+        private String type;
+
+        public Dependency(String name, String type) {
+            this.name = name;
+            this.type = type;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
         public net.mcreator.blockly.data.Dependency toMCreatorDependency() {
             return new net.mcreator.blockly.data.Dependency(name, type);
+        }
+
+        @Override public Object clone() throws CloneNotSupportedException {
+            return super.clone();
         }
     }
 }

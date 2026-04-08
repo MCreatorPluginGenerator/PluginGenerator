@@ -5,7 +5,6 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.VariableTypeLoader;
-import org.cdc.framework.utils.BuiltInToolBoxId;
 import org.cdc.generator.ui.elements.PluginProceduresElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Utils;
@@ -36,7 +35,7 @@ public class InputValueArgType extends AbstractArgType {
         }
         addConfiguration("name", name);
         var check = new VComboBox<String>();
-        for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
+        for (VariableType supportedType : Utils.getAllSupportedVariableTypes(modElementGui.getMCreator())) {
             check.addItem(supportedType.blocklyTypeName());
         }
         if (jsonObject.has("check")) {
@@ -44,19 +43,7 @@ public class InputValueArgType extends AbstractArgType {
         }
         addConfiguration("check", check);
 
-        name.getDocument().addDocumentListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent documentEvent) {
-                newJsonObject.addProperty("name", name.getText());
-            }
-
-            @Override public void removeUpdate(DocumentEvent documentEvent) {
-                newJsonObject.addProperty("name", name.getText());
-            }
-
-            @Override public void changedUpdate(DocumentEvent documentEvent) {
-                newJsonObject.addProperty("name", name.getText());
-            }
-        });
+        name.getDocument().addDocumentListener(createDefaultNameDocumentListener(name::getText, () -> newJsonObject));
         check.addItemListener(a -> {
             newJsonObject.addProperty("check", check.getSelectedItem());
         });
@@ -68,7 +55,7 @@ public class InputValueArgType extends AbstractArgType {
         if (jsonObject.has("name")) {
             newJsonObject.addProperty("name", jsonObject.get("name").getAsString());
         } else {
-            jsonObject.addProperty("name", "none");
+            newJsonObject.addProperty("name", "none");
         }
         if (jsonObject.has("check")) {
             newJsonObject.addProperty("check", jsonObject.get("check").getAsString());

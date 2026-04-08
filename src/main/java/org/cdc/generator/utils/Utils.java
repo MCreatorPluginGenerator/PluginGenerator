@@ -3,6 +3,7 @@ package org.cdc.generator.utils;
 import net.mcreator.generator.Generator;
 import net.mcreator.generator.template.base.BaseDataModelProvider;
 import net.mcreator.plugin.PluginLoader;
+import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
@@ -39,6 +40,15 @@ public class Utils {
         var set = new HashSet<org.cdc.generator.utils.VariableType>();
         ITypeProvider.serviceLoader.stream().forEach(a -> {
             set.addAll(a.get().provide());
+        });
+        return set;
+    }
+
+    public static Set<org.cdc.generator.utils.VariableType> getAllSupportedVariableTypes(MCreator mcreator) {
+        // remove duplicated strs.
+        var set = new HashSet<org.cdc.generator.utils.VariableType>();
+        ITypeProvider.serviceLoader.stream().forEach(a -> {
+            set.addAll(a.get().provide(mcreator));
         });
         return set;
     }
@@ -177,7 +187,8 @@ public class Utils {
 
     /**
      * add the base data variables
-     * @param provider provider
+     *
+     * @param provider  provider
      * @param generator generator of current mcreator. Do not need the specific generator.
      */
     public static void initCompletionWithGenerator(DefaultCompletionProvider provider, Generator generator) {

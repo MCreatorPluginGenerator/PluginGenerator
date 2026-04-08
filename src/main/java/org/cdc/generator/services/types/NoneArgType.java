@@ -29,31 +29,7 @@ public class NoneArgType extends AbstractArgType {
     @Override public JPanel getEditor(JsonObject jsonObject, JsonObject newJsonObject) {
         JPanel configurationPanel = super.getEditor(jsonObject, newJsonObject);
         var name = new VTextField();
-        name.getDocument().addDocumentListener(new DocumentListener() {
-            @Override public void insertUpdate(DocumentEvent documentEvent) {
-                if (name.getText().isBlank()){
-                    newJsonObject.remove("name");
-                } else {
-                    newJsonObject.addProperty("name", name.getText());
-                }
-            }
-
-            @Override public void removeUpdate(DocumentEvent documentEvent) {
-                if (name.getText().isBlank()){
-                    newJsonObject.remove("name");
-                } else {
-                    newJsonObject.addProperty("name", name.getText());
-                }
-            }
-
-            @Override public void changedUpdate(DocumentEvent documentEvent) {
-                if (name.getText().isBlank()){
-                    newJsonObject.remove("name");
-                } else {
-                    newJsonObject.addProperty("name", name.getText());
-                }
-            }
-        });
+        name.getDocument().addDocumentListener(createDefaultNameDocumentListener(name::getText,()->newJsonObject));
         if (jsonObject.has("name")) {
             name.setText(jsonObject.get("name").getAsString());
         }

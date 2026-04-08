@@ -220,7 +220,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         if (proxy != null) {
             //inject
             container.registerTemporaryObject("modElementGui", () -> this);
-            container.inject(proxy);
+            container.inject(proxy.getArg0Type());
             //inject
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("type", proxy.getArg0Type().getName());

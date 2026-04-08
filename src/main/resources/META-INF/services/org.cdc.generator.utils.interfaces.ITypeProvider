@@ -1,1 +1,2 @@
 org.cdc.generator.services.CommonTypesProvider
+org.cdc.generator.services.WorkspaceTypesProvider

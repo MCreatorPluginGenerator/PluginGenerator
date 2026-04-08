@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
+import net.mcreator.workspace.elements.VariableTypeLoader;
+import org.cdc.framework.utils.BuiltInToolBoxId;
 import org.cdc.generator.ui.elements.PluginProceduresElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Utils;
@@ -71,7 +73,7 @@ public class InputValueArgType extends AbstractArgType {
         if (jsonObject.has("check")) {
             newJsonObject.addProperty("check", jsonObject.get("check").getAsString());
         } else {
-            newJsonObject.addProperty("check", "");
+            newJsonObject.addProperty("check", VariableTypeLoader.BuiltInTypes.NUMBER.getBlocklyVariableType());
         }
     }
 

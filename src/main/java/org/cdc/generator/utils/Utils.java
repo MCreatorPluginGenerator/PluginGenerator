@@ -190,7 +190,6 @@ public class Utils {
         if (color == null) {
             return "0";
         }
-
         float[] hsbvals = new float[3];
         Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsbvals);
 

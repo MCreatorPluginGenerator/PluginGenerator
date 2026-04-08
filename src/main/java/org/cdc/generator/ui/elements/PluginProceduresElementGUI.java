@@ -18,13 +18,11 @@ import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.framework.utils.BuiltInToolBoxId;
 import org.cdc.generator.elements.PluginProcedureModElement;
+import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.services.types.NoneArgType;
-import org.cdc.generator.utils.Arg0InputType;
-import org.cdc.generator.utils.Rules;
-import org.cdc.generator.utils.Utils;
-import org.cdc.generator.utils.VariableType;
+import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.ioc.Inject;
@@ -54,7 +52,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     protected final VTextField previousStatement = new VTextField();
     protected final VTextField nextStatement = new VTextField();
     protected final JColor color;
-    protected final JStringListField outputs;
+    protected final VComboBox<String> outputs;
     protected final VComboBox<String> toolboxId = new VComboBox<>();
     protected final VTextField group = new VTextField();
     protected final JStringListField warnings;
@@ -74,7 +72,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
         this.inputsInline = createDefaultCheckBox();
         this.color = new JColor(mcreator, false, false);
-        this.outputs = new JStringListField(mcreator, null);
+        this.outputs = new VComboBox<>();
         this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);
         this.requiredApis = new JStringListField(mcreator, a -> Rules.getFileNameValidator(a::getText));
         this.model = new ArrayListListModel<>();
@@ -102,6 +100,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         addConfigurationWithHelpEntry("inputs_inline", inputsInline);
         addConfigurationWithHelpEntry("previous_statement", previousStatement);
         addConfigurationWithHelpEntry("next_statement", nextStatement);
+
         addConfigurationWithHelpEntry("color", color);
         addConfigurationWithHelpEntry("outputs", outputs);
 
@@ -260,7 +259,9 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.previousStatement.setText(generatableElement.previousStatement);
         this.nextStatement.setText(generatableElement.nextStatement);
         this.color.setColor(generatableElement.colour);
-        this.outputs.setTextList(generatableElement.outputs);
+        if (!generatableElement.outputs.isEmpty()) {
+            this.outputs.setSelectedItem(generatableElement.outputs.getFirst());
+        }
         this.toolboxId.setSelectedItem(generatableElement.toolbox_id);
         this.group.setText(generatableElement.group);
         this.warnings.setTextList(generatableElement.warnings);
@@ -281,7 +282,11 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         element.previousStatement = this.previousStatement.getText();
         element.nextStatement = this.nextStatement.getText();
         element.colour = this.color.getColor();
-        element.outputs = Objects.requireNonNullElse(outputs.getTextList(), List.of());
+        if (outputs.getSelectedIndex() == 0) {
+            element.outputs = List.of();
+        } else {
+            element.outputs = List.of(Objects.requireNonNull(outputs.getSelectedItem()));
+        }
         element.toolbox_id = this.toolboxId.getSelectedItem();
         element.group = this.group.getText();
         element.warnings = Objects.requireNonNullElse(warnings.getTextList(), List.of());
@@ -313,6 +318,19 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             }
         });
         ComboBoxUtil.updateComboBoxContents(toolboxId, stringArrayList.stream().sorted().toList());
+
+        ArrayList<String> types = new ArrayList<>();
+        types.add(Constants.NONE);
+        for (ModElement element : mcreator.getWorkspaceInfo()
+                .getElementsOfType(ModElementTypes.VARIABLE.getRegistryName())) {
+            if (element.getGeneratableElement() instanceof VariableModElement variableModElement) {
+                types.add(variableModElement.blocklyVariableType);
+            }
+        }
+        for (VariableType allSupportedVariableType : Utils.getAllSupportedVariableTypes()) {
+            types.add(allSupportedVariableType.blocklyTypeName());
+        }
+        ComboBoxUtil.updateComboBoxContents(outputs, types);
     }
 
     @Override @Nullable public URI contextURL() throws URISyntaxException {

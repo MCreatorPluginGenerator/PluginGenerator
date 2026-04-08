@@ -57,6 +57,7 @@ public class ProcedureCategoryModElementGUI
         readableName.setText(modElement.getName());
         addConfigurationWithHelpEntry("readable_name", readableName);
 
+
         addConfigurationWithHelpEntry("color", color);
 
         parentCategory.setSelectedItem(Constants.NONE);

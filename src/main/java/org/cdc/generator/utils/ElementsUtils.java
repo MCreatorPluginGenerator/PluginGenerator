@@ -23,6 +23,14 @@ public class ElementsUtils {
         return trigger.getRegistryName();
     }
 
+    public static String getProcedureFileName(Workspace workspace, String name) {
+        var trigger = workspace.getModElementByName(name);
+        if (trigger == null) {
+            return null;
+        }
+        return trigger.getRegistryName();
+    }
+
     public static String getVariableName(Workspace workspace, String name) {
         var variable = workspace.getModElementByName(name);
         if (variable == null) {

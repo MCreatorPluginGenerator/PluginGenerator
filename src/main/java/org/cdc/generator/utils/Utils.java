@@ -44,15 +44,6 @@ public class Utils {
         return set;
     }
 
-    public static Set<org.cdc.generator.utils.VariableType> getAllSupportedVariableTypes(MCreator mcreator) {
-        // remove duplicated strs.
-        var set = new HashSet<org.cdc.generator.utils.VariableType>();
-        ITypeProvider.serviceLoader.stream().forEach(a -> {
-            set.addAll(a.get().provide(mcreator));
-        });
-        return set;
-    }
-
     public static List<String> getAllVariableScope() {
         return Arrays.stream(VariableType.Scope.values()).map(a -> a.name().toLowerCase(Locale.ROOT)).toList()
                 .reversed();

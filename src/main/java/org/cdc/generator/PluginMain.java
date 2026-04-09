@@ -10,6 +10,7 @@ import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.plugin.events.workspace.WorkspaceBuildStartedEvent;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.MCreatorApplication;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.generator.init.Menus;
@@ -31,6 +32,8 @@ public class PluginMain extends JavaPlugin {
     public static PluginMain getINSTANCE() {
         return INSTANCE;
     }
+
+    private MCreatorApplication application;
 
     public PluginMain(Plugin plugin) {
         super(plugin);
@@ -57,6 +60,7 @@ public class PluginMain extends JavaPlugin {
         });
 
         addListener(ApplicationLoadedEvent.class, event -> {
+            application = event.getMCreatorApplication();
             PluginMakerPreference.INSTANCE = new PluginMakerPreference("plugin_generator");
             Container.getInstance().registerObject("preferences", () -> PluginMakerPreference.INSTANCE);
         });
@@ -119,5 +123,9 @@ public class PluginMain extends JavaPlugin {
         ResourcePanels.register(mcreator);
         Menus.registerAllMenus(mcreator);
         Menus.registerAllSubMenus(mcreator);
+    }
+
+    public MCreatorApplication getApplication() {
+        return application;
     }
 }

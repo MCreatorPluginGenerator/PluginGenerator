@@ -12,8 +12,6 @@ import org.cdc.generator.utils.VariableType;
 import org.cdc.generator.utils.ioc.Inject;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 public class InputValueArgType extends AbstractArgType {
     @Inject PluginProceduresElementGUI modElementGui;
@@ -35,7 +33,7 @@ public class InputValueArgType extends AbstractArgType {
         }
         addConfiguration("name", name);
         var check = new VComboBox<String>();
-        for (VariableType supportedType : Utils.getAllSupportedVariableTypes(modElementGui.getMCreator())) {
+        for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
             check.addItem(supportedType.blocklyTypeName());
         }
         if (jsonObject.has("check")) {

@@ -14,8 +14,4 @@ public interface ITypeProvider {
             ITypeProvider.class.getClassLoader());
 
     List<VariableType> provide();
-
-    default List<VariableType> provide(MCreator mCreator){
-        return provide();
-    }
 }

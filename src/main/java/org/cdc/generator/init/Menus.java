@@ -25,6 +25,7 @@ import java.util.stream.Stream;
 public class Menus {
     public static Supplier<JMenu> PLUGIN_MAKER = register(() -> L10N.menu("menus.plugin_maker"));
     public static Supplier<JMenu> DATALIST_UTILS = register(() -> L10N.menu("menus.datalist_utils"));
+    public static Supplier<JMenu> PLUGIN_PROCEDURE_UTILS = register(()->L10N.menu("menus.plugin_procedure_utils"));
 
     private static ArrayList<Supplier<JMenu>> menus;
 

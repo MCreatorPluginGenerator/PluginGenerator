@@ -231,15 +231,6 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             typeName.setSelectedItem(proxy.getArg0Type().getName());
             typeName.addItemListener(a -> {
                 jsonObject.addProperty("type", typeName.getSelectedItem());
-                if (proxy.getArg0Type().getType() == Arg0InputType.INPUT) {
-                    var newList = new ArrayList<>(inputs.getTextList());
-                    newList.add(proxy.getUniqueName());
-                    inputs.setTextList(newList);
-                } else if (proxy.getArg0Type().getType() == Arg0InputType.FIELD) {
-                    var newList = new ArrayList<>(fields.getTextList());
-                    newList.add(proxy.getUniqueName());
-                    fields.setTextList(newList);
-                }
                 reloadComponent(rightComponent);
             });
             configurationPanel.add(L10N.label("elementgui.arg0.type"));

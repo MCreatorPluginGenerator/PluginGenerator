@@ -2,6 +2,7 @@ package org.cdc.generator.services;
 
 import net.mcreator.ui.MCreator;
 import net.mcreator.workspace.elements.ModElement;
+import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.utils.VariableType;
@@ -13,17 +14,19 @@ import java.util.List;
 public class WorkspaceTypesProvider implements ITypeProvider {
 
     @Override public List<VariableType> provide() {
-        return List.of();
+        var list = new ArrayList<VariableType>();
+        for (MCreator openMCreator : PluginMain.getINSTANCE().getApplication().getOpenMCreators()) {
+            provide(openMCreator,list);
+        }
+        return list;
     }
 
-    @Override public List<VariableType> provide(MCreator mcreator) {
-        var list = new ArrayList<VariableType>();
+    public void provide(MCreator mcreator, List<VariableType> list) {
         for (ModElement element : mcreator.getWorkspaceInfo()
                 .getElementsOfType(ModElementTypes.VARIABLE.getRegistryName())) {
             if (element.getGeneratableElement() instanceof VariableModElement modElement) {
                 list.add(new VariableType(modElement.name, modElement.blocklyVariableType));
             }
         }
-        return list;
     }
 }

@@ -1,5 +1,5 @@
 {
-   <#if !data.arg0.isEmpty()>
+  <#if !data.arg0.isEmpty()>
   "args0": [
        <#list data.arg0 as arg>
        ${arg.toString()}<#sep>,
@@ -67,6 +67,5 @@
            </#list>
          ]
        </#if>
-
    }
 }

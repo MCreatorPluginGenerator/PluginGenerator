@@ -60,7 +60,7 @@ public class TriggerImplementationModElementGUI
 
         triggerElementName.setEditable(false);
         triggerElementName.setValidator(new NotEmptyValidator(triggerElementName::getSelectedItem));
-        addConfigurationWithHelpEntry("trigger_element_name", triggerElementName);
+        addElementSelectorConfiguration("trigger_element_name", triggerElementName,triggerElementName::getSelectedItem);
 
         eventName.setValidator(() -> {
             if (eventName.getText() == null || eventName.getText().isEmpty()) {

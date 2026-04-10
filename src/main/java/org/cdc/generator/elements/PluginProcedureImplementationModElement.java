@@ -13,6 +13,8 @@ public class PluginProcedureImplementationModElement extends GeneratableElement 
     public String generator;
     public String pluginProcedureElementName;
 
+    public String content;
+
     public PluginProcedureImplementationModElement(ModElement element) {
         super(element);
     }

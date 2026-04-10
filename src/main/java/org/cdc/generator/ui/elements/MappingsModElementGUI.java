@@ -65,7 +65,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
 
         datalistName.setEditable(false);
         datalistName.setValidator(new NotEmptyValidator(datalistName::getSelectedItem));
-        addConfigurationWithHelpEntry("datalist_name", datalistName);
+        addElementSelectorConfiguration("datalist_name", datalistName,datalistName::getSelectedItem);
 
         JToolBar bar = new JToolBar();
         bar.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));

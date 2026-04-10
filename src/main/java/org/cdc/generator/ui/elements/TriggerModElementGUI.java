@@ -136,6 +136,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         JButton remrow = createRemoveRowButton();
         bar.add(remrow);
         JButton xyz = new JButton("XYZ");
+        xyz.setContentAreaFilled(false);
         xyz.setToolTipText("Add xyz parameters");
         xyz.setOpaque(false);
         xyz.addActionListener(a -> {

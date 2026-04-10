@@ -86,7 +86,8 @@ public class VariableImplementationModElementGUI
                 return jLabel;
             }
         });
-        addConfigurationWithHelpEntry("variable_element_name", variableElementName);
+        addElementSelectorConfiguration("variable_element_name", variableElementName,
+                variableElementName::getSelectedItem);
 
         defaultValue.setText("null");
         defaultValue.setValidator(new NotEmptyValidator(defaultValue::getText));

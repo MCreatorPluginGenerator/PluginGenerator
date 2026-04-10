@@ -39,6 +39,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.net.URI;
@@ -108,6 +110,16 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         addConfigurationWithHelpEntry("next_statement", nextStatement);
 
         addConfigurationWithHelpEntry("color", color);
+        outputs.addItemListener(e -> {
+            if (outputs.getSelectedIndex() != 0){
+                if (previousStatement.getText().isBlank()){
+                    previousStatement.setText("null");
+                }
+                if (nextStatement.getText().isBlank()){
+                    nextStatement.setText("null");
+                }
+            }
+        });
         addConfigurationWithHelpEntry("outputs", outputs);
 
         toolboxId.setEditable(true);
@@ -126,6 +138,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             }
             return ValidationResult.PASSED;
         });
+        localizationValue.enableRealtimeValidation();
         addConfigurationWithHelpEntry("localization_key", localizationValue);
 
         var typeComboBox = new VComboBox<String>();

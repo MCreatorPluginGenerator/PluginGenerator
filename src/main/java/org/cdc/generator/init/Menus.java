@@ -8,6 +8,7 @@ import net.mcreator.util.DesktopUtils;
 import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.DataListModElement;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
+import org.cdc.generator.ui.elements.PluginProceduresElementGUI;
 import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.builders.JMenuBuilder;
 import org.cdc.generator.utils.builders.JMenuItemBuilder;
@@ -50,6 +51,7 @@ public class Menus {
     public static void registerMenuVisibleControls(PluginMain pluginMain) {
         pluginMain.addListener(TabEvent.Shown.class, event -> {
             DATALIST_UTILS.get().setVisible(event.getTab().getContent() instanceof DataListModElementGUI);
+            PLUGIN_PROCEDURE_UTILS.get().setVisible(event.getTab().getContent() instanceof PluginProceduresElementGUI);
         });
     }
 

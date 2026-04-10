@@ -3,7 +3,6 @@ package org.cdc.generator.utils;
 import net.mcreator.generator.Generator;
 import net.mcreator.generator.template.base.BaseDataModelProvider;
 import net.mcreator.plugin.PluginLoader;
-import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
@@ -15,6 +14,7 @@ import org.cdc.generator.ui.elements.ISearchable;
 import org.cdc.generator.utils.interfaces.ITypeProvider;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
+import org.fife.ui.autocomplete.ShorthandCompletion;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -22,6 +22,7 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
 
@@ -184,8 +185,13 @@ public class Utils {
      */
     public static void initCompletionWithGenerator(DefaultCompletionProvider provider, Generator generator) {
         new BaseDataModelProvider(generator).provide().forEach((key, value) -> {
-            provider.addCompletion(new BasicCompletion(provider, "${" + key, value.getClass().getName()));
+            provider.addCompletion(new BasicCompletion(provider, key, value.getClass().getName()));
+            for (Method method : value.getClass().getMethods()) {
+                provider.addCompletion(
+                        new ShorthandCompletion(provider, key + ".", key + "." + method.getName() + "(", method.getName()));
+            }
         });
+
     }
 
     public static String convertColor(Color color) {

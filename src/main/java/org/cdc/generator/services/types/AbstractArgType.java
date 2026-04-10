@@ -2,6 +2,7 @@ package org.cdc.generator.services.types;
 
 import com.formdev.flatlaf.json.Json;
 import com.google.gson.JsonObject;
+import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 
@@ -26,6 +27,10 @@ public abstract class AbstractArgType implements IArg0Type {
         configurationPanel = new JPanel(new GridLayout(row, col));
         initNewJsonObject(jsonObject, newJsonObject);
         return configurationPanel;
+    }
+
+    public JPanel wrapConfigurationPanel(){
+        return PanelUtils.totalCenterInPanel(configurationPanel);
     }
 
     protected abstract void initNewJsonObject(JsonObject jsonObject, JsonObject newJsonObject);
@@ -65,5 +70,13 @@ public abstract class AbstractArgType implements IArg0Type {
                 }
             }
         };
+    }
+
+    @Override public String getUniqueName(JsonObject jsonObject) {
+        var json = jsonObject.get("name");
+        if (json == null) {
+            return "none";
+        }
+        return json.getAsString();
     }
 }

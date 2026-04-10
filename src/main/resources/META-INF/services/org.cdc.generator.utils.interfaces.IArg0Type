@@ -1,2 +1,5 @@
-org.cdc.generator.services.types.NoneArgType
+org.cdc.generator.services.types.InputDummyArgType
 org.cdc.generator.services.types.InputValueArgType
+org.cdc.generator.services.types.FieldInputArgType
+org.cdc.generator.services.types.FieldCheckBoxArgType
+org.cdc.generator.services.types.InputStatementArgType

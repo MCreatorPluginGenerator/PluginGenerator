@@ -6,19 +6,17 @@ import net.mcreator.ui.validation.component.VTextField;
 import org.cdc.generator.utils.Arg0InputType;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
-public class NoneArgType extends AbstractArgType {
-    private static NoneArgType INSTANCE;
+public class InputDummyArgType extends AbstractArgType {
+    private static InputDummyArgType INSTANCE;
 
-    public NoneArgType() {
+    public InputDummyArgType() {
         super(1, 2);
     }
 
-    public static NoneArgType getInstance() {
+    public static InputDummyArgType getInstance() {
         if (INSTANCE == null)
-            INSTANCE = new NoneArgType();
+            INSTANCE = new InputDummyArgType();
         return INSTANCE;
     }
 
@@ -27,14 +25,14 @@ public class NoneArgType extends AbstractArgType {
     }
 
     @Override public JPanel getEditor(JsonObject jsonObject, JsonObject newJsonObject) {
-        JPanel configurationPanel = super.getEditor(jsonObject, newJsonObject);
+        super.getEditor(jsonObject, newJsonObject);
         var name = new VTextField();
         name.getDocument().addDocumentListener(createDefaultNameDocumentListener(name::getText,()->newJsonObject));
         if (jsonObject.has("name")) {
             name.setText(jsonObject.get("name").getAsString());
         }
         addConfiguration("name", name);
-        return PanelUtils.totalCenterInPanel(configurationPanel);
+        return wrapConfigurationPanel();
     }
 
     @Override protected void initNewJsonObject(JsonObject jsonObject,JsonObject newJsonObject) {
@@ -45,9 +43,5 @@ public class NoneArgType extends AbstractArgType {
 
     @Override public Arg0InputType getType() {
         return Arg0InputType.DEPENDENCY;
-    }
-
-    @Override public String getUniqueName(JsonObject jsonObject) {
-        return "none";
     }
 }

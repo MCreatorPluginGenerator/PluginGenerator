@@ -11,9 +11,12 @@ import org.cdc.framework.utils.BuilderUtils;
 import org.cdc.generator.elements.PluginProcedureImplementationModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.init.ModElementTypes;
+import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
+import org.fife.ui.autocomplete.AutoCompletion;
+import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -32,6 +35,7 @@ public class PluginProcedureImplementationModElementGUI
     private final VComboBox<String> pluginprocedureElementName = new VComboBox<>();
 
     private final RSyntaxTextArea content = new RSyntaxTextArea();
+    private AutoCompletion lastAutoCompletion;
 
     public PluginProcedureImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
             boolean editingMode) {
@@ -78,15 +82,40 @@ public class PluginProcedureImplementationModElementGUI
         });
         toolbar.add(generate);
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(content, mcreator);
-        AutoCompletionFactory.createDefaultCompletion(content, this::createCompletionProvider);
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
+
+        pluginprocedureElementName.addItemListener(a -> {
+            if (lastAutoCompletion != null) {
+                lastAutoCompletion.uninstall();
+            }
+            if (getPluginProcedureModElement() == null){
+                return;
+            }
+            lastAutoCompletion = AutoCompletionFactory.createDefaultCompletion(content, this::createCompletionProvider);
+        });
 
         addPage(PanelUtils.northAndCenterElement(configurationPanel, panel));
     }
 
     private CompletionProvider createCompletionProvider() {
-        return new DefaultCompletionProvider();
+        var complete = new DefaultCompletionProvider();
+        var element = getPluginProcedureModElement();
+        for (String input : element.inputs) {
+            complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getInputPlaceHolder(input)));
+            complete.addCompletion(new BasicCompletion(complete, "input$" + input));
+        }
+        for (String field : element.fields) {
+            complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getFieldPlaceHolder(field)));
+            complete.addCompletion(new BasicCompletion(complete, "field$" + field));
+        }
+        for (String statement : element.statements) {
+            complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getStatementPlaceHolder(statement)));
+            complete.addCompletion(new BasicCompletion(complete, "statement$" + statement));
+        }
+        Utils.initCompletionWithGenerator(complete, mcreator.getGenerator());
+
+        return complete;
     }
 
     @Override protected void openInEditingMode(PluginProcedureImplementationModElement generatableElement) {
@@ -117,8 +146,12 @@ public class PluginProcedureImplementationModElementGUI
     }
 
     public PluginProcedureModElement getPluginProcedureModElement() {
-        var trigger = mcreator.getWorkspace().getModElementByName(pluginprocedureElementName.getSelectedItem());
-        if (trigger.getGeneratableElement() instanceof PluginProcedureModElement pluginProcedure) {
+        var procedureElement = mcreator.getWorkspace()
+                .getModElementByName(pluginprocedureElementName.getSelectedItem());
+        if (procedureElement == null) {
+            return null;
+        }
+        if (procedureElement.getGeneratableElement() instanceof PluginProcedureModElement pluginProcedure) {
             return pluginProcedure;
         }
         return null;

@@ -26,7 +26,7 @@ public class InputValueArgType extends AbstractArgType {
     }
 
     @Override public JPanel getEditor(JsonObject jsonObject, JsonObject newJsonObject) {
-        JPanel configurationPanel = super.getEditor(jsonObject, newJsonObject);
+        super.getEditor(jsonObject, newJsonObject);
 
         var name = new VTextField();
         if (jsonObject.has("name")) {
@@ -47,7 +47,7 @@ public class InputValueArgType extends AbstractArgType {
             newJsonObject.addProperty("check", check.getSelectedItem());
         });
 
-        return PanelUtils.totalCenterInPanel(configurationPanel);
+        return wrapConfigurationPanel();
     }
 
     @Override protected void initNewJsonObject(JsonObject jsonObject, JsonObject newJsonObject) {
@@ -65,13 +65,5 @@ public class InputValueArgType extends AbstractArgType {
 
     @Override public Arg0InputType getType() {
         return Arg0InputType.INPUT;
-    }
-
-    @Override public String getUniqueName(JsonObject jsonObject) {
-        var json = jsonObject.get("name");
-        if (json == null) {
-            return "none";
-        }
-        return json.getAsString();
     }
 }

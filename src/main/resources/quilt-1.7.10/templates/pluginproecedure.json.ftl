@@ -29,6 +29,15 @@
                 </#list>
            ],
        </#if>
+       <#if !data.statements.isEmpty()>
+         ,"statements": [
+            <#list data.statements as statement>
+            {
+                "name": "${statement}"
+            }<#sep>,
+            </#list>
+         ]
+       </#if>
        <#if !data.fields.isEmpty()>
          ,"fields": [
          <#list data.fields as field>

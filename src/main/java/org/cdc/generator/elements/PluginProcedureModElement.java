@@ -34,6 +34,7 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     public List<String> required_apis;
     public List<String> inputs;
     public List<String> fields;
+    public List<String> statements;
 
     public String localization;
     public String tooltip;

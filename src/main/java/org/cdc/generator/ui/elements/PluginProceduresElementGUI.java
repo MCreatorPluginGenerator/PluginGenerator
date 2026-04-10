@@ -68,6 +68,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     protected final JStringListField requiredApis;
     protected final JStringListField inputs;
     protected final JStringListField fields;
+    protected final JStringListField statements;
     protected final JStringListField toolboxInit;
     protected final VTextField localizationValue;
     protected final VTextField tooltip;
@@ -90,6 +91,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.arg0List = new JList<>(model);
         this.inputs = new JStringListField(mcreator, null);
         this.fields = new JStringListField(mcreator, null);
+        this.statements = new JStringListField(mcreator, null);
         this.toolboxInit = new JStringListField(mcreator, null);
         this.localizationValue = new VTextField();
         this.tooltip = new VTextField();
@@ -105,7 +107,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(15, 2, 5, 5));
+        initConfiguration(new GridLayout(16, 2, 5, 5));
 
         name.setText(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getText));
@@ -130,12 +132,15 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         toolboxId.setEditable(true);
         toolboxId.setSelectedItem("other");
         addConfigurationWithHelpEntry("toolbox_id", toolboxId);
+
+        group.setValidator(new NotEmptyValidator(group::getText));
         addConfigurationWithHelpEntry("group", group);
 
         addConfigurationWithHelpEntry("warnings", warnings);
         addConfigurationWithHelpEntry("required_apis", requiredApis);
         addConfigurationWithHelpEntry("inputs", inputs);
         addConfigurationWithHelpEntry("fields", fields);
+        addConfigurationWithHelpEntry("statements", statements);
         addConfigurationWithHelpEntry("toolbox_init", toolboxInit);
         localizationValue.setValidator(() -> {
             if (BuilderUtils.countLanguageParameterCount(localizationValue.getText()) != model.size()) {
@@ -297,9 +302,11 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         }
         this.inputs.setTextList(generatableElement.inputs);
         this.fields.setTextList(generatableElement.fields);
+        this.statements.setTextList(generatableElement.statements);
         this.toolboxInit.setTextList(generatableElement.toolbox_init);
         this.dependencies = generatableElement.dependencies;
         this.localizationValue.setText(generatableElement.localization);
+        this.tooltip.setText(generatableElement.tooltip);
     }
 
     @Override public PluginProcedureModElement getElementFromGUI() {
@@ -321,6 +328,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         element.arg0 = model.stream().map(a -> a.getArg0Json().deepCopy()).toList();
         element.inputs = this.inputs.getTextList();
         element.fields = this.fields.getTextList();
+        element.statements = this.statements.getTextList();
         element.toolbox_init = this.toolboxInit.getTextList();
         element.dependencies = dependencies.stream().map(a -> {
             try {
@@ -330,6 +338,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             }
         }).toList();
         element.localization = localizationValue.getText();
+        element.tooltip = tooltip.getText();
         return element;
     }
 
@@ -435,5 +444,9 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
 
     public JStringListField getFields() {
         return fields;
+    }
+
+    public JStringListField getStatements() {
+        return statements;
     }
 }

@@ -142,12 +142,16 @@ public class Menus {
                     .getContent() instanceof PluginProceduresElementGUI pluginProceduresElementGUI) {
                 var inputs = new ArrayList<String>();
                 var fields = new ArrayList<String>();
+                var statements = new ArrayList<String>();
                 for (ArgTypeProxy argTypeProxy : pluginProceduresElementGUI.getModel()) {
                     if (argTypeProxy.getArg0Type().getType() == Arg0InputType.INPUT){
                         inputs.add(argTypeProxy.getUniqueName());
                     }
                     if (argTypeProxy.getArg0Type().getType() == Arg0InputType.FIELD){
                         fields.add(argTypeProxy.getUniqueName());
+                    }
+                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.STATEMENT){
+                        statements.add(argTypeProxy.getUniqueName());
                     }
                 }
                 var inputs1 = new HashSet<String>();
@@ -159,6 +163,11 @@ public class Menus {
                 fields1.addAll(pluginProceduresElementGUI.getFields().getTextList());
                 fields1.addAll(fields);
                 pluginProceduresElementGUI.getFields().setTextList(fields1);
+
+                var statements1 = new HashSet<String>();
+                statements1.addAll(pluginProceduresElementGUI.getStatements().getTextList());
+                statements1.addAll(statements);
+                pluginProceduresElementGUI.getStatements().setTextList(statements1);
             }
         }).build());
         // TODO: Mapping_utils functions: like temporary plugin to add item and blocks.

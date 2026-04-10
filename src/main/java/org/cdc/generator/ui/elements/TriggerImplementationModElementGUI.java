@@ -8,6 +8,7 @@ import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
+import org.cdc.framework.utils.BuilderUtils;
 import org.cdc.generator.elements.TriggerImplementationModElement;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
@@ -29,6 +30,7 @@ import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -74,17 +76,11 @@ public class TriggerImplementationModElementGUI
         JButton generate = new JButton(UIRES.get("18px.import"));
         generate.setToolTipText("Generate code");
         generate.addActionListener(e -> {
-            var str = """
-                    <#assign dependenciesCode>
-                      <@procedureDependenciesCode dependencies, {
-                            %map%
-                      }/>
-                    </#assign>
-                    execute(event<#if dependenciesCode?has_content>,</#if>${dependenciesCode});
-                    """;
-            str = str.replace("%map%", Objects.requireNonNull(getTriggerModElement().dependencies_provided).stream()
-                    .map(a -> YamlUtils.keyAndValue(YamlUtils.str(a.getName()), YamlUtils.str(a.getName())))
-                    .collect(Collectors.joining(",\n        ")));
+            var map = new HashMap<String,String>();
+            for (TriggerModElement.Dependency dependency : getTriggerModElement().dependencies_provided) {
+                map.put(dependency.getName(),dependency.getType());
+            }
+            var str = BuilderUtils.generateTriggerDependencies(map);
             methodBody.setText(str);
         });
         toolbar.add(generate);

@@ -53,7 +53,7 @@ public class Container {
             if (field.isAnnotationPresent(Inject.class) && map.containsKey(field.getName())) {
                 field.setAccessible(true);
                 var value = map.get(field.getName()).get();
-                if (field.getType().isAssignableFrom(value.getClass())) {
+                if (field.getType().isAssignableFrom(value.getClass()) || field.getType().isPrimitive()) {
                     try {
                         field.set(object, value);
                     } catch (IllegalAccessException e) {

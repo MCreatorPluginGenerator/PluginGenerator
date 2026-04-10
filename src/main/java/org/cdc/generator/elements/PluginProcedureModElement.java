@@ -36,6 +36,7 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     public List<String> fields;
 
     public String localization;
+    public String tooltip;
 
     public PluginProcedureModElement(ModElement element) {
         super(element);
@@ -61,6 +62,11 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
 
     @UsedByReflection public String getLocalization() {
         return localization;
+    }
+
+    @UsedByReflection
+    public String getTooltip() {
+        return tooltip;
     }
 
     public static class Dependency implements Cloneable {

@@ -20,6 +20,7 @@ import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.framework.utils.BuilderUtils;
 import org.cdc.framework.utils.BuiltInToolBoxId;
+import org.cdc.framework.utils.L10NHelper;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.init.ModElementTypes;
@@ -34,6 +35,8 @@ import org.cdc.generator.utils.validators.NotEmptyValidator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -67,6 +70,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     protected final JStringListField fields;
     protected final JStringListField toolboxInit;
     protected final VTextField localizationValue;
+    protected final VTextField tooltip;
 
     private final ArrayListListModel<ArgTypeProxy> model;
     public JList<ArgTypeProxy> arg0List;
@@ -88,6 +92,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.fields = new JStringListField(mcreator, null);
         this.toolboxInit = new JStringListField(mcreator, null);
         this.localizationValue = new VTextField();
+        this.tooltip = new VTextField();
 
         this.dependencies = new ArrayList<>();
 
@@ -100,7 +105,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(14, 2, 5, 5));
+        initConfiguration(new GridLayout(15, 2, 5, 5));
 
         name.setText(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getText));
@@ -111,11 +116,11 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
 
         addConfigurationWithHelpEntry("color", color);
         outputs.addItemListener(e -> {
-            if (outputs.getSelectedIndex() != 0){
-                if (previousStatement.getText().isBlank()){
+            if (outputs.getSelectedIndex() != 0) {
+                if (previousStatement.getText().isBlank()) {
                     previousStatement.setText("null");
                 }
-                if (nextStatement.getText().isBlank()){
+                if (nextStatement.getText().isBlank()) {
                     nextStatement.setText("null");
                 }
             }
@@ -126,6 +131,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         toolboxId.setSelectedItem("other");
         addConfigurationWithHelpEntry("toolbox_id", toolboxId);
         addConfigurationWithHelpEntry("group", group);
+
         addConfigurationWithHelpEntry("warnings", warnings);
         addConfigurationWithHelpEntry("required_apis", requiredApis);
         addConfigurationWithHelpEntry("inputs", inputs);
@@ -133,13 +139,14 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         addConfigurationWithHelpEntry("toolbox_init", toolboxInit);
         localizationValue.setValidator(() -> {
             if (BuilderUtils.countLanguageParameterCount(localizationValue.getText()) != model.size()) {
-                return new ValidationResult(ValidationResult.Type.ERROR,
-                        "\" " + localizationValue.getText() + " \"is a irregular content because we need parameter count: " + model.size());
+                return new ValidationResult(ValidationResult.Type.ERROR, "\" " + localizationValue.getText()
+                        + " \"is a irregular content because we need parameter count: " + model.size());
             }
             return ValidationResult.PASSED;
         });
         localizationValue.enableRealtimeValidation();
-        addConfigurationWithHelpEntry("localization_key", localizationValue);
+        addConfigurationWithHelpEntry("localization_value", localizationValue);
+        addConfigurationWithHelpEntry("tooltip", tooltip);
 
         var typeComboBox = new VComboBox<String>();
         typeComboBox.setOpaque(false);
@@ -247,6 +254,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         if (proxy != null) {
             //inject
             container.registerTemporaryObject("modElementGui", () -> this);
+            container.registerTemporaryObject("index", () -> arg0List.getSelectedIndex());
             container.inject(proxy.getArg0Type());
             //inject
             JsonObject jsonObject = new JsonObject();
@@ -411,5 +419,21 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
                 row.setType(aValue.toString());
             }
         }
+    }
+
+    public JStringListField getWarnings() {
+        return warnings;
+    }
+
+    public ArrayListListModel<ArgTypeProxy> getModel() {
+        return model;
+    }
+
+    public JStringListField getInputs() {
+        return inputs;
+    }
+
+    public JStringListField getFields() {
+        return fields;
     }
 }

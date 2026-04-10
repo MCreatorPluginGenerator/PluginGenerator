@@ -15,6 +15,7 @@ import javax.swing.*;
 
 public class InputValueArgType extends AbstractArgType {
     @Inject PluginProceduresElementGUI modElementGui;
+    @Inject int index;
 
     public InputValueArgType() {
         super(3, 2);
@@ -53,7 +54,7 @@ public class InputValueArgType extends AbstractArgType {
         if (jsonObject.has("name")) {
             newJsonObject.addProperty("name", jsonObject.get("name").getAsString());
         } else {
-            newJsonObject.addProperty("name", "none");
+            newJsonObject.addProperty("name", "none" + index);
         }
         if (jsonObject.has("check")) {
             newJsonObject.addProperty("check", jsonObject.get("check").getAsString());

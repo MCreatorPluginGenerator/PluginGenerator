@@ -5,10 +5,13 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.dialogs.file.FileDialogs;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.util.DesktopUtils;
+import org.cdc.framework.utils.L10NHelper;
 import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.DataListModElement;
+import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
 import org.cdc.generator.ui.elements.PluginProceduresElementGUI;
+import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.builders.JMenuBuilder;
 import org.cdc.generator.utils.builders.JMenuItemBuilder;
@@ -17,16 +20,14 @@ import javax.swing.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class Menus {
     public static Supplier<JMenu> PLUGIN_MAKER = register(() -> L10N.menu("menus.plugin_maker"));
     public static Supplier<JMenu> DATALIST_UTILS = register(() -> L10N.menu("menus.datalist_utils"));
-    public static Supplier<JMenu> PLUGIN_PROCEDURE_UTILS = register(()->L10N.menu("menus.plugin_procedure_utils"));
+    public static Supplier<JMenu> PLUGIN_PROCEDURE_UTILS = register(() -> L10N.menu("menus.plugin_procedure_utils"));
 
     private static ArrayList<Supplier<JMenu>> menus;
 
@@ -123,6 +124,43 @@ public class Menus {
                         });
                     }
                 }).build());
+        PLUGIN_PROCEDURE_UTILS.get()
+                .add(new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("generate_warnings")
+                        .setActionListener(a -> {
+                            if (mcreator.getTabs().getCurrentTab()
+                                    .getContent() instanceof PluginProceduresElementGUI pluginProceduresElementGUI) {
+                                for (String s : pluginProceduresElementGUI.getWarnings().getTextList()) {
+                                    for (LinkedHashMap<String, String> value : mcreator.getWorkspace().getLanguageMap()
+                                            .values()) {
+                                        value.put(L10NHelper.getWarningKey(s), s);
+                                    }
+                                }
+                            }
+                        }).build());
+        PLUGIN_PROCEDURE_UTILS.get().add(new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("refresh_inputs_and_fields").setActionListener(a->{
+            if (mcreator.getTabs().getCurrentTab()
+                    .getContent() instanceof PluginProceduresElementGUI pluginProceduresElementGUI) {
+                var inputs = new ArrayList<String>();
+                var fields = new ArrayList<String>();
+                for (ArgTypeProxy argTypeProxy : pluginProceduresElementGUI.getModel()) {
+                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.INPUT){
+                        inputs.add(argTypeProxy.getUniqueName());
+                    }
+                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.FIELD){
+                        fields.add(argTypeProxy.getUniqueName());
+                    }
+                }
+                var inputs1 = new HashSet<String>();
+                inputs1.addAll(pluginProceduresElementGUI.getInputs().getTextList());
+                inputs1.addAll(inputs);
+                pluginProceduresElementGUI.getInputs().setTextList(inputs1);
+
+                var fields1 = new HashSet<String>();
+                fields1.addAll(pluginProceduresElementGUI.getFields().getTextList());
+                fields1.addAll(fields);
+                pluginProceduresElementGUI.getFields().setTextList(fields1);
+            }
+        }).build());
         // TODO: Mapping_utils functions: like temporary plugin to add item and blocks.
     }
 }

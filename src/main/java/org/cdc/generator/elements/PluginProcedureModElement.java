@@ -35,6 +35,8 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     public List<String> inputs;
     public List<String> fields;
 
+    public String localization;
+
     public PluginProcedureModElement(ModElement element) {
         super(element);
     }
@@ -44,7 +46,7 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     }
 
     @UsedByReflection public String getOutputs() {
-        if (outputs.isEmpty()){
+        if (outputs.isEmpty()) {
             return null;
         }
         if (outputs.size() == 1) {
@@ -55,6 +57,10 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
 
     @Override public String getBlocklyFolder() {
         return "procedures";
+    }
+
+    @UsedByReflection public String getLocalization() {
+        return localization;
     }
 
     public static class Dependency implements Cloneable {

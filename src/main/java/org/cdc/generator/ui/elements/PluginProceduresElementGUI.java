@@ -11,11 +11,14 @@ import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.laf.themes.Theme;
+import net.mcreator.ui.validation.ValidationResult;
+import net.mcreator.ui.validation.Validator;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.ArrayListListModel;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableTypeLoader;
+import org.cdc.framework.utils.BuilderUtils;
 import org.cdc.framework.utils.BuiltInToolBoxId;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.VariableModElement;
@@ -26,6 +29,7 @@ import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.ioc.Inject;
+import org.cdc.generator.utils.validators.NotEmptyValidator;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +64,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     protected final JStringListField inputs;
     protected final JStringListField fields;
     protected final JStringListField toolboxInit;
+    protected final VTextField localizationValue;
 
     private final ArrayListListModel<ArgTypeProxy> model;
     public JList<ArgTypeProxy> arg0List;
@@ -80,6 +85,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.inputs = new JStringListField(mcreator, null);
         this.fields = new JStringListField(mcreator, null);
         this.toolboxInit = new JStringListField(mcreator, null);
+        this.localizationValue = new VTextField();
 
         this.dependencies = new ArrayList<>();
 
@@ -92,7 +98,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(13, 2, 5, 5));
+        initConfiguration(new GridLayout(14, 2, 5, 5));
 
         name.setText(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getText));
@@ -112,7 +118,15 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         addConfigurationWithHelpEntry("required_apis", requiredApis);
         addConfigurationWithHelpEntry("inputs", inputs);
         addConfigurationWithHelpEntry("fields", fields);
-        addConfigurationWithHelpEntry("toolboxInit", toolboxInit);
+        addConfigurationWithHelpEntry("toolbox_init", toolboxInit);
+        localizationValue.setValidator(() -> {
+            if (BuilderUtils.countLanguageParameterCount(localizationValue.getText()) != model.size()) {
+                return new ValidationResult(ValidationResult.Type.ERROR,
+                        "\" " + localizationValue.getText() + " \"is a irregular content because we need parameter count: " + model.size());
+            }
+            return ValidationResult.PASSED;
+        });
+        addConfigurationWithHelpEntry("localization_key", localizationValue);
 
         var typeComboBox = new VComboBox<String>();
         typeComboBox.setOpaque(false);
@@ -173,7 +187,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         });
 
         addPage("Configuration", PanelUtils.northAndCenterElement(configurationPanel, toolbarAndTable(bar))).validate(
-                name);
+                name).validate(localizationValue);
 
         JToolBar args0ToolBar = new JToolBar();
 
@@ -264,6 +278,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.fields.setTextList(generatableElement.fields);
         this.toolboxInit.setTextList(generatableElement.toolbox_init);
         this.dependencies = generatableElement.dependencies;
+        this.localizationValue.setText(generatableElement.localization);
     }
 
     @Override public PluginProcedureModElement getElementFromGUI() {
@@ -293,6 +308,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
                 throw new RuntimeException(e);
             }
         }).toList();
+        element.localization = localizationValue.getText();
         return element;
     }
 

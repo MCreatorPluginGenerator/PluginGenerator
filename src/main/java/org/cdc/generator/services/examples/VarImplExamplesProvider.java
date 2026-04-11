@@ -1,4 +1,4 @@
-package org.cdc.generator.services;
+package org.cdc.generator.services.examples;
 
 import jdk.jfr.Description;
 import net.mcreator.generator.Generator;

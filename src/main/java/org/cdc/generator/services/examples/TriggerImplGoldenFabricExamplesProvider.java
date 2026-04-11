@@ -1,4 +1,4 @@
-package org.cdc.generator.services;
+package org.cdc.generator.services.examples;
 
 import jdk.jfr.Description;
 import net.mcreator.ui.init.UIRES;
@@ -13,19 +13,23 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 @Description("TriggerImplExamples")
-public class TriggerImplForgeForksExamplesProvider implements IExamplesProvider {
+// Not the official generator
+public class TriggerImplGoldenFabricExamplesProvider implements IExamplesProvider {
     @InjectField TriggerImplementationModElementGUI modElementGui;
+
     @Override
     public void provideExamples(Consumer<JComponent> componentConsumer, Consumer<Object> exampleConsumer,
             String[] args) {
-        JButton generate = new JButton(UIRES.get("16px.forge"));
-        generate.setToolTipText("Generate forge code");
+        JButton generate = new JButton(UIRES.get("16px.fabric"));
+        generate.setToolTipText("Generate golden fabric code");
         generate.addActionListener(e -> {
-            var map = new HashMap<String,String>();
+            var map = new HashMap<String, String>();
             for (TriggerModElement.Dependency dependency : modElementGui.getTriggerModElement().dependencies_provided) {
-                map.put(dependency.getName(),dependency.getType());
+                map.put(dependency.getName(), dependency.getType());
             }
-            var str = BuilderUtils.generateTriggerDependencies(map);
+            var str = """
+                    (@Placeholder world,pos and so on@) -> {
+                    """ + BuilderUtils.generateTriggerDependencies(map, false);
             exampleConsumer.accept(str);
         });
         componentConsumer.accept(generate);

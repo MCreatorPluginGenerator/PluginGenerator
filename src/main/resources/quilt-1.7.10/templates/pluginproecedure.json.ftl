@@ -11,6 +11,13 @@
   <#if data.getOutputs()??>
   ,"output": ${data.getOutputs()}
   </#if>
+  <#if !data.getExtensions().isEmpty()>
+  ,"extensions": [
+     <#list data.extensions as extension>
+       ${extension}<#sep>,
+     </#list>
+  ]
+  </#if>
   <#if !data.previousStatement.isEmpty()>
   ,"previousStatement": "${data.previousStatement}"
   </#if>

@@ -48,6 +48,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     protected final VTextField nextStatement = new VTextField();
     protected final JColor color;
     protected final VComboBox<String> outputs;
+    protected final JStringListField extensions;
     protected final VComboBox<String> toolboxId = new VComboBox<>();
     protected final VTextField group = new VTextField();
     protected final JStringListField warnings;
@@ -71,6 +72,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.inputsInline = createDefaultCheckBox();
         this.color = new JColor(mcreator, false, false);
         this.outputs = new VComboBox<>();
+        this.extensions = new JStringListField(mcreator, null);
         this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);
         this.requiredApis = new JStringListField(mcreator, a -> Rules.getFileNameValidator(a::getText));
         this.model = new ArrayListListModel<>();
@@ -93,7 +95,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(16, 2, 5, 5));
+        initConfiguration(new GridLayout(17, 2, 5, 5));
 
         name.setText(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getText));
@@ -106,16 +108,14 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
 
         addConfigurationWithHelpEntry("color", color);
         outputs.addItemListener(e -> {
-            if (outputs.getSelectedIndex() != 0) {
+            if (outputs.getSelectedIndex() == 0) {
                 if (previousStatement.getText().isBlank()) {
                     previousStatement.setText("null");
-                }
-                if (nextStatement.getText().isBlank()) {
-                    nextStatement.setText("null");
                 }
             }
         });
         addConfigurationWithHelpEntry("outputs", outputs);
+        addConfigurationWithHelpEntry("extensions", extensions);
 
         toolboxId.setEditable(true);
         toolboxId.setSelectedItem("other");
@@ -279,6 +279,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.previousStatement.setText(generatableElement.previousStatement);
         this.nextStatement.setText(generatableElement.nextStatement);
         this.color.setColor(generatableElement.colour);
+        this.extensions.setTextList(generatableElement.extensions);
         if (!generatableElement.outputs.isEmpty()) {
             this.outputs.setSelectedItem(generatableElement.outputs.getFirst());
         }
@@ -310,6 +311,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         } else {
             element.outputs = List.of(Objects.requireNonNull(outputs.getSelectedItem()));
         }
+        element.extensions = extensions.getTextList();
         element.toolbox_id = this.toolboxId.getSelectedItem();
         element.group = this.group.getText();
         element.warnings = Objects.requireNonNullElse(warnings.getTextList(), List.of());

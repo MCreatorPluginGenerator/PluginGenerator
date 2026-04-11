@@ -22,6 +22,7 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     public String nextStatement;
     public Color colour;
     public List<String> outputs;
+    public List<String> extensions;
 
     // mcreator:
     // parent category
@@ -68,6 +69,15 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     @UsedByReflection
     public String getTooltip() {
         return tooltip;
+    }
+
+    //compatible with previous version.
+    // it may be null
+    public List<String> getExtensions() {
+        if (extensions == null){
+            return List.of();
+        }
+        return extensions;
     }
 
     public static class Dependency implements Cloneable {

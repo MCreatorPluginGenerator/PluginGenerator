@@ -1,5 +1,5 @@
-org.cdc.generator.services.CommonGradleExamplesProvider
-org.cdc.generator.services.CurseMavenExamplesProvider
-org.cdc.generator.services.VarImplExamplesProvider
-org.cdc.generator.services.TriggerImplForgeForksExamplesProvider
-org.cdc.generator.services.TriggerImplGoldenFabricExamplesProvider
+org.cdc.generator.services.examples.CommonGradleExamplesProvider
+org.cdc.generator.services.examples.CurseMavenExamplesProvider
+org.cdc.generator.services.examples.VarImplExamplesProvider
+org.cdc.generator.services.examples.TriggerImplForgeForksExamplesProvider
+org.cdc.generator.services.examples.TriggerImplGoldenFabricExamplesProvider

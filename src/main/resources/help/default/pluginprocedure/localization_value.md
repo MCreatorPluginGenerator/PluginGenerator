@@ -1,3 +1,5 @@
+the message0 of this procedure.
+
 Example:
 
 A block has two args:

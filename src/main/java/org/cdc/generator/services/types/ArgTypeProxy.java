@@ -4,15 +4,11 @@ import com.google.gson.JsonObject;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 
 public class ArgTypeProxy {
-    public static ArgTypeProxy createArgTypeProxy(JsonObject jsonObject){
-        return new ArgTypeProxy(jsonObject);
-    }
-
-    public static IArg0Type getArg0Type(JsonObject jsonObject){
+    public static IArg0Type getArg0Type(JsonObject jsonObject) {
         String type = jsonObject.get("type").getAsString();
         IArg0Type type1 = null;
         for (IArg0Type arg0type : IArg0Type.arg0types) {
-            if (arg0type.getName().equals(type)){
+            if (arg0type.getName().equals(type)) {
                 type1 = arg0type;
                 break;
             }
@@ -26,7 +22,7 @@ public class ArgTypeProxy {
         this.arg0Json = arg0Json;
     }
 
-    public String getUniqueName(){
+    public String getUniqueName() {
         return getArg0Type().getUniqueName(arg0Json);
     }
 
@@ -41,6 +37,8 @@ public class ArgTypeProxy {
     public IArg0Type getArg0Type() {
         return getArg0Type(arg0Json);
     }
+
+    public String getArg0TypeName() {return getArg0Type().getName();}
 
     @Override public String toString() {
         return getUniqueName();

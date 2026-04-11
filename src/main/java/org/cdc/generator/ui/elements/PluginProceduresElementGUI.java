@@ -287,9 +287,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.group.setText(generatableElement.group);
         this.warnings.setTextList(generatableElement.warnings);
         this.requiredApis.setTextList(generatableElement.required_apis);
-        for (JsonObject jsonObject : generatableElement.arg0) {
-            model.add(ArgTypeProxy.createArgTypeProxy(jsonObject));
-        }
+        model.addAll(generatableElement.arg0);
         this.inputs.setTextList(generatableElement.inputs);
         this.fields.setTextList(generatableElement.fields);
         this.statements.setTextList(generatableElement.statements);
@@ -316,7 +314,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         element.group = this.group.getText();
         element.warnings = Objects.requireNonNullElse(warnings.getTextList(), List.of());
         element.required_apis = Objects.requireNonNullElse(requiredApis.getTextList(), List.of());
-        element.arg0 = model.stream().map(a -> a.getArg0Json().deepCopy()).toList();
+        element.arg0 = new ArrayList<>(model);
         element.inputs = this.inputs.getTextList();
         element.fields = this.fields.getTextList();
         element.statements = this.statements.getTextList();

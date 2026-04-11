@@ -5,6 +5,7 @@ import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
+import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.YamlUtils;
 
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class PluginProcedureModElement extends GeneratableElement implements IBlocklyElement {
 
-    public List<JsonObject> arg0;
+    public List<ArgTypeProxy> arg0;
     public boolean inputsInline;
     public String previousStatement;
     public String nextStatement;

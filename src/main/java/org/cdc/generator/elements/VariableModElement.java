@@ -20,6 +20,7 @@ public class VariableModElement extends GeneratableElement {
     public String blocklyVariableType;
     public boolean ignoredByCoverage;
     public boolean nullable;
+    public String customVariableDependencyLocalization;
 
     @Nullable public List<String> required_apis;
 
@@ -40,5 +41,9 @@ public class VariableModElement extends GeneratableElement {
 
     @UsedByReflection public boolean isGenerate() {
         return generate;
+    }
+
+    @UsedByReflection public String getCustomVariableDependencyLocalization() {
+        return customVariableDependencyLocalization;
     }
 }

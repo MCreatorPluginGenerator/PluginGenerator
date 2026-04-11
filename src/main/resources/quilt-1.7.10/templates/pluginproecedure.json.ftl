@@ -2,7 +2,7 @@
   <#if !data.arg0.isEmpty()>
   "args0": [
        <#list data.arg0 as arg>
-       ${arg.toString()}<#sep>,
+       ${arg.getArg0Json().toString()}<#sep>,
        </#list>
    ],
   </#if>

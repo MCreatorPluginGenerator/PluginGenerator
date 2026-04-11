@@ -3,3 +3,7 @@ templates:
     condition: generate
     writer: json
     name: "@RESROOT/variables/@[getName()].json"
+
+localizationkeys:
+  - key: blockly.block.custom_dependency_@registryname
+    mapto: getCustomVariableDependencyLocalization()

@@ -7,3 +7,7 @@ templates:
     condition: 'getGeneratorFlavor() %= FORGE'
     writer: file
     name: "@RESROOT/@[getGeneratorName()]/triggers/@[getTriggerName()].java.ftl"
+  - template: triggerimpl/fabric.java.ftl.ftl
+    condition: 'getGeneratorFlavor() %= FABRIC'
+    writer: file
+    name: "@RESROOT/@[getGeneratorName()]/triggers/@[getTriggerName()].java.ftl"

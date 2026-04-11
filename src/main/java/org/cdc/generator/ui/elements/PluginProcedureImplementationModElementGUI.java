@@ -95,7 +95,7 @@ public class PluginProcedureImplementationModElementGUI
             lastAutoCompletion = AutoCompletionFactory.createDefaultCompletion(content, this::createCompletionProvider);
         });
 
-        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel));
+        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator);
     }
 
     private CompletionProvider createCompletionProvider() {

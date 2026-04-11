@@ -10,6 +10,7 @@
     </list>
     <writeAnnotations>
       <writeAnnotation name="org.cdc.generator.utils.ioc.Inject" />
+      <writeAnnotation name="org.cdc.generator.utils.ioc.InjectField" />
     </writeAnnotations>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />

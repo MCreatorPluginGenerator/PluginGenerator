@@ -38,6 +38,13 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     }
 
     /**
+     * When you need @Inject
+     */
+    public void initAfterAll(){
+
+    }
+
+    /**
      * init configurationPanel. You can call it optional.
      */
     protected void initConfiguration(LayoutManager layoutManager) {

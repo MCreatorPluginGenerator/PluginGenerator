@@ -24,7 +24,7 @@ import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 import org.cdc.generator.utils.ioc.Container;
-import org.cdc.generator.utils.ioc.Inject;
+import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 
 import javax.annotation.Nonnull;
@@ -64,7 +64,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
 
     public List<PluginProcedureModElement.Dependency> dependencies;
 
-    @Inject private Container container;
+    @InjectField private Container container;
 
     public PluginProceduresElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
@@ -244,9 +244,10 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         var proxy = arg0List.getSelectedValue();
         if (proxy != null) {
             //inject
-            container.registerTemporaryObject("modElementGui", () -> this);
+            container.registerObject("modElementGui", () -> this);
             container.registerTemporaryObject("index", () -> arg0List.getSelectedIndex());
             container.inject(proxy.getArg0Type());
+            container.endTemporaryLife();
             //inject
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("type", proxy.getArg0Type().getName());

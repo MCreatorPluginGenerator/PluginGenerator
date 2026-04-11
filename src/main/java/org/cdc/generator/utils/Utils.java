@@ -22,7 +22,9 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.List;
 
@@ -187,11 +189,15 @@ public class Utils {
         new BaseDataModelProvider(generator).provide().forEach((key, value) -> {
             provider.addCompletion(new BasicCompletion(provider, key, value.getClass().getName()));
             for (Method method : value.getClass().getMethods()) {
-                provider.addCompletion(
-                        new ShorthandCompletion(provider, key + ".", key + "." + method.getName() + "(", method.getName()));
+                if (method.getReturnType() != Void.TYPE) {
+                    provider.addCompletion(
+                            new ShorthandCompletion(provider, key + ".", key + "." + method.getName() + "(",
+                                    method.getName()));
+                }
             }
         });
-
+        provider.addCompletion(new ShorthandCompletion(provider, "mcelements", "<#include \"mcelements.ftl\">"));
+        provider.addCompletion(new ShorthandCompletion(provider, "mcitems", "<#include \"mcitems.ftl\">"));
     }
 
     public static String convertColor(Color color) {

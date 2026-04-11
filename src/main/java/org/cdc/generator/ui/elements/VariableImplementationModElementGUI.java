@@ -4,6 +4,7 @@ import jdk.jfr.Description;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
+import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.image.ImageUtils;
@@ -19,7 +20,7 @@ import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
 import org.cdc.generator.utils.ioc.Container;
-import org.cdc.generator.utils.ioc.Inject;
+import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
@@ -49,8 +50,8 @@ public class VariableImplementationModElementGUI
     private final Map<String, MethodHandle> cacheHandles = new HashMap<>();
     private final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-    @Inject private Logger LOGGER;
-    @Inject private Container container;
+    @InjectField private Logger LOGGER;
+    @InjectField private Container container;
 
     public VariableImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Scope name", "Init", "Get", "Set", "Read", "Write" });
@@ -150,7 +151,7 @@ public class VariableImplementationModElementGUI
         }
 
         addPage("Configuration", PanelUtils.northAndCenterElement(configurationPanel, wrapTable())).validate(
-                variableElementName).validate(generator).validate(defaultValue);
+                variableElementName).validate(generator).validate(defaultValue).lazyValidate(()->scopeList.stream().anyMatch(a->!a.hasNotNull())?new AggregatedValidationResult.FAIL("You should at least edit one scope"):new AggregatedValidationResult.PASS());
 
     }
 

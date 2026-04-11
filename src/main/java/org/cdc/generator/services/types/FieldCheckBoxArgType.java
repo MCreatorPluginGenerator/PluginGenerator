@@ -3,13 +3,13 @@ package org.cdc.generator.services.types;
 import com.google.gson.JsonObject;
 import net.mcreator.ui.validation.component.VTextField;
 import org.cdc.generator.utils.Arg0InputType;
-import org.cdc.generator.utils.ioc.Inject;
+import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
 
 public class FieldCheckBoxArgType extends AbstractArgType {
 
-    @Inject int index;
+    @InjectField int index;
 
     public FieldCheckBoxArgType() {
         super(2, 2);

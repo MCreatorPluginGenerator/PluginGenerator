@@ -6,7 +6,7 @@ import net.mcreator.generator.GeneratorConfiguration;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
-import org.cdc.generator.utils.ioc.Inject;
+import org.cdc.generator.utils.ioc.InjectField;
 import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
@@ -15,9 +15,9 @@ import java.util.function.Consumer;
 
 @Description("VarImplExamples") public class VarImplExamplesProvider implements IExamplesProvider {
 
-    @Inject String generatorName;
-    @Inject String name;
-    @Inject String columnName;
+    @InjectField String generatorName;
+    @InjectField String name;
+    @InjectField String columnName;
 
     @Override
     public void provideExamples(Consumer<JComponent> componentConsumer, Consumer<Object> exampleConsumer,

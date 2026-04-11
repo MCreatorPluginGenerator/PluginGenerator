@@ -35,9 +35,13 @@ import javax.annotation.Nullable;
     private static <E extends GeneratableElement> ModElementType<E> register(String registryName,
             @Nullable Character shortcut, ModElementType.ModElementGUIProvider<E> modElementGUIProvider,
             Class<E> modElementStorageClass) {
-        var modElementType = new ModElementType<>(registryName, shortcut,
-                (mcreator, modElement, editingMode) -> Container.getInstance()
-                        .inject(modElementGUIProvider.get(mcreator, modElement, editingMode)), modElementStorageClass);
+        var modElementType = new ModElementType<>(registryName, shortcut, (mcreator, modElement, editingMode) -> {
+            var obj = Container.getInstance().inject(modElementGUIProvider.get(mcreator, modElement, editingMode));
+            if (obj instanceof AbstractConfigurationTableModElementGUI<E> elementGUI) {
+                elementGUI.initAfterAll();
+            }
+            return obj;
+        }, modElementStorageClass);
         ModElementTypeLoader.register(modElementType);
         return modElementType;
     }

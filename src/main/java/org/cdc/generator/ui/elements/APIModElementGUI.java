@@ -15,7 +15,7 @@ import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
-import org.cdc.generator.utils.ioc.Inject;
+import org.cdc.generator.utils.ioc.InjectField;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -43,7 +43,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
     public List<APIModElement.Configuration> configurations = new ArrayList<>();
     private final ArrayList<Integer> lastSearchResult = new ArrayList<>(List.of(0));
 
-    @Inject private PluginMakerPreference preferences;
+    @InjectField private PluginMakerPreference preferences;
 
     public APIModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode,

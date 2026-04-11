@@ -36,6 +36,11 @@ public class Container {
         objectMap.put(name, objectSupplier);
     }
 
+    /**
+     * object will be cleared after call endTemporaryLift
+     * @param name
+     * @param objectSupplier
+     */
     public void registerTemporaryObject(String name, Supplier<Object> objectSupplier) {
         tempObjectMap.put(name, objectSupplier);
     }
@@ -50,7 +55,7 @@ public class Container {
         map.put("LOG", () -> LogManager.getLogger(cls));
 
         for (Field field : cls.getDeclaredFields()) {
-            if (field.isAnnotationPresent(Inject.class) && map.containsKey(field.getName())) {
+            if (field.isAnnotationPresent(InjectField.class) && map.containsKey(field.getName())) {
                 field.setAccessible(true);
                 var value = map.get(field.getName()).get();
                 if (field.getType().isAssignableFrom(value.getClass()) || field.getType().equals(value.getClass())) {

@@ -1,22 +1,24 @@
 package org.cdc.generator.ui.elements;
 
+import jdk.jfr.Description;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
-import net.mcreator.ui.init.UIRES;
+import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
-import org.cdc.framework.utils.BuilderUtils;
+import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.TriggerImplementationModElement;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
-import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.Utils;
-import org.cdc.generator.utils.YamlUtils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
+import org.cdc.generator.utils.interfaces.IExamplesProvider;
+import org.cdc.generator.utils.ioc.Container;
+import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
@@ -30,9 +32,7 @@ import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class TriggerImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<TriggerImplementationModElement> {
@@ -42,6 +42,10 @@ public class TriggerImplementationModElementGUI
 
     private final VTextField eventName = new VTextField();
     private final RSyntaxTextArea methodBody = new RSyntaxTextArea();
+
+    @InjectField Container container;
+    @InjectField Logger LOGGER;
+    private JToolBar methodToolBar;
 
     public TriggerImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
@@ -62,7 +66,8 @@ public class TriggerImplementationModElementGUI
 
         triggerElementName.setEditable(false);
         triggerElementName.setValidator(new NotEmptyValidator(triggerElementName::getSelectedItem));
-        addElementSelectorConfiguration("trigger_element_name", triggerElementName,triggerElementName::getSelectedItem);
+        addElementSelectorConfiguration("trigger_element_name", triggerElementName,
+                triggerElementName::getSelectedItem);
 
         eventName.setValidator(() -> {
             if (eventName.getText() == null || eventName.getText().isEmpty()) {
@@ -72,25 +77,41 @@ public class TriggerImplementationModElementGUI
         });
         addConfigurationWithHelpEntry("event_name", eventName);
 
-        var toolbar = new JToolBar();
-        JButton generate = new JButton(UIRES.get("18px.import"));
-        generate.setToolTipText("Generate code");
-        generate.addActionListener(e -> {
-            var map = new HashMap<String,String>();
-            for (TriggerModElement.Dependency dependency : getTriggerModElement().dependencies_provided) {
-                map.put(dependency.getName(),dependency.getType());
-            }
-            var str = BuilderUtils.generateTriggerDependencies(map);
-            methodBody.setText(str);
-        });
-        toolbar.add(generate);
+        methodToolBar = new JToolBar();
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(methodBody, mcreator);
         AutoCompletionFactory.createDefaultCompletion(methodBody, this::createCompletionProvider);
-        var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
+        var panel = PanelUtils.northAndCenterElement(methodToolBar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
+        generator.addItemListener(eventName -> reloadToolBar());
         addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator)
-                .validate(triggerElementName).validate(eventName);
+                .validate(triggerElementName).validate(eventName).lazyValidate(
+                        () -> methodBody.getText().contains("@Placeholder") ?
+                                new AggregatedValidationResult.FAIL("You should replace the placeholder") :
+                                new AggregatedValidationResult.PASS());
+    }
+
+    @Override public void initAfterAll() {
+        reloadToolBar();
+    }
+
+    private void reloadToolBar(){
+        methodToolBar.removeAll();
+        container.registerObject("modElementGui", ()-> this);
+        IExamplesProvider.examplesProviders.stream().forEach(a -> {
+            if (a.type().isAnnotationPresent(Description.class)) {
+                var des = a.type().getAnnotation(Description.class);
+                if (des.value().equals("TriggerImplExamples")) {
+                    container.inject(a.get())
+                            .provideExamples(methodToolBar::add, text -> methodBody.setText(Objects.toString(text)),
+                                    new String[] { generator.getSelectedItem() });
+                }
+            }
+        });
+        SwingUtilities.invokeLater(() -> {
+            methodToolBar.repaint();
+            methodToolBar.revalidate();
+        });
     }
 
     @Override protected void openInEditingMode(TriggerImplementationModElement generatableElement) {

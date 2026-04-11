@@ -151,8 +151,11 @@ public class VariableImplementationModElementGUI
         }
 
         addPage("Configuration", PanelUtils.northAndCenterElement(configurationPanel, wrapTable())).validate(
-                variableElementName).validate(generator).validate(defaultValue).lazyValidate(()->scopeList.stream().allMatch(
-                VariableImplementationModElement.VariableScope::hasNotNull)?new AggregatedValidationResult.PASS():new AggregatedValidationResult.FAIL("You should at least edit one scope"));
+                variableElementName).validate(generator).validate(defaultValue).lazyValidate(
+                () -> scopeList.stream().filter(VariableImplementationModElement.VariableScope::hasNotNull).count()
+                        > 0 ?
+                        new AggregatedValidationResult.PASS() :
+                        new AggregatedValidationResult.FAIL("You should edit at least one scope"));
 
     }
 

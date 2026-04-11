@@ -98,6 +98,8 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         name.setText(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getText));
         addNameConfiguration(name);
+
+        inputsInline.setSelected(true);
         addConfigurationWithHelpEntry("inputs_inline", inputsInline);
         addConfigurationWithHelpEntry("previous_statement", previousStatement);
         addConfigurationWithHelpEntry("next_statement", nextStatement);

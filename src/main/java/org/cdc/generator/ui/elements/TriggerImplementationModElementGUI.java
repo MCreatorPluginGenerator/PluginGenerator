@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.TriggerImplementationModElement;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
+import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
@@ -29,6 +30,7 @@ import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -38,7 +40,8 @@ public class TriggerImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<TriggerImplementationModElement> {
 
     private final VComboBox<String> generator = new VComboBox<>();
-    private final VComboBox<String> triggerElementName = new VComboBox<>();
+    private final VComboBox<String> triggerFileName = new VComboBox<>();
+    private String triggerElementName;
 
     private final VTextField eventName = new VTextField();
     private final RSyntaxTextArea methodBody = new RSyntaxTextArea();
@@ -52,7 +55,7 @@ public class TriggerImplementationModElementGUI
 
         if (editingMode) {
             generator.setEnabled(false);
-            triggerElementName.setEnabled(false);
+            triggerFileName.setEnabled(false);
         }
 
         this.initGUI();
@@ -64,10 +67,19 @@ public class TriggerImplementationModElementGUI
 
         addGeneratorConfiguration(generator);
 
-        triggerElementName.setEditable(false);
-        triggerElementName.setValidator(new NotEmptyValidator(triggerElementName::getSelectedItem));
-        addElementSelectorConfiguration("trigger_element_name", triggerElementName,
-                triggerElementName::getSelectedItem);
+        triggerFileName.setEditable(true);
+        triggerFileName.setValidator(new NotEmptyValidator(triggerFileName::getSelectedItem));
+        triggerFileName.addItemListener(a -> {
+            if (a.getStateChange() == ItemEvent.SELECTED) {
+                var registry = ElementsUtils.getProcedureFileName(getModElement().getWorkspace(),
+                        a.getItem().toString());
+                if (registry != null) {
+                    triggerElementName = a.getItem().toString();
+                    triggerFileName.setSelectedItem(registry);
+                }
+            }
+        });
+        addElementSelectorConfiguration("trigger_element_name", triggerFileName, () -> this.triggerElementName);
 
         eventName.setValidator(() -> {
             if (eventName.getText() == null || eventName.getText().isEmpty()) {
@@ -85,7 +97,7 @@ public class TriggerImplementationModElementGUI
 
         generator.addItemListener(eventName -> reloadToolBar());
         addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator)
-                .validate(triggerElementName).validate(eventName).lazyValidate(
+                .validate(triggerFileName).validate(eventName).lazyValidate(
                         () -> methodBody.getText().contains("@Placeholder") ?
                                 new AggregatedValidationResult.FAIL("You should replace the placeholder") :
                                 new AggregatedValidationResult.PASS());
@@ -95,9 +107,9 @@ public class TriggerImplementationModElementGUI
         reloadToolBar();
     }
 
-    private void reloadToolBar(){
+    private void reloadToolBar() {
         methodToolBar.removeAll();
-        container.registerObject("modElementGui", ()-> this);
+        container.registerObject("modElementGui", () -> this);
         IExamplesProvider.examplesProviders.stream().forEach(a -> {
             if (a.type().isAnnotationPresent(Description.class)) {
                 var des = a.type().getAnnotation(Description.class);
@@ -116,14 +128,14 @@ public class TriggerImplementationModElementGUI
 
     @Override protected void openInEditingMode(TriggerImplementationModElement generatableElement) {
         this.generator.setSelectedItem(generatableElement.generatorName);
-        this.triggerElementName.setSelectedItem(generatableElement.triggerElementName);
+        this.triggerFileName.setSelectedItem(generatableElement.triggerFileName);
         this.eventName.setText(generatableElement.eventName);
         this.methodBody.setText(generatableElement.methodBody);
     }
 
     @Override public TriggerImplementationModElement getElementFromGUI() {
         var element = new TriggerImplementationModElement(modElement);
-        element.triggerElementName = triggerElementName.getSelectedItem();
+        element.triggerFileName = triggerFileName.getSelectedItem();
         element.generatorName = generator.getSelectedItem();
         element.eventName = eventName.getText();
         element.methodBody = methodBody.getText();
@@ -135,7 +147,7 @@ public class TriggerImplementationModElementGUI
     }
 
     public TriggerModElement getTriggerModElement() {
-        var trigger = mcreator.getWorkspace().getModElementByName(triggerElementName.getSelectedItem());
+        var trigger = mcreator.getWorkspace().getModElementByName(triggerElementName);
         if (trigger.getGeneratableElement() instanceof TriggerModElement triggerModElement) {
             return triggerModElement;
         }
@@ -148,7 +160,7 @@ public class TriggerImplementationModElementGUI
                 .getElementsOfType(ModElementTypes.TRIGGER.getRegistryName())) {
             stringArrayList.add(element.getName());
         }
-        ComboBoxUtil.updateComboBoxContents(triggerElementName, stringArrayList);
+        ComboBoxUtil.updateComboBoxContents(triggerFileName, stringArrayList);
     }
 
     private CompletionProvider createCompletionProvider() {

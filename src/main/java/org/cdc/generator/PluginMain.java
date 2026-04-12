@@ -3,7 +3,6 @@ package org.cdc.generator;
 import net.mcreator.Launcher;
 import net.mcreator.io.FileIO;
 import net.mcreator.plugin.JavaPlugin;
-import net.mcreator.plugin.MCREventListener;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.ApplicationLoadedEvent;
 import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
@@ -20,6 +19,7 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ZipUtils;
 import org.cdc.generator.utils.ioc.Container;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -82,6 +82,9 @@ public class PluginMain extends JavaPlugin {
         var selfDependants = "mcreator" + Launcher.version.versionlong;
         if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
             LOG.debug("Try to add self to dependants");
+            SwingUtilities.invokeLater(()->{
+                JOptionPane.showMessageDialog(null,"But for the help from community, this will be not finished. If you encounter a bug, please report.");
+            });
             mcreator.getWorkspaceSettings().dependants.add(selfDependants);
         }
         if (mcreator.getWorkspaceSettings().dependants.stream().noneMatch(str -> str.startsWith("weight_"))) {

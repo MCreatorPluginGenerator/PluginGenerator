@@ -139,6 +139,8 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         });
         localizationValue.enableRealtimeValidation();
         addConfigurationWithHelpEntry("localization_value", localizationValue);
+
+        tooltip.setText("Practice makes perfect");
         addConfigurationWithHelpEntry("tooltip", tooltip);
 
         var typeComboBox = new VComboBox<String>();

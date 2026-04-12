@@ -13,7 +13,7 @@ import java.util.Locale;
 public class TriggerImplementationModElement extends GeneratableElement implements IGeneratorElement {
 
     public String generatorName;
-    public String triggerElementName;
+    public String triggerFileName;
 
     public String eventName;
     public String methodBody;
@@ -23,10 +23,7 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
     }
 
     @UsedByReflection public String getTriggerName() {
-        if (triggerElementName == null) {
-            return null;
-        }
-        return ElementsUtils.getTriggerName(getModElement().getWorkspace(), triggerElementName);
+        return triggerFileName;
     }
 
     @Override @UsedByReflection public String getGeneratorName() {

@@ -40,7 +40,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     /**
      * When you need @Inject
      */
-    public void initAfterAll(){
+    public void initAfterAll() {
 
     }
 
@@ -105,9 +105,14 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     protected void addElementSelectorConfiguration(String name, JComponent component,
             Supplier<String> elementNameSupplier) {
         var edit = new JButton(UIRES.get("16px.edit"));
+        edit.setToolTipText("Edit the selected element");
         edit.addActionListener(a -> {
             var element = mcreator.getWorkspace().getModElementByName(elementNameSupplier.get());
-            element.getType().getModElementGUI(mcreator, element, true).showView();
+            if (element != null) {
+                element.getType().getModElementGUI(mcreator, element, true).showView();
+            } else {
+                JOptionPane.showMessageDialog(this, "Can not open " + elementNameSupplier.get());
+            }
         });
         addConfigurationWithHelpEntry(name, PanelUtils.centerAndEastElement(component, edit));
     }

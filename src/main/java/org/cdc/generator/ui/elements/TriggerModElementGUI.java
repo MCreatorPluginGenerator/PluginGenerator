@@ -1,5 +1,6 @@
 package org.cdc.generator.ui.elements;
 
+import net.mcreator.blockly.data.ExternalTriggerLoader;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JStringListField;
 import net.mcreator.ui.component.TranslatedComboBox;

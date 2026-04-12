@@ -67,15 +67,18 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
         return localization;
     }
 
-    @UsedByReflection
-    public String getTooltip() {
+    @UsedByReflection public String getTooltip() {
+        if (tooltip.isBlank()) {
+            // mcreator will not check non-null.....So we only return a placeholder.
+            return "Practice makes perfect";
+        }
         return tooltip;
     }
 
-    //compatible with previous version.
+    // compatible with previous version.
     // it may be null
-    public List<String> getExtensions() {
-        if (extensions == null){
+    @UsedByReflection public List<String> getExtensions() {
+        if (extensions == null) {
             return List.of();
         }
         return extensions;

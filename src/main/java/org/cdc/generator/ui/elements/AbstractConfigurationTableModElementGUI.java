@@ -105,7 +105,12 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     protected void addElementSelectorConfiguration(String name, JComponent component,
             Supplier<String> elementNameSupplier) {
         var edit = new JButton(UIRES.get("16px.edit"));
-        edit.setToolTipText("Edit the selected element");
+        edit.addMouseListener(new MouseAdapter() {
+            @Override public void mouseEntered(MouseEvent e) {
+                edit.setToolTipText("Edit the element " + elementNameSupplier.get());
+            }
+        });
+
         edit.addActionListener(a -> {
             var element = mcreator.getWorkspace().getModElementByName(elementNameSupplier.get());
             if (element != null) {

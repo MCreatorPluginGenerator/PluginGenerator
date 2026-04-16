@@ -38,7 +38,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     }
 
     /**
-     * When you need @Inject
+     * When you need @InjectField
      */
     public void initAfterAll() {
 

@@ -6,6 +6,7 @@ import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.ApplicationLoadedEvent;
 import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
+import net.mcreator.plugin.events.ui.BlocklyPanelRegisterDOMData;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.plugin.events.workspace.WorkspaceBuildStartedEvent;
 import net.mcreator.ui.MCreator;
@@ -18,6 +19,7 @@ import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ZipUtils;
 import org.cdc.generator.utils.ioc.Container;
+import org.cdc.js.JavaScriptBridge;
 
 import javax.swing.*;
 import java.io.File;
@@ -65,6 +67,10 @@ public class PluginMain extends JavaPlugin {
             Container.getInstance().registerObject("preferences", () -> PluginMakerPreference.INSTANCE);
         });
 
+        addListener(BlocklyPanelRegisterDOMData.class, a -> {
+            a.addJavaScriptBridge("devUtils", new JavaScriptBridge());
+        });
+
         Menus.registerMenuVisibleControls(this);
     }
 
@@ -82,8 +88,9 @@ public class PluginMain extends JavaPlugin {
         var selfDependants = "mcreator" + Launcher.version.versionlong;
         if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
             LOG.debug("Try to add self to dependants");
-            SwingUtilities.invokeLater(()->{
-                JOptionPane.showMessageDialog(null,"But for the help from community, this will be not finished. If you encounter a bug, please report.");
+            SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(null,
+                        "But for the help from community, this will be not finished. If you encounter a bug, please report.");
             });
             mcreator.getWorkspaceSettings().dependants.add(selfDependants);
         }

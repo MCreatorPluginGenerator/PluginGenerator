@@ -32,9 +32,9 @@
        <#if !data.toolbox_init.isEmpty()>
            ,"toolbox_init": [
                 <#list data.toolbox_init as init>
-                    ${init}<#sep>,
+                    "${JavaConventions.escapeStringForJava(init)}"<#sep>,
                 </#list>
-           ],
+           ]
        </#if>
        <#if !data.statements.isEmpty()>
          ,"statements": [

@@ -47,7 +47,6 @@ public class TriggerImplementationModElementGUI
     private final RSyntaxTextArea methodBody = new RSyntaxTextArea();
 
     @InjectField Container container;
-    @InjectField Logger LOGGER;
     private JToolBar methodToolBar;
 
     public TriggerImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {

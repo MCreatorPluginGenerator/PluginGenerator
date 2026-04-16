@@ -11,6 +11,7 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.validation.ValidationResult;
+import net.mcreator.ui.validation.Validator;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.ArrayListListModel;
@@ -33,11 +34,15 @@ import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 public class PluginProceduresElementGUI extends AbstractConfigurationTableModElementGUI<PluginProcedureModElement>
         implements ISearchable {
@@ -80,7 +85,12 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.inputs = new JStringListField(mcreator, null);
         this.fields = new JStringListField(mcreator, null);
         this.statements = new JStringListField(mcreator, null);
-        this.toolboxInit = new JStringListField(mcreator, null);
+        this.toolboxInit = new JStringListField(mcreator, vTextField -> () -> {
+            if (vTextField.getText().startsWith("<value")) {
+                return ValidationResult.PASSED;
+            }
+            return new ValidationResult(ValidationResult.Type.ERROR, "Must starts with <value");
+        });
         this.localizationValue = new VTextField();
         this.tooltip = new VTextField();
 
@@ -213,6 +223,20 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         arg0List.setOpaque(false);
         arg0List.setVisibleRowCount(20);
         arg0List.setMinimumSize(new Dimension(100, 200));
+
+        JPopupMenu functions = new JPopupMenu();
+        JMenuItem copyValue = new JMenuItem("Copy as toolbox init");
+        copyValue.addActionListener(e -> {
+            if (arg0List.getSelectedValue() != null) {
+                var content = new StringSelection(
+                        "<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\"></value>");
+                arg0List.getToolkit().getSystemClipboard().setContents(content, content);
+            }
+        });
+        functions.add(copyValue);
+
+        arg0List.setComponentPopupMenu(functions);
+
         splitPane.setLeftComponent(new JScrollPane(arg0List));
         JPanel rightComponent = new JPanel(new BorderLayout());
         rightComponent.setBorder(BorderFactory.createTitledBorder("Config"));

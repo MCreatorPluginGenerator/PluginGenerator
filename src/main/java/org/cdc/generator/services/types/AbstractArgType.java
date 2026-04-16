@@ -23,7 +23,7 @@ public abstract class AbstractArgType implements IArg0Type {
     }
 
     @Override public JPanel getEditor(JsonObject jsonObject, JsonObject newJsonObject) {
-        configurationPanel = new JPanel(new GridLayout(row, col));
+        configurationPanel = new JPanel(new GridLayout(row, col,5,5));
         initNewJsonObject(jsonObject, newJsonObject);
         return configurationPanel;
     }

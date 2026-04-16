@@ -15,7 +15,7 @@ public class FieldDataListSelectorArgType extends AbstractArgType {
     @InjectField int index;
 
     public FieldDataListSelectorArgType() {
-        super(3, 2);
+        super(4, 2);
     }
 
     @Override public String getName() {
@@ -46,20 +46,32 @@ public class FieldDataListSelectorArgType extends AbstractArgType {
         }
         addConfiguration("testvalue", testValue);
 
+        var customEntryProviders = new VTextField();
+        if (jsonObject.has("customEntryProviders")) {
+            customEntryProviders.setText(jsonObject.get("customEntryProviders").getAsString());
+        }
+        addConfiguration("custom_entry_providers", customEntryProviders);
+
         name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
         datalist.addItemListener(a -> newJsonObject.addProperty("datalist", datalist.getSelectedItem()));
         testValue.getDocument().addDocumentListener(
                 createDefaultDocumentListener("testValue", testValue::getText, () -> newJsonObject));
+        customEntryProviders.getDocument().addDocumentListener(
+                createDefaultDocumentListener("customEntryProviders", customEntryProviders::getText,
+                        () -> newJsonObject));
         return wrapConfigurationPanel();
     }
 
     @Override protected void initNewJsonObject(JsonObject jsonObject, JsonObject newJsonObject) {
-        ifHasNameThenPut(jsonObject,newJsonObject,index);
+        ifHasNameThenPut(jsonObject, newJsonObject, index);
         if (jsonObject.has("datalist")) {
             newJsonObject.addProperty("datalist", jsonObject.get("datalist").getAsString());
         }
         if (jsonObject.has("testValue")) {
             newJsonObject.addProperty("testValue", jsonObject.get("testValue").getAsString());
+        }
+        if (jsonObject.has("customEntryProviders")) {
+            newJsonObject.addProperty("customEntryProviders", jsonObject.get("customEntryProviders").getAsString());
         }
     }
 

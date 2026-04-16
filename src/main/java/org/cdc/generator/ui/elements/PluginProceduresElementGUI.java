@@ -223,7 +223,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         arg0List.setBorder(BorderFactory.createTitledBorder("List"));
         arg0List.setOpaque(false);
         arg0List.setVisibleRowCount(20);
-        arg0List.setMinimumSize(new Dimension(100, 200));
+        arg0List.setMinimumSize(new Dimension(200, 200));
 
         JPopupMenu functions = new JPopupMenu();
         JMenuItem copyValue = new JMenuItem("Copy toolbox init value");

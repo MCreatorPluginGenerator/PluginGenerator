@@ -225,7 +225,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         arg0List.setMinimumSize(new Dimension(100, 200));
 
         JPopupMenu functions = new JPopupMenu();
-        JMenuItem copyValue = new JMenuItem("Copy as toolbox init");
+        JMenuItem copyValue = new JMenuItem("Copy toolbox init value");
         copyValue.addActionListener(e -> {
             if (arg0List.getSelectedValue() != null) {
                 var content = new StringSelection(
@@ -234,6 +234,14 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             }
         });
         functions.add(copyValue);
+        JMenuItem copyPlaceHolder = new JMenuItem("Copy localization placeholder");
+        copyPlaceHolder.addActionListener(e -> {
+            if (arg0List.getSelectedValue() != null) {
+                var content = new StringSelection("%" + (arg0List.getSelectedIndex() + 1));
+                arg0List.getToolkit().getSystemClipboard().setContents(content, content);
+            }
+        });
+        functions.add(copyPlaceHolder);
 
         arg0List.setComponentPopupMenu(functions);
 
@@ -259,7 +267,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
                     boolean cellHasFocus) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
                         cellHasFocus);
-                label.setText(Objects.toString(value));
+                label.setText((index + 1) + ", " + value);
                 return label;
             }
         });

@@ -1,7 +1,5 @@
 package org.cdc.js;
 
-import net.mcreator.ui.init.L10N;
-
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 
@@ -10,9 +8,5 @@ public class JavaScriptBridge {
 		System.out.println(text);
 		StringSelection stringSelection = new StringSelection(text);
 		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, stringSelection);
-	}
-
-	public String t(String key){
-		return L10N.t(key);
 	}
 }

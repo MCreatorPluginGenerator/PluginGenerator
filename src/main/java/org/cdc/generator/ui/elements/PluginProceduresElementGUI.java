@@ -229,8 +229,9 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         JMenuItem copyValue = new JMenuItem("Copy toolbox init value");
         copyValue.addActionListener(e -> {
             if (arg0List.getSelectedValue() != null) {
+                var str =  JOptionPane.showInputDialog(mcreator,"wrap your copied procedure xml or null");
                 var content = new StringSelection(
-                        "<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\"></value>");
+                        "<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\">"+str+"</value>");
                 arg0List.getToolkit().getSystemClipboard().setContents(content, content);
             }
         });
@@ -339,6 +340,8 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         element.previousStatement = this.previousStatement.getText();
         element.nextStatement = this.nextStatement.getText();
         element.colour = this.color.getColor();
+
+        // compatible with previous version.
         if (outputs.getSelectedIndex() == 0) {
             element.outputs = List.of();
         } else {

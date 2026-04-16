@@ -31,6 +31,7 @@ import org.cdc.generator.utils.validators.NotEmptyValidator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.swing.*;
+import javax.swing.border.BevelBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
@@ -267,7 +268,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
                     boolean cellHasFocus) {
                 JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
                         cellHasFocus);
-                label.setText((index + 1) + ", " + value);
+                label.setText((index + 1) + ": " + value);
                 return label;
             }
         });

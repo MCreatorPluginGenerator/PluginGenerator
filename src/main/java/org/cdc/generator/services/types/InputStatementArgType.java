@@ -17,7 +17,7 @@ public class InputStatementArgType extends AbstractArgType{
     @Override public JPanel getEditor(JsonObject jsonObject, JsonObject newJsonObject) {
         super.getEditor(jsonObject, newJsonObject);
         var name = new VTextField();
-        name.getDocument().addDocumentListener(createDefaultNameDocumentListener(name::getText,()->newJsonObject));
+        name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText,()->newJsonObject));
         if (jsonObject.has("name")) {
             name.setText(jsonObject.get("name").getAsString());
         }

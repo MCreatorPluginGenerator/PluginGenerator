@@ -3,3 +3,4 @@ org.cdc.generator.services.types.InputValueArgType
 org.cdc.generator.services.types.FieldInputArgType
 org.cdc.generator.services.types.FieldCheckBoxArgType
 org.cdc.generator.services.types.InputStatementArgType
+org.cdc.generator.services.types.FieldDataListSelectorArgType

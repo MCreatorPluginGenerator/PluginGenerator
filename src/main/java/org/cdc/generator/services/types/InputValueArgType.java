@@ -41,7 +41,7 @@ public class InputValueArgType extends AbstractArgType {
         }
         addConfiguration("check", check);
 
-        name.getDocument().addDocumentListener(createDefaultNameDocumentListener(name::getText, () -> newJsonObject));
+        name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
         check.addItemListener(a -> {
             newJsonObject.addProperty("check", check.getSelectedItem());
         });

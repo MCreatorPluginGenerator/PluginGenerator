@@ -28,7 +28,7 @@ public class FieldCheckBoxArgType extends AbstractArgType {
         }
         addConfiguration("checked", checked);
 
-        name.getDocument().addDocumentListener(createDefaultNameDocumentListener(name::getText, () -> newJsonObject));
+        name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
         checked.addChangeListener(a -> {
             newJsonObject.addProperty("checked", checked.isSelected());
         });

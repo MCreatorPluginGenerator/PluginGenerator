@@ -1,7 +1,6 @@
 package org.cdc.generator.services.types;
 
 import com.google.gson.JsonObject;
-import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.component.VTextField;
 import org.cdc.generator.utils.Arg0InputType;
 
@@ -27,7 +26,7 @@ public class InputDummyArgType extends AbstractArgType {
     @Override public JPanel getEditor(JsonObject jsonObject, JsonObject newJsonObject) {
         super.getEditor(jsonObject, newJsonObject);
         var name = new VTextField();
-        name.getDocument().addDocumentListener(createDefaultNameDocumentListener(name::getText,()->newJsonObject));
+        name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText,()->newJsonObject));
         if (jsonObject.has("name")) {
             name.setText(jsonObject.get("name").getAsString());
         }

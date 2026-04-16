@@ -2,14 +2,19 @@ package org.cdc.generator.utils;
 
 import net.mcreator.generator.Generator;
 import net.mcreator.generator.template.base.BaseDataModelProvider;
+import net.mcreator.minecraft.DataListLoader;
 import net.mcreator.plugin.PluginLoader;
+import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.ColorUtils;
+import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableType;
+import org.cdc.generator.PluginMain;
+import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.elements.ISearchable;
 import org.cdc.generator.utils.interfaces.ITypeProvider;
 import org.fife.ui.autocomplete.BasicCompletion;
@@ -213,5 +218,23 @@ public class Utils {
             return String.valueOf((int) hue);
         }
         return "\"" + ColorUtils.formatColor(color) + "\"";
+    }
+
+    public static List<String> getAllDatalistName() {
+        return getAllDatalistName(false);
+    }
+
+    public static List<String> getAllDatalistName(boolean includeElement) {
+        var list = new ArrayList<String>();
+        if (includeElement) {
+            for (MCreator openMCreator : PluginMain.getINSTANCE().getApplication().getOpenMCreators()) {
+                for (ModElement modElement : openMCreator.getWorkspaceInfo()
+                        .getElementsOfType(ModElementTypes.DATA_LIST.getRegistryName())) {
+                    list.add(modElement.getRegistryName());
+                }
+            }
+        }
+        list.addAll(DataListLoader.getCache().keySet().stream().sorted().toList());
+        return list;
     }
 }

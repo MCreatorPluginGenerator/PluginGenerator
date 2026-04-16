@@ -1,6 +1,5 @@
 package org.cdc.generator.services.types;
 
-import com.formdev.flatlaf.json.Json;
 import com.google.gson.JsonObject;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
@@ -29,7 +28,7 @@ public abstract class AbstractArgType implements IArg0Type {
         return configurationPanel;
     }
 
-    public JPanel wrapConfigurationPanel(){
+    public JPanel wrapConfigurationPanel() {
         return PanelUtils.totalCenterInPanel(configurationPanel);
     }
 
@@ -44,29 +43,43 @@ public abstract class AbstractArgType implements IArg0Type {
         return L10N.checkbox("elementgui.common.enable");
     }
 
-    protected DocumentListener createDefaultNameDocumentListener(Supplier<String> name,Supplier<JsonObject> newJsonObject){
+    protected DocumentListener createDefaultDocumentListener(Supplier<String> nameSupplier,
+            Supplier<JsonObject> newJsonObject) {
+        return createDefaultDocumentListener("name", nameSupplier, newJsonObject);
+    }
+
+    protected void ifHasNameThenPut(JsonObject jsonObject, JsonObject newJsonObject, int index) {
+        if (jsonObject.has("name")) {
+            newJsonObject.addProperty("name", jsonObject.get("name").getAsString());
+        } else {
+            newJsonObject.addProperty("name", "none" + index);
+        }
+    }
+
+    protected DocumentListener createDefaultDocumentListener(String nameKey, Supplier<String> nameSupplier,
+            Supplier<JsonObject> newJsonObject) {
         return new DocumentListener() {
             @Override public void insertUpdate(DocumentEvent documentEvent) {
-                if (name.get().isBlank()){
-                    newJsonObject.get().remove("name");
+                if (nameSupplier.get().isBlank()) {
+                    newJsonObject.get().remove(nameKey);
                 } else {
-                    newJsonObject.get().addProperty("name", name.get());
+                    newJsonObject.get().addProperty(nameKey, nameSupplier.get());
                 }
             }
 
             @Override public void removeUpdate(DocumentEvent documentEvent) {
-                if (name.get().isBlank()){
-                    newJsonObject.get().remove("name");
+                if (nameSupplier.get().isBlank()) {
+                    newJsonObject.get().remove(nameKey);
                 } else {
-                    newJsonObject.get().addProperty("name", name.get());
+                    newJsonObject.get().addProperty(nameKey, nameSupplier.get());
                 }
             }
 
             @Override public void changedUpdate(DocumentEvent documentEvent) {
-                if (name.get().isBlank()){
-                    newJsonObject.get().remove("name");
+                if (nameSupplier.get().isBlank()) {
+                    newJsonObject.get().remove(nameKey);
                 } else {
-                    newJsonObject.get().addProperty("name", name.get());
+                    newJsonObject.get().addProperty(nameKey, nameSupplier.get());
                 }
             }
         };

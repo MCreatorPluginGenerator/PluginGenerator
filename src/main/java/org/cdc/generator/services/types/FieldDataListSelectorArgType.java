@@ -1,0 +1,68 @@
+package org.cdc.generator.services.types;
+
+import com.google.gson.JsonObject;
+import net.mcreator.ui.component.util.ComboBoxUtil;
+import net.mcreator.ui.validation.component.VComboBox;
+import net.mcreator.ui.validation.component.VTextField;
+import org.cdc.generator.utils.Arg0InputType;
+import org.cdc.generator.utils.Utils;
+import org.cdc.generator.utils.ioc.InjectField;
+
+import javax.swing.*;
+
+public class FieldDataListSelectorArgType extends AbstractArgType {
+
+    @InjectField int index;
+
+    public FieldDataListSelectorArgType() {
+        super(3, 2);
+    }
+
+    @Override public String getName() {
+        return "field_data_list_selector";
+    }
+
+    @Override public JPanel getEditor(JsonObject jsonObject, JsonObject newJsonObject) {
+        super.getEditor(jsonObject, newJsonObject);
+
+        var name = new VTextField();
+        if (jsonObject.has("name")) {
+            name.setText(jsonObject.get("name").getAsString());
+        }
+        addConfiguration("name", name);
+
+        var datalist = new VComboBox<String>();
+        datalist.setEditable(true);
+        if (jsonObject.has("datalist")) {
+            datalist.setSelectedItem(jsonObject.get("datalist").getAsString());
+        }
+        ComboBoxUtil.updateComboBoxContents(datalist, Utils.getAllDatalistName(true));
+        addConfiguration("datalist", datalist);
+
+        var testValue = new VTextField();
+        if (jsonObject.has("testValue")) {
+            testValue.setText(jsonObject.get("testValue").getAsString());
+        }
+        addConfiguration("testvalue", testValue);
+
+        name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
+        datalist.addItemListener(a -> newJsonObject.addProperty("datalist", datalist.getSelectedItem()));
+        testValue.getDocument().addDocumentListener(
+                createDefaultDocumentListener("testValue", testValue::getText, () -> newJsonObject));
+        return wrapConfigurationPanel();
+    }
+
+    @Override protected void initNewJsonObject(JsonObject jsonObject, JsonObject newJsonObject) {
+        ifHasNameThenPut(jsonObject,newJsonObject,index);
+        if (jsonObject.has("datalist")) {
+            newJsonObject.addProperty("datalist", jsonObject.get("datalist").getAsString());
+        }
+        if (jsonObject.has("testValue")) {
+            newJsonObject.addProperty("testValue", jsonObject.get("testValue").getAsString());
+        }
+    }
+
+    @Override public Arg0InputType getType() {
+        return Arg0InputType.FIELD;
+    }
+}

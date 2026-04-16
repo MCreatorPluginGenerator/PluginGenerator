@@ -72,8 +72,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         datalistName.setEditable(true);
         datalistName.setValidator(Rules.getFileNameValidator(datalistName::getSelectedItem));
         datalistName.setSelectedItem(modElement.getRegistryName());
-        var list = DataListLoader.getCache().keySet().stream().sorted().toList();
-        ComboBoxUtil.updateComboBoxContents(datalistName, list);
+        ComboBoxUtil.updateComboBoxContents(datalistName, Utils.getAllDatalistName());
         addNameConfiguration(datalistName);
 
         generateDataList.setSelected(true);

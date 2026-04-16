@@ -7,7 +7,7 @@ import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
 
-public class FieldInputArgType extends AbstractArgType{
+public class FieldInputArgType extends AbstractArgType {
     @InjectField int index;
 
     public FieldInputArgType() {
@@ -23,16 +23,12 @@ public class FieldInputArgType extends AbstractArgType{
         }
         addConfiguration("name", name);
 
-        name.getDocument().addDocumentListener(createDefaultNameDocumentListener(name::getText, () -> newJsonObject));
+        name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
         return wrapConfigurationPanel();
     }
 
     @Override protected void initNewJsonObject(JsonObject jsonObject, JsonObject newJsonObject) {
-        if (jsonObject.has("name")) {
-            newJsonObject.addProperty("name", jsonObject.get("name").getAsString());
-        } else {
-            newJsonObject.addProperty("name", "none" + index);
-        }
+        ifHasNameThenPut(jsonObject, newJsonObject, index);
     }
 
     @Override public String getName() {

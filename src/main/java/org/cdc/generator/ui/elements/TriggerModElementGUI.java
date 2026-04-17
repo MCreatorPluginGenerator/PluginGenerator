@@ -26,10 +26,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
@@ -154,9 +152,11 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         });
         remrow.addActionListener(a -> {
             jTable.editCellAt(-1, 0);
-            Arrays.stream(jTable.getSelectedRows()).mapToObj(b -> dependencies.get(b)).forEach(c -> {
-                dependencies.remove(c);
-            });
+            var stack = new Stack<Integer>();
+            Arrays.stream(jTable.getSelectedRows()).forEach(stack::add);
+            while (!stack.empty()) {
+                jTable.remove((int) stack.pop());
+            }
             refreshTable();
         });
 

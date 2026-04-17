@@ -204,11 +204,14 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             dependencies.add(new PluginProcedureModElement.Dependency("name" + dependencies.size(), "type"));
             refreshTable();
         });
+
         remrow.addActionListener(a -> {
             jTable.editCellAt(-1, 0);
-            Arrays.stream(jTable.getSelectedRows()).mapToObj(b -> dependencies.get(b)).forEach(c -> {
-                dependencies.remove(c);
-            });
+            var stack = new Stack<Integer>();
+            Arrays.stream(jTable.getSelectedRows()).forEach(stack::add);
+            while (!stack.empty()) {
+                jTable.remove(stack.pop());
+            }
             refreshTable();
         });
 
@@ -224,14 +227,15 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         arg0List.setOpaque(false);
         arg0List.setVisibleRowCount(20);
         arg0List.setMinimumSize(new Dimension(200, 200));
+        arg0List.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JPopupMenu functions = new JPopupMenu();
         JMenuItem copyValue = new JMenuItem("Copy toolbox init value");
         copyValue.addActionListener(e -> {
             if (arg0List.getSelectedValue() != null) {
-                var str =  JOptionPane.showInputDialog(mcreator,"wrap your copied procedure xml or null");
+                var str = JOptionPane.showInputDialog(mcreator, "wrap your copied procedure xml or null");
                 var content = new StringSelection(
-                        "<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\">"+str+"</value>");
+                        "<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\">" + str + "</value>");
                 arg0List.getToolkit().getSystemClipboard().setContents(content, content);
             }
         });

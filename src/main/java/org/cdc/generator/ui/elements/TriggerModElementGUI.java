@@ -94,7 +94,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         typeComboBox.setOpaque(false);
         typeComboBox.setEditable(true);
 
-        initTable(new TriggerModElementGUITableModul());
+        initTable(new TriggerModElementGUITableModel());
         jTable.setDefaultRenderer(String.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
@@ -156,7 +156,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             var stack = new Stack<Integer>();
             Arrays.stream(jTable.getSelectedRows()).forEach(stack::add);
             while (!stack.empty()) {
-                jTable.remove((int) stack.pop());
+                dependencies.remove((int) stack.pop());
             }
             refreshTable();
         });
@@ -241,7 +241,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         return String.join(" ", strs);
     }
 
-    private class TriggerModElementGUITableModul extends AbstractTableModel {
+    private class TriggerModElementGUITableModel extends AbstractTableModel {
 
         @Override public int getRowCount() {
             return dependencies.size();

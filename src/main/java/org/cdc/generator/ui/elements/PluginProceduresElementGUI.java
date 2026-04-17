@@ -210,7 +210,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             var stack = new Stack<Integer>();
             Arrays.stream(jTable.getSelectedRows()).forEach(stack::add);
             while (!stack.empty()) {
-                jTable.remove(stack.pop());
+                dependencies.remove((int) stack.pop());
             }
             refreshTable();
         });

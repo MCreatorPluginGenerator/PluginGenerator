@@ -10,6 +10,7 @@ import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
+import net.mcreator.util.StringUtils;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.elements.TriggerModElement;
@@ -74,7 +75,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         this.name.setValidator(Rules.getFileNameValidator(this.name::getText));
         addNameConfiguration(name);
 
-        this.readableName.setText(modElement.getName());
+        this.readableName.setText(toEventReadableName(modElement.getName()));
         addConfigurationWithHelpEntry("readable_name", readableName);
 
         addConfigurationWithHelpEntry("has_result", hasResult);
@@ -192,7 +193,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
     }
 
     @Override public CompletableFuture<Void> refreshTable() {
-        return CompletableFuture.runAsync(()->{
+        return CompletableFuture.runAsync(() -> {
             jTable.repaint();
             jTable.revalidate();
         });
@@ -225,6 +226,19 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
         return null;
+    }
+
+    private String toEventReadableName(String string) {
+        var str = StringUtils.machineToReadableName(string);
+        var strs = str.split(" ");
+        for (int i = 0; i < strs.length; i++) {
+            if (i == 0) {
+                continue;
+            }
+            var ss = strs[i];
+            strs[i] = StringUtils.lowercaseFirstLetter(ss);
+        }
+        return String.join(" ", strs);
     }
 
     private class TriggerModElementGUITableModul extends AbstractTableModel {

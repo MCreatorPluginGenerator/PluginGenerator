@@ -1,6 +1,7 @@
 package org.cdc.generator.ui.elements;
 
 import net.mcreator.element.GeneratableElement;
+import net.mcreator.generator.Generator;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.MCreatorTabs;
 import net.mcreator.ui.component.util.ComponentUtils;
@@ -22,6 +23,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Locale;
 import java.util.function.Supplier;
 
 public abstract class AbstractConfigurationTableModElementGUI<E extends GeneratableElement> extends ModElementGUI<E> {
@@ -82,6 +84,26 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         generator.setSelectedItem(PluginMakerPreference.INSTANCE.preferGenerator.get());
         generator.setEditable(true);
         generator.setPreferredSize(Utils.tryToGetTextFieldSize());
+        generator.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                    boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
+                        cellHasFocus);
+                var generatorName = value.toString();
+                try {
+                    //exclude addon...
+                    var flavor = generatorName.split("-")[0];
+                    if ("addon".equals(flavor)) {
+                        flavor = "bedrock";
+                    }
+                    label.setIcon(UIRES.get("16px." + flavor));
+                } catch (Exception ignored) {
+
+                }
+                return label;
+            }
+        });
         configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(modElement.getTypeString() + "/generator"),
                 L10N.label("elementgui.common.generator")));
         configurationPanel.add(generator);

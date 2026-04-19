@@ -30,6 +30,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -37,8 +38,10 @@ public class Utils {
         return !generator.getGeneratorConfiguration().getRaw().containsKey("is_plugin_maker");
     }
 
-    public static Set<String> getAllSupportedGenerators() {
-        return Generator.GENERATOR_CACHE.keySet();
+    public static List<String> getAllSupportedGenerators() {
+        // to do more stable.
+        return Generator.GENERATOR_CACHE.entrySet().stream()
+                .sorted(new JavaGeneratorFirstComparator()).map(Map.Entry::getKey).toList();
     }
 
     public static Set<org.cdc.generator.utils.VariableType> getAllSupportedVariableTypes() {
@@ -77,6 +80,10 @@ public class Utils {
     }
 
     public static JPanel initSearchComponent(ArrayList<Integer> lastSearchResult, ISearchable searchable) {
+        if (lastSearchResult.size() != 1){
+            lastSearchResult.add(-1);
+        }
+
         VTextField searchbar = new VTextField();
         ComponentUtils.deriveFont(searchbar, 16);
         searchbar.setOpaque(false);
@@ -164,7 +171,7 @@ public class Utils {
         if (none == null) {
             return Constants.NONE;
         }
-        if (none.isBlank()){
+        if (none.isBlank()) {
             return Constants.NONE;
         }
         return none.equals(Constants.NONE) ? null : none;

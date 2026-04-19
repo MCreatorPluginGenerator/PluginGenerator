@@ -7,8 +7,12 @@ import org.cdc.generator.elements.interfaces.IGeneratorElement;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.YamlUtils;
 
+import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TriggerImplementationModElement extends GeneratableElement implements IGeneratorElement {
 
@@ -38,12 +42,18 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
 
     @UsedByReflection public String getEventNameUsedAsMethodName() {
         if (eventName.contains(".")) {
-            return eventName.split("\\.")[0];
+            var sp = eventName.split("\\.");
+            return Arrays.stream(sp).filter(a->a.endsWith("Event")|| List.of("Pre", "Post").contains(a)).collect(
+                    Collectors.joining());
         }
         return eventName;
     }
 
     @UsedByReflection public List<String> getMethodBodyLines() {
         return YamlUtils.splitString(methodBody);
+    }
+
+    @Override public BufferedImage generateModElementPicture() {
+        return IGeneratorElement.super.generateModElementPicture();
     }
 }

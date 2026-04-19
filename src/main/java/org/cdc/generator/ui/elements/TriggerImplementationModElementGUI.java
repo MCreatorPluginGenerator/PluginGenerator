@@ -77,6 +77,9 @@ public class TriggerImplementationModElementGUI
         addElementSelectorConfiguration("trigger_element_name", triggerFileName, () -> this.triggerElementName);
 
         eventName.setValidator(() -> {
+            if (eventName.getText().contains("$")){
+                return new ValidationResult(ValidationResult.Type.ERROR,"Invalid char $");
+            }
             if (eventName.getText() == null || eventName.getText().isEmpty()) {
                 return new ValidationResult(ValidationResult.Type.ERROR, "Not empty");
             }
@@ -169,6 +172,7 @@ public class TriggerImplementationModElementGUI
         provider.addCompletion(new BasicCompletion(provider, "<#assign"));
         provider.addCompletion(new BasicCompletion(provider, "@procedureDependenciesCode"));
         provider.addCompletion(new BasicCompletion(provider, "execute()"));
+        provider.addCompletion(new BasicCompletion(provider,"event"));
 
         Utils.initCompletionWithGenerator(provider, mcreator.getGenerator());
 

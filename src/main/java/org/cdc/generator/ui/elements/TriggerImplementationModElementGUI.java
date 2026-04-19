@@ -9,7 +9,6 @@ import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
-import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.TriggerImplementationModElement;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
@@ -56,9 +55,6 @@ public class TriggerImplementationModElementGUI
             generator.setEnabled(false);
             triggerFileName.setEnabled(false);
         }
-
-        this.initGUI();
-        this.finalizeGUI();
     }
 
     @Override protected void initGUI() {
@@ -103,7 +99,11 @@ public class TriggerImplementationModElementGUI
     }
 
     @Override public void initAfterAll() {
-        reloadToolBar();
+        initGUI();
+        finalizeGUI();
+        if (methodToolBar.getComponents().length == 0){
+            reloadToolBar();
+        }
     }
 
     private void reloadToolBar() {

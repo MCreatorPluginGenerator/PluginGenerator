@@ -3,5 +3,12 @@ org.cdc.generator.services.types.InputValueArgType
 org.cdc.generator.services.types.FieldInputArgType
 org.cdc.generator.services.types.FieldCheckBoxArgType
 org.cdc.generator.services.types.FieldDataListSelectorArgType
+org.cdc.generator.services.types.FieldNumberArgType
 org.cdc.generator.services.types.FieldImageArgType
+org.cdc.generator.services.types.FieldAIConditionSelectorArgType
+org.cdc.generator.services.types.FieldDropdownArgType
+org.cdc.generator.services.types.FieldJavaNameArgType
+org.cdc.generator.services.types.FieldDataListDropdownArgType
+org.cdc.generator.services.types.FieldResourceLocationArgType
+org.cdc.generator.services.types.FieldColorSelectorArgType
 org.cdc.generator.services.types.InputStatementArgType

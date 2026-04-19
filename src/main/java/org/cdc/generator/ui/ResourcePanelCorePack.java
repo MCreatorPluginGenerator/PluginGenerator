@@ -76,7 +76,7 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
 		if (file.isFile() && file.getName().endsWith(".zip")) {
 			try (ZipFile zipFile = new ZipFile(file)) {
 				zipFile.stream().forEach(a -> {
-					fileTree.addElement(a.getName(), file + File.separator + a);
+					fileTree.addElement(a.getName(), file + File.separator + a.getName());
 				});
 			} catch (IOException e) {
 				throw new RuntimeException(e);

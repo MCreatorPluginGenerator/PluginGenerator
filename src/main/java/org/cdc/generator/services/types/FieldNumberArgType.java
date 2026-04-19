@@ -7,11 +7,10 @@ import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
 
-//Basic Arg Type
-public class FieldInputArgType extends AbstractArgType {
+public class FieldNumberArgType extends AbstractArgType {
     @InjectField int index;
 
-    public FieldInputArgType() {
+    public FieldNumberArgType() {
         super(2, 2);
     }
 
@@ -24,23 +23,23 @@ public class FieldInputArgType extends AbstractArgType {
         }
         addConfiguration("name", name);
 
-        var text = new VTextField();
+        var numberModel = new SpinnerNumberModel();
+        var number = new JSpinner(numberModel);
         if (jsonObject.has("text")) {
-            text.setText(jsonObject.get("text").getAsString());
+            numberModel.setValue(jsonObject.get("text").getAsString());
         }
-        addConfiguration("text", text);
+        addConfiguration("value", number);
 
         name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
-        text.getDocument()
-                .addDocumentListener(createDefaultDocumentListener("text", text::getText, () -> newJsonObject));
+        number.addChangeListener(a -> newJsonObject.addProperty("value", numberModel.getNumber()));
         return wrapConfigurationPanel();
     }
 
     @Override protected void initNewJsonObject(JsonObject jsonObject, JsonObject newJsonObject) {
         ifHasNameThenPut(jsonObject, newJsonObject, index);
 
-        if (jsonObject.has("text")) {
-            newJsonObject.addProperty("text", jsonObject.get("text").getAsString());
+        if (jsonObject.has("value")){
+            newJsonObject.addProperty("value",jsonObject.get("value").getAsNumber());
         }
     }
 

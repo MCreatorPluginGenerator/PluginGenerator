@@ -7,45 +7,39 @@ import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
 
-//Basic Arg Type
-public class FieldInputArgType extends AbstractArgType {
+public class FieldAIConditionSelectorArgType extends AbstractArgType{
     @InjectField int index;
 
-    public FieldInputArgType() {
-        super(2, 2);
+    private static InputDummyArgType INSTANCE;
+
+    public FieldAIConditionSelectorArgType() {
+        super(1, 2);
+    }
+
+    public static InputDummyArgType getInstance() {
+        if (INSTANCE == null)
+            INSTANCE = new InputDummyArgType();
+        return INSTANCE;
+    }
+
+    @Override public String getName() {
+        return "field_ai_condition_selector";
     }
 
     @Override public JPanel getEditor(JsonObject jsonObject, JsonObject newJsonObject) {
         super.getEditor(jsonObject, newJsonObject);
-
         var name = new VTextField();
         if (jsonObject.has("name")) {
             name.setText(jsonObject.get("name").getAsString());
         }
         addConfiguration("name", name);
 
-        var text = new VTextField();
-        if (jsonObject.has("text")) {
-            text.setText(jsonObject.get("text").getAsString());
-        }
-        addConfiguration("text", text);
-
         name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
-        text.getDocument()
-                .addDocumentListener(createDefaultDocumentListener("text", text::getText, () -> newJsonObject));
         return wrapConfigurationPanel();
     }
 
     @Override protected void initNewJsonObject(JsonObject jsonObject, JsonObject newJsonObject) {
         ifHasNameThenPut(jsonObject, newJsonObject, index);
-
-        if (jsonObject.has("text")) {
-            newJsonObject.addProperty("text", jsonObject.get("text").getAsString());
-        }
-    }
-
-    @Override public String getName() {
-        return "field_input";
     }
 
     @Override public Arg0InputType getType() {

@@ -37,9 +37,13 @@ public class Menus {
         }
         var supplier = new Supplier<JMenu>() {
             private JMenu menu;
+            private long lifeCycleTime;
 
             @Override public JMenu get() {
-                if (menu == null) {
+                var million = System.currentTimeMillis() - lifeCycleTime;
+                // refresh the menu
+                if (menu == null || million > 10000L) {
+                    lifeCycleTime = System.currentTimeMillis();
                     menu = menuSupplier.get();
                 }
                 return menu;
@@ -63,7 +67,6 @@ public class Menus {
     }
 
     public static void registerAllSubMenus(MCreator mcreator) {
-        PLUGIN_MAKER.get().removeAll();
         PLUGIN_MAKER.get()
                 .add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("load_from_external").setReload(a -> {
                     final var langmap = mcreator.getWorkspace().getLanguageMap();
@@ -96,7 +99,6 @@ public class Menus {
                 .setActionListener(a -> {
                     DesktopUtils.browseSafe("https://mcreator.net/changelog");
                 }).build());
-        DATALIST_UTILS.get().removeAll();
         DATALIST_UTILS.get().add(new JMenuBuilder().setParentMenuName("datalist_utils").setName("builtin_entries")
                 .setInit(menu -> Stream.of(Constants.builtEntriesInDataList).forEach(a -> {
                     JMenuItem menuItem = new JMenuItem(a);
@@ -126,7 +128,6 @@ public class Menus {
                         });
                     }
                 }).build());
-        PLUGIN_PROCEDURE_UTILS.get().removeAll();
         PLUGIN_PROCEDURE_UTILS.get()
                 .add(new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("generate_warnings")
                         .setActionListener(a -> {

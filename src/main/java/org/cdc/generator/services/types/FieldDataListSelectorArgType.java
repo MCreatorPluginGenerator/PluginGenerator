@@ -1,6 +1,8 @@
 package org.cdc.generator.services.types;
 
 import com.google.gson.JsonObject;
+import net.mcreator.element.ModElementType;
+import net.mcreator.element.ModElementTypeLoader;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
@@ -9,6 +11,8 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 public class FieldDataListSelectorArgType extends AbstractArgType {
 
@@ -46,9 +50,14 @@ public class FieldDataListSelectorArgType extends AbstractArgType {
         }
         addConfiguration("testvalue", testValue);
 
-        var customEntryProviders = new VTextField();
+        var customEntryProviders = new VComboBox<String>();
+        customEntryProviders.setEditable(true);
+        customEntryProviders.setSelectedItem("");
         if (jsonObject.has("customEntryProviders")) {
-            customEntryProviders.setText(jsonObject.get("customEntryProviders").getAsString());
+            customEntryProviders.setSelectedItem(jsonObject.get("customEntryProviders").getAsString());
+        }
+        for (ModElementType<?> allModElementType : ModElementTypeLoader.getAllModElementTypes()) {
+            customEntryProviders.addItem(allModElementType.getRegistryName());
         }
         addConfiguration("custom_entry_providers", customEntryProviders);
 
@@ -56,9 +65,14 @@ public class FieldDataListSelectorArgType extends AbstractArgType {
         datalist.addItemListener(a -> newJsonObject.addProperty("datalist", datalist.getSelectedItem()));
         testValue.getDocument().addDocumentListener(
                 createDefaultDocumentListener("testValue", testValue::getText, () -> newJsonObject));
-        customEntryProviders.getDocument().addDocumentListener(
-                createDefaultDocumentListener("customEntryProviders", customEntryProviders::getText,
-                        () -> newJsonObject));
+        customEntryProviders.addItemListener(a->{
+            if (customEntryProviders.getSelectedItem() == null || customEntryProviders.getSelectedItem()
+                    .isBlank()) {
+                newJsonObject.remove("customEntryProviders");
+            } else {
+                newJsonObject.addProperty("customEntryProviders", customEntryProviders.getSelectedItem());
+            }
+        });
         return wrapConfigurationPanel();
     }
 

@@ -162,9 +162,12 @@ public class Utils {
 
     public static String nullToNoneOrNoneToNull(String none) {
         if (none == null) {
-            return "None";
+            return Constants.NONE;
         }
-        return none.equals("None") ? null : none;
+        if (none.isBlank()){
+            return Constants.NONE;
+        }
+        return none.equals(Constants.NONE) ? null : none;
     }
 
     public static File tryToFindCorePlugin() {

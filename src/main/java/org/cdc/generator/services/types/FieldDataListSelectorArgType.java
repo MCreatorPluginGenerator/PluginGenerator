@@ -11,8 +11,6 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 public class FieldDataListSelectorArgType extends AbstractArgType {
 

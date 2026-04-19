@@ -6,6 +6,7 @@ import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
+import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.YamlUtils;
 
@@ -22,6 +23,7 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     public String previousStatement;
     public String nextStatement;
     public Color colour;
+    public String builtInColor;
     public List<String> outputs;
     public List<String> extensions;
 
@@ -46,6 +48,9 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     }
 
     @UsedByReflection public String getColor() {
+        if (builtInColor != null){
+            return YamlUtils.str(builtInColor);
+        }
         return Utils.convertColor(colour);
     }
 

@@ -80,12 +80,12 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
 
         addConfigurationWithHelpEntry("color", color);
 
-        customVariableDependencyLocalization.setValidator(new NotEmptyValidator(customVariableDependencyLocalization::getText));
-        addConfigurationWithHelpEntry("dependency_localization",customVariableDependencyLocalization);
-
         builtInColor.setOpaque(false);
         builtInColor.setEditable(true);
         addConfigurationWithHelpEntry("builtincolor", builtInColor);
+
+        customVariableDependencyLocalization.setValidator(new NotEmptyValidator(customVariableDependencyLocalization::getText));
+        addConfigurationWithHelpEntry("dependency_localization",customVariableDependencyLocalization);
 
         addPage(PanelUtils.totalCenterInPanel(configurationPanel)).validate(name).validate(customVariableDependencyLocalization);
     }
@@ -98,7 +98,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         this.ignoredByCoverage.setSelected(generatableElement.ignoredByCoverage);
         this.requiredApis.setTextList(generatableElement.required_apis);
         this.color.setColor(generatableElement.color);
-        this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.strColor));
+        this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.builtinColor));
         this.customVariableDependencyLocalization.setText(generatableElement.customVariableDependencyLocalization);
     }
 
@@ -111,7 +111,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         variableModElement.ignoredByCoverage = ignoredByCoverage.isSelected();
         variableModElement.required_apis = requiredApis.getTextList();
         variableModElement.color = color.getColor();
-        variableModElement.strColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem());
+        variableModElement.builtinColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem());
         variableModElement.customVariableDependencyLocalization = customVariableDependencyLocalization.getText();
         return variableModElement;
     }

@@ -53,6 +53,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     protected final VTextField previousStatement = new VTextField();
     protected final VTextField nextStatement = new VTextField();
     protected final JColor color;
+    private final VComboBox<String> builtInColor;
     protected final VComboBox<String> outputs;
     protected final JStringListField extensions;
     protected final VComboBox<String> toolboxId = new VComboBox<>();
@@ -77,6 +78,8 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
         this.inputsInline = createDefaultCheckBox();
         this.color = new JColor(mcreator, false, false);
+        this.builtInColor = new VComboBox<>(new String[] { Constants.NONE, Constants.BuiltInColors.BKY_TEXTS_HUE,
+                Constants.BuiltInColors.BKY_LOGIC_HUE, Constants.BuiltInColors.BKY_MATH_HUE });
         this.outputs = new VComboBox<>();
         this.extensions = new JStringListField(mcreator, null);
         this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);
@@ -106,7 +109,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(17, 2, 5, 5));
+        initConfiguration(new GridLayout(18, 2, 5, 5));
 
         name.setText(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getText));
@@ -118,6 +121,10 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         addConfigurationWithHelpEntry("next_statement", nextStatement);
 
         addConfigurationWithHelpEntry("color", color);
+        builtInColor.setOpaque(false);
+        builtInColor.setEditable(true);
+        addConfigurationWithHelpEntry("builtincolor", builtInColor);
+
         outputs.addItemListener(e -> {
             if (outputs.getSelectedIndex() == 0) {
                 if (previousStatement.getText().isBlank()) {
@@ -319,6 +326,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.previousStatement.setText(generatableElement.previousStatement);
         this.nextStatement.setText(generatableElement.nextStatement);
         this.color.setColor(generatableElement.colour);
+        this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.builtInColor));
         this.extensions.setTextList(generatableElement.extensions);
         if (!generatableElement.outputs.isEmpty()) {
             this.outputs.setSelectedItem(generatableElement.outputs.getFirst());
@@ -344,6 +352,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         element.previousStatement = this.previousStatement.getText();
         element.nextStatement = this.nextStatement.getText();
         element.colour = this.color.getColor();
+        element.builtInColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem());
 
         // compatible with previous version.
         if (outputs.getSelectedIndex() == 0) {
@@ -480,4 +489,5 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     public JStringListField getStatements() {
         return statements;
     }
+
 }

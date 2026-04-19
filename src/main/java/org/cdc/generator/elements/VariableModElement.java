@@ -4,6 +4,7 @@ import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.utils.Utils;
+import org.cdc.generator.utils.YamlUtils;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -15,7 +16,7 @@ public class VariableModElement extends GeneratableElement {
     public String name;
     public Color color;
     // use this will ignore color
-    public String strColor;
+    public String builtinColor;
     // like ActionResult
     public String blocklyVariableType;
     public boolean ignoredByCoverage;
@@ -29,8 +30,8 @@ public class VariableModElement extends GeneratableElement {
     }
 
     @UsedByReflection public String getFormattedColor() {
-        if (strColor != null) {
-            return "\"" + strColor + "\"";
+        if (builtinColor != null) {
+            return YamlUtils.str(builtinColor);
         }
         return Utils.convertColor(color);
     }

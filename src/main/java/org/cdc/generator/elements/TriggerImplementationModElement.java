@@ -4,7 +4,6 @@ import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
-import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.YamlUtils;
 
 import java.awt.image.BufferedImage;
@@ -12,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class TriggerImplementationModElement extends GeneratableElement implements IGeneratorElement {
 
@@ -54,6 +52,6 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
     }
 
     @Override public BufferedImage generateModElementPicture() {
-        return IGeneratorElement.super.generateModElementPicture();
+        return IGeneratorElement.super.generateModElementPicture0();
     }
 }

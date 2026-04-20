@@ -33,6 +33,6 @@ public class PluginProcedureImplementationModElement extends GeneratableElement 
     }
 
     @Override public BufferedImage generateModElementPicture() {
-        return IGeneratorElement.super.generateModElementPicture();
+        return IGeneratorElement.super.generateModElementPicture0();
     }
 }

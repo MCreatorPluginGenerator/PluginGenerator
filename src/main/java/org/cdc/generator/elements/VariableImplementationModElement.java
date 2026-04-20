@@ -44,7 +44,7 @@ public class VariableImplementationModElement extends GeneratableElement impleme
     }
 
     @Override public BufferedImage generateModElementPicture() {
-        return IGeneratorElement.super.generateModElementPicture();
+        return IGeneratorElement.super.generateModElementPicture0();
     }
 
     public static class VariableScope implements Cloneable {

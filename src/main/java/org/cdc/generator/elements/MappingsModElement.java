@@ -87,6 +87,6 @@ public class MappingsModElement extends GeneratableElement implements IGenerator
     }
 
     @Override public BufferedImage generateModElementPicture() {
-        return IGeneratorElement.super.generateModElementPicture();
+        return IGeneratorElement.super.generateModElementPicture0();
     }
 }

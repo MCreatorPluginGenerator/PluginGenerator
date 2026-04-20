@@ -229,7 +229,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override protected void openInEditingMode(DataListModElement generatableElement) {
-        this.entries = new ArrayList<>(generatableElement.entries);
+        this.entries.addAll(generatableElement.entries);
         this.generateDataList.setSelected(generatableElement.generateDataList);
         this.dialogMessage.setText(generatableElement.dialogMessage);
         for (DataListModElement.DataListEntry entry : entries) {

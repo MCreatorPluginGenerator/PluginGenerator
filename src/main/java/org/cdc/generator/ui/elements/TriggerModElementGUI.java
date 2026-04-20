@@ -209,7 +209,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         this.cancelable.setSelected(generatableElement.cancelable);
         this.side.setSelectedItem(generatableElement.side);
         this.requiredApis.setTextList(generatableElement.required_apis);
-        this.dependencies = generatableElement.dependencies_provided;
+        this.dependencies.addAll(generatableElement.dependencies_provided);
     }
 
     @Override public TriggerModElement getElementFromGUI() {

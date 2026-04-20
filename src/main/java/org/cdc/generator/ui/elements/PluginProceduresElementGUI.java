@@ -340,7 +340,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         this.fields.setTextList(generatableElement.fields);
         this.statements.setTextList(generatableElement.statements);
         this.toolboxInit.setTextList(generatableElement.toolbox_init);
-        this.dependencies = generatableElement.dependencies;
+        this.dependencies.addAll(generatableElement.dependencies);
         this.localizationValue.setText(generatableElement.localization);
         this.tooltip.setText(generatableElement.tooltip);
     }

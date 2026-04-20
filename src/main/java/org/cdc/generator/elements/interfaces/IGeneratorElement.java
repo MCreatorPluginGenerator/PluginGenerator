@@ -3,7 +3,6 @@ package org.cdc.generator.elements.interfaces;
 import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.ui.init.UIRES;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public interface IGeneratorElement {

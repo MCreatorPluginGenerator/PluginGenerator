@@ -1,18 +1,14 @@
 package org.cdc.generator.elements;
 
-import com.google.gson.JsonObject;
 import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
-import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.YamlUtils;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 

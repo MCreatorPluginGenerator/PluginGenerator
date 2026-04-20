@@ -1,6 +1,5 @@
 package org.cdc.generator.utils.interfaces;
 
-import net.mcreator.ui.MCreator;
 import org.cdc.generator.utils.VariableType;
 
 import java.util.List;

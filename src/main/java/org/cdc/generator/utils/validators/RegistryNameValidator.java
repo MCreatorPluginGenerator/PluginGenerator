@@ -21,11 +21,8 @@ package org.cdc.generator.utils.validators;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.ui.validation.Validator;
-import net.mcreator.ui.validation.component.VComboBox;
-import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.StringUtils;
 
-import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;

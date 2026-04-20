@@ -1,9 +1,7 @@
 package org.cdc.generator.ui.elements;
 
 import net.mcreator.element.GeneratableElement;
-import net.mcreator.generator.Generator;
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.MCreatorTabs;
 import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.help.HelpUtils;
@@ -11,7 +9,6 @@ import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.modgui.ModElementGUI;
 import net.mcreator.ui.validation.component.VComboBox;
-import net.mcreator.ui.variants.modmaker.ModMaker;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.Utils;
@@ -23,7 +20,6 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Locale;
 import java.util.function.Supplier;
 
 public abstract class AbstractConfigurationTableModElementGUI<E extends GeneratableElement> extends ModElementGUI<E> {

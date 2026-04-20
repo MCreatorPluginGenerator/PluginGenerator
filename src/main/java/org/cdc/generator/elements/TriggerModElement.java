@@ -4,7 +4,6 @@ import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Locale;
 

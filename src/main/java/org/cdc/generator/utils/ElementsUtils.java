@@ -1,9 +1,6 @@
 package org.cdc.generator.utils;
 
 import net.mcreator.workspace.Workspace;
-import net.mcreator.workspace.elements.ModElement;
-import org.cdc.generator.elements.DataListModElement;
-import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.elements.VariableModElement;
 
 public class ElementsUtils {

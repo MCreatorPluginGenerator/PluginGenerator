@@ -2,7 +2,6 @@ package org.cdc.generator.ui;
 
 import net.mcreator.io.tree.FileNode;
 import net.mcreator.io.tree.FileTree;
-import net.mcreator.ui.FileOpener;
 import net.mcreator.ui.component.tree.FilterTreeNode;
 import net.mcreator.ui.component.tree.FilteredTreeModel;
 import net.mcreator.ui.component.tree.JFileTree;
@@ -20,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;

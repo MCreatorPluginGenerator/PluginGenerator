@@ -4,15 +4,16 @@ import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
+import org.cdc.generator.elements.interfaces.IColorElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
-import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.YamlUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class PluginProcedureModElement extends GeneratableElement implements IBlocklyElement {
+public class PluginProcedureModElement extends GeneratableElement implements IBlocklyElement, IColorElement {
 
     public List<ArgTypeProxy> arg0;
     public boolean inputsInline;
@@ -43,12 +44,7 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
         super(element);
     }
 
-    @UsedByReflection public String getColor() {
-        if (builtInColor != null){
-            return YamlUtils.str(builtInColor);
-        }
-        return Utils.convertColor(colour);
-    }
+
 
     @UsedByReflection public String getOutputs() {
         if (outputs.isEmpty()) {
@@ -83,6 +79,14 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
             return List.of();
         }
         return extensions;
+    }
+
+    @Override public @Nullable String getBuiltinColor() {
+        return builtInColor;
+    }
+
+    @Override public Color getCustomColor() {
+        return colour;
     }
 
     public static class Dependency implements Cloneable {

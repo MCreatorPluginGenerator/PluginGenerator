@@ -12,14 +12,6 @@ public class ElementsUtils {
         return datalist.getRegistryName();
     }
 
-    public static String getTriggerName(Workspace workspace, String name) {
-        var trigger = workspace.getModElementByName(name);
-        if (trigger == null) {
-            return null;
-        }
-        return trigger.getRegistryName();
-    }
-
     public static String getProcedureFileName(Workspace workspace, String name) {
         var trigger = workspace.getModElementByName(name);
         if (trigger == null) {

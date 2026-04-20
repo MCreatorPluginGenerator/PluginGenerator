@@ -76,8 +76,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
         this.inputsInline = createDefaultCheckBox();
         this.color = new JColor(mcreator, false, false);
-        this.builtInColor = new VComboBox<>(new String[] { Constants.NONE, Constants.BuiltInColors.BKY_TEXTS_HUE,
-                Constants.BuiltInColors.BKY_LOGIC_HUE, Constants.BuiltInColors.BKY_MATH_HUE });
+        this.builtInColor = new VComboBox<>(Utils.getAllBuiltinColors());
         this.outputs = new VComboBox<>();
         this.extensions = new JStringListField(mcreator, null);
         this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);

@@ -1,5 +1,5 @@
 {
-  "color": ${data.getFormattedColor()},
+  "color": ${data.getColor()},
   "blocklyVariableType": "${data.blocklyVariableType}"
 	<#if data.ignoredByCoverage>,"ignoredByCoverage": true</#if>
 	<#if data.nullable>,"nullable": true</#if>

@@ -57,6 +57,11 @@ public class Utils {
                 .reversed();
     }
 
+    public static String[] getAllBuiltinColors(){
+        return new String[] { Constants.NONE, Constants.BuiltInColors.BKY_TEXTS_HUE,
+                Constants.BuiltInColors.BKY_LOGIC_HUE, Constants.BuiltInColors.BKY_MATH_HUE };
+    }
+
     public static List<String> getMappingResult(String generator, String datalist, String name) {
         var memory = Generator.GENERATOR_CACHE.get(generator).getMappingLoader().getMapping(datalist);
         if (memory != null) {

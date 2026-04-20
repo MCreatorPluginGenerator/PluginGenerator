@@ -4,11 +4,12 @@ import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
-import org.cdc.generator.utils.Utils;
+import org.cdc.generator.elements.interfaces.IColorElement;
+import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
-public class ProcedureCategoryModElement extends GeneratableElement implements IBlocklyElement {
+public class ProcedureCategoryModElement extends GeneratableElement implements IBlocklyElement, IColorElement {
 
     public String readableName;
 
@@ -21,8 +22,12 @@ public class ProcedureCategoryModElement extends GeneratableElement implements I
         super(element);
     }
 
-    @UsedByReflection public String getColor() {
-        return Utils.convertColor(color);
+    @Override public @Nullable String getBuiltinColor() {
+        return null;
+    }
+
+    @Override public Color getCustomColor() {
+        return color;
     }
 
     @UsedByReflection public String getParentCategory() {

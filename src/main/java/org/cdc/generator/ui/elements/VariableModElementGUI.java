@@ -12,7 +12,6 @@ import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableType;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.elements.VariableModElement;
-import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
@@ -43,8 +42,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
 
         this.requiredApis = new JStringListField(mcreator, vTextField -> Rules.getModidValidator(vTextField::getText));
         this.color = new JColor(mcreator, false, false);
-        this.builtInColor = new VComboBox<>(new String[] { Constants.NONE, Constants.BuiltInColors.BKY_TEXTS_HUE,
-                Constants.BuiltInColors.BKY_LOGIC_HUE, Constants.BuiltInColors.BKY_MATH_HUE });
+        this.builtInColor = new VComboBox<>(Utils.getAllBuiltinColors());
         if (editingMode) {
             name.setEnabled(false);
         }

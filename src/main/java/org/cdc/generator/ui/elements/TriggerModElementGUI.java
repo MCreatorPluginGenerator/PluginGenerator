@@ -35,13 +35,13 @@ import java.util.stream.Stream;
 public class TriggerModElementGUI extends AbstractConfigurationTableModElementGUI<TriggerModElement>
         implements ISearchable {
 
-    private final VTextField name = new VTextField();
-    private final VTextField readableName = new VTextField();
-    private final JStringListField requiredApis = new JStringListField(mcreator,
+    protected final VTextField name = new VTextField();
+    protected final VTextField readableName = new VTextField();
+    protected final JStringListField requiredApis = new JStringListField(mcreator,
             vTextField -> Rules.getModidValidator(vTextField::getText));
-    private final JCheckBox cancelable = createDefaultCheckBox();
-    private final JCheckBox hasResult = createDefaultCheckBox();
-    private final TranslatedComboBox side = new TranslatedComboBox(
+    protected final JCheckBox cancelable = createDefaultCheckBox();
+    protected final JCheckBox hasResult = createDefaultCheckBox();
+    protected final TranslatedComboBox side = new TranslatedComboBox(
             // @formatter:off
             Map.entry("SERVER", "elementgui.plugintrigger.side.server"),
             Map.entry("CLIENT", "elementgui.plugintrigger.side.client"),
@@ -52,7 +52,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
     public List<TriggerModElement.Dependency> dependencies;
 
     // the 0 is the last search index
-    private final ArrayList<Integer> lastSearchResult;
+    protected final ArrayList<Integer> lastSearchResult;
 
     public TriggerModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
@@ -227,7 +227,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         return null;
     }
 
-    private String toEventReadableName(String string) {
+    protected String toEventReadableName(String string) {
         var str = StringUtils.machineToReadableName(string);
         var strs = str.split(" ");
         for (int i = 0; i < strs.length; i++) {
@@ -240,7 +240,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         return String.join(" ", strs);
     }
 
-    private class TriggerModElementGUITableModel extends AbstractTableModel {
+    protected class TriggerModElementGUITableModel extends AbstractTableModel {
 
         @Override public int getRowCount() {
             return dependencies.size();

@@ -7,6 +7,7 @@ import org.cdc.generator.elements.interfaces.IGeneratorElement;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Utils;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,5 +84,9 @@ public class MappingsModElement extends GeneratableElement implements IGenerator
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @Override public BufferedImage generateModElementPicture() {
+        return IGeneratorElement.super.generateModElementPicture();
     }
 }

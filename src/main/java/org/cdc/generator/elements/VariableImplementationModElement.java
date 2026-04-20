@@ -8,6 +8,7 @@ import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.YamlUtils;
 
+import java.awt.image.BufferedImage;
 import java.beans.BeanProperty;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,10 @@ public class VariableImplementationModElement extends GeneratableElement impleme
 
     @Override public String getGeneratorName() {
         return generator;
+    }
+
+    @Override public BufferedImage generateModElementPicture() {
+        return IGeneratorElement.super.generateModElementPicture();
     }
 
     public static class VariableScope implements Cloneable {

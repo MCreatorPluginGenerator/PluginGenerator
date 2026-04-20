@@ -19,7 +19,7 @@ public interface IGeneratorElement {
             flavor = "bedrock";
         }
         var icon = UIRES.get("16px." + flavor);
-        Font font = Theme.current().getFont().deriveFont(12f);
+        Font font = Theme.current().getFont().deriveFont(12f).deriveFont(Font.BOLD);
 
         // 先用临时 Graphics 计算文字尺寸
         BufferedImage tempImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
@@ -27,13 +27,18 @@ public interface IGeneratorElement {
         g2d.setFont(font);
         FontMetrics fm = g2d.getFontMetrics();
 
-        int textWidth = fm.stringWidth(version) + 4;
+        int textWidth = fm.stringWidth(version);
         int textHeight = fm.getHeight();
         g2d.dispose();
 
         // 计算最终图片尺寸
         int width = Math.max(icon.getIconWidth(), textWidth);
         int height = icon.getIconHeight() + textHeight;
+
+        int middle = Math.max(width,height);
+
+        width = middle;
+        height = middle;
 
         // 创建最终图片
         BufferedImage result = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);

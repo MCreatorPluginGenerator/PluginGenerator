@@ -125,13 +125,6 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         builtInColor.setEditable(true);
         addConfigurationWithHelpEntry("builtincolor", builtInColor);
 
-        outputs.addItemListener(e -> {
-            if (outputs.getSelectedIndex() == 0) {
-                if (previousStatement.getText().isBlank()) {
-                    previousStatement.setText("null");
-                }
-            }
-        });
         addConfigurationWithHelpEntry("outputs", outputs);
         addConfigurationWithHelpEntry("extensions", extensions);
 

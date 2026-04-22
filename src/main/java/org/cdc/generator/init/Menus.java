@@ -42,6 +42,8 @@ public class Menus {
     }
 
     public static void registerMenuVisibleControls(PluginMain pluginMain) {
+        DATALIST_UTILS.setVisible(false);
+        PLUGIN_PROCEDURE_UTILS.setVisible(false);
         pluginMain.addListener(TabEvent.Shown.class, event -> {
             DATALIST_UTILS.setVisible(event.getTab().getContent() instanceof DataListModElementGUI);
             PLUGIN_PROCEDURE_UTILS.setVisible(event.getTab().getContent() instanceof PluginProceduresElementGUI);
@@ -84,9 +86,7 @@ public class Menus {
                     // MCreatorApplication.WEB_API.getUpdateInfo();
                 }).build());
         PLUGIN_MAKER.get().add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")
-                .setActionListener(a -> {
-                    DesktopUtils.browseSafe("https://mcreator.net/changelog");
-                }).build());
+                .setActionListener(a -> DesktopUtils.browseSafe("https://mcreator.net/changelog")).build());
         DATALIST_UTILS.get().add(new JMenuBuilder().setParentMenuName("datalist_utils").setName("builtin_entries")
                 .setInit(menu -> Stream.of(Constants.builtEntriesInDataList).forEach(a -> {
                     JMenuItem menuItem = new JMenuItem(a);

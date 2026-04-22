@@ -38,10 +38,10 @@ base_templates:
   - template: pluginbase/plugin.json.ftl
     writer: json
     name: "@RESROOT/plugin.json"
-  - template: pluginbase/plugin.java.ftl
-    writer: java
-    name: "@SRCROOT/@BASEPACKAGEPATH/PluginMain.java"
-    condition: "${settings.getMCreatorDependenciesRaw().contains(\"javaplugin\")}"
+#  - template: pluginbase/plugin.java.ftl
+#    writer: java
+#    name: "@SRCROOT/@BASEPACKAGEPATH/PluginMain.java"
+#    condition: "${settings.getMCreatorDependenciesRaw().contains(\"javaplugin\")}"
   - template: pluginbase/.placeholder
     writer: file
     name: "@SRCROOT/.placeholder"

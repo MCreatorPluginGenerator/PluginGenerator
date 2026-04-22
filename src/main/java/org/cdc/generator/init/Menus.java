@@ -13,6 +13,7 @@ import org.cdc.generator.ui.elements.DataListModElementGUI;
 import org.cdc.generator.ui.elements.PluginProceduresElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Constants;
+import org.cdc.generator.utils.MenuProvider;
 import org.cdc.generator.utils.builders.JMenuBuilder;
 import org.cdc.generator.utils.builders.JMenuItemBuilder;
 
@@ -25,38 +26,25 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 public class Menus {
-    public static Supplier<JMenu> PLUGIN_MAKER = register(() -> L10N.menu("menus.plugin_maker"));
-    public static Supplier<JMenu> DATALIST_UTILS = register(() -> L10N.menu("menus.datalist_utils"));
-    public static Supplier<JMenu> PLUGIN_PROCEDURE_UTILS = register(() -> L10N.menu("menus.plugin_procedure_utils"));
+    public static MenuProvider PLUGIN_MAKER = register(() -> L10N.menu("menus.plugin_maker"));
+    public static MenuProvider DATALIST_UTILS = register(() -> L10N.menu("menus.datalist_utils"));
+    public static MenuProvider PLUGIN_PROCEDURE_UTILS = register(() -> L10N.menu("menus.plugin_procedure_utils"));
 
     private static ArrayList<Supplier<JMenu>> menus;
 
-    private static Supplier<JMenu> register(final Supplier<JMenu> menuSupplier) {
+    private static MenuProvider register(final Supplier<JMenu> menuSupplier) {
         if (menus == null) {
             menus = new ArrayList<>();
         }
-        var supplier = new Supplier<JMenu>() {
-            private JMenu menu;
-            private long lifeCycleTime;
-
-            @Override public JMenu get() {
-                var million = System.currentTimeMillis() - lifeCycleTime;
-                // refresh the menu
-                if (menu == null || million > 10000L) {
-                    lifeCycleTime = System.currentTimeMillis();
-                    menu = menuSupplier.get();
-                }
-                return menu;
-            }
-        };
+        var supplier = new MenuProvider(menuSupplier);
         menus.add(supplier);
         return supplier;
     }
 
     public static void registerMenuVisibleControls(PluginMain pluginMain) {
         pluginMain.addListener(TabEvent.Shown.class, event -> {
-            DATALIST_UTILS.get().setVisible(event.getTab().getContent() instanceof DataListModElementGUI);
-            PLUGIN_PROCEDURE_UTILS.get().setVisible(event.getTab().getContent() instanceof PluginProceduresElementGUI);
+            DATALIST_UTILS.setVisible(event.getTab().getContent() instanceof DataListModElementGUI);
+            PLUGIN_PROCEDURE_UTILS.setVisible(event.getTab().getContent() instanceof PluginProceduresElementGUI);
         });
     }
 

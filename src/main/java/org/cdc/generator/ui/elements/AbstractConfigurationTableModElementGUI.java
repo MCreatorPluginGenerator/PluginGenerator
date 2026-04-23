@@ -11,6 +11,7 @@ import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.modgui.ModElementGUI;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.workspace.elements.ModElement;
+import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
@@ -89,7 +90,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
                         cellHasFocus);
                 var generatorName = value.toString();
                 try {
-                    //exclude addon...
+                    //other than addon...
                     var flavor = generatorName.split("-")[0];
                     if ("addon".equals(flavor)) {
                         flavor = "bedrock";
@@ -173,5 +174,18 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
 
     protected JCheckBox createDefaultCheckBox() {
         return L10N.checkbox("elementgui.common.enable");
+    }
+
+    protected boolean isUnique() {
+        if (modElement.getGeneratableElement() instanceof IUniqueElement unique) {
+            return mcreator.getWorkspaceInfo().getGElementsOfType(modElement.getTypeString()).stream().noneMatch(a -> {
+                if (unique != a && a instanceof IUniqueElement unique1) {
+                    System.out.println(unique1.getUniqueID());
+                    return unique1.getUniqueID().equals(unique.getUniqueID());
+                }
+                return false;
+            });
+        }
+        return true;
     }
 }

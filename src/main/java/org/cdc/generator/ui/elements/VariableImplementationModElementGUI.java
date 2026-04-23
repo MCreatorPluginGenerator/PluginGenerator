@@ -56,7 +56,7 @@ public class VariableImplementationModElementGUI
     public VariableImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Scope name", "Init", "Get", "Set", "Read", "Write" });
 
-        if (editingMode) {
+        if (isUnique()) {
             generator.setEnabled(false);
             variableElementName.setEnabled(false);
         }

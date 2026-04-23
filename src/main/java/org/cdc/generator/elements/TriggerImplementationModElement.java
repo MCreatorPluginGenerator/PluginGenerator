@@ -4,6 +4,7 @@ import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
+import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.utils.YamlUtils;
 
 import java.awt.image.BufferedImage;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-public class TriggerImplementationModElement extends GeneratableElement implements IGeneratorElement {
+public class TriggerImplementationModElement extends GeneratableElement implements IGeneratorElement, IUniqueElement {
 
     public String generatorName;
     public String triggerFileName;
@@ -41,8 +42,8 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
     @UsedByReflection public String getEventNameUsedAsMethodName() {
         if (eventName.contains(".")) {
             var sp = eventName.split("\\.");
-            return Arrays.stream(sp).filter(a->a.endsWith("Event")|| List.of("Pre", "Post").contains(a)).collect(
-                    Collectors.joining());
+            return Arrays.stream(sp).filter(a -> a.endsWith("Event") || List.of("Pre", "Post").contains(a))
+                    .collect(Collectors.joining());
         }
         return eventName;
     }
@@ -53,5 +54,9 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
 
     @Override public BufferedImage generateModElementPicture() {
         return IGeneratorElement.super.generateModElementPicture0();
+    }
+
+    @Override public String getUniqueID() {
+        return getModElement().getTypeString() + getGeneratorName() + triggerFileName;
     }
 }

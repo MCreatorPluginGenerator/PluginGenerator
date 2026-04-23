@@ -4,6 +4,7 @@ import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
+import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Utils;
 
@@ -11,7 +12,7 @@ import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MappingsModElement extends GeneratableElement implements IGeneratorElement {
+public class MappingsModElement extends GeneratableElement implements IGeneratorElement, IUniqueElement {
 
     public String generatorName;
     public String datalistElementName;
@@ -30,6 +31,10 @@ public class MappingsModElement extends GeneratableElement implements IGenerator
             return null;
         }
         return ElementsUtils.getDataListName(getModElement().getWorkspace(), datalistElementName);
+    }
+
+    @Override public String getUniqueID() {
+        return getModElement().getTypeString() + getGeneratorName() + datalistElementName;
     }
 
     public static class MappingEntry implements Cloneable {

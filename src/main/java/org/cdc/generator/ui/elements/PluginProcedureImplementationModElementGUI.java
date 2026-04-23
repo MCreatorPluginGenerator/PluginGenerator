@@ -44,7 +44,7 @@ public class PluginProcedureImplementationModElementGUI
             boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
-        if (editingMode) {
+        if (isUnique()) {
             generator.setEnabled(false);
             procedureFileName.setEnabled(false);
         }

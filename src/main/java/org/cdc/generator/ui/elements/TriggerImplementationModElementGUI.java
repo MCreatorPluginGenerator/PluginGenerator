@@ -51,7 +51,7 @@ public class TriggerImplementationModElementGUI
     public TriggerImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
-        if (editingMode) {
+        if (isUnique()) {
             generator.setEnabled(false);
             triggerFileName.setEnabled(false);
         }

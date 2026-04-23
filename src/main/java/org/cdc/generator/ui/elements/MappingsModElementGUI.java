@@ -49,7 +49,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         this.mappingEntries = new ArrayList<>();
         this.lastSearchResult = new ArrayList<>(List.of(0));
 
-        if (editingMode) {
+        if (isUnique()) {
             generator.setEnabled(false);
             datalistName.setEnabled(false);
         }
@@ -65,7 +65,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
 
         datalistName.setEditable(false);
         datalistName.setValidator(new NotEmptyValidator(datalistName::getSelectedItem));
-        addElementSelectorConfiguration("datalist_name", datalistName,datalistName::getSelectedItem);
+        addElementSelectorConfiguration("datalist_name", datalistName, datalistName::getSelectedItem);
 
         JToolBar bar = new JToolBar();
         bar.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
@@ -213,7 +213,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(datalistName, stringArrayList);
-        if (!isEditingMode()){
+        if (!isEditingMode()) {
 
             datalistName.setSelectedIndex(stringArrayList.size() - 1);
         }
@@ -243,7 +243,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override public CompletableFuture<Void> refreshTable() {
-        return CompletableFuture.runAsync(()->{
+        return CompletableFuture.runAsync(() -> {
             jTable.repaint();
             jTable.revalidate();
         });

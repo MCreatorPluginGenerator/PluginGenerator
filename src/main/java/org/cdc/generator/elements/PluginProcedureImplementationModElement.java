@@ -5,11 +5,12 @@ import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
+import org.cdc.generator.elements.interfaces.IUniqueElement;
 
 import java.awt.image.BufferedImage;
 
-public class PluginProcedureImplementationModElement extends GeneratableElement implements IBlocklyElement,
-        IGeneratorElement {
+public class PluginProcedureImplementationModElement extends GeneratableElement
+        implements IBlocklyElement, IGeneratorElement, IUniqueElement {
 
     public String generator;
     public String procedureFileName;
@@ -34,5 +35,9 @@ public class PluginProcedureImplementationModElement extends GeneratableElement 
 
     @Override public BufferedImage generateModElementPicture() {
         return IGeneratorElement.super.generateModElementPicture0();
+    }
+
+    @Override public String getUniqueID() {
+        return getModElement().getTypeString() + getGeneratorName() + procedureFileName;
     }
 }

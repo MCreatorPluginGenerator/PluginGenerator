@@ -4,6 +4,7 @@ import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
+import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.YamlUtils;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class VariableImplementationModElement extends GeneratableElement implements IGeneratorElement {
+public class VariableImplementationModElement extends GeneratableElement implements IGeneratorElement, IUniqueElement {
 
     public String generator;
     public String variableElementName;
@@ -45,6 +46,10 @@ public class VariableImplementationModElement extends GeneratableElement impleme
 
     @Override public BufferedImage generateModElementPicture() {
         return IGeneratorElement.super.generateModElementPicture0();
+    }
+
+    @Override public String getUniqueID() {
+        return getModElement().getTypeString() + generator + variableElementName;
     }
 
     public static class VariableScope implements Cloneable {

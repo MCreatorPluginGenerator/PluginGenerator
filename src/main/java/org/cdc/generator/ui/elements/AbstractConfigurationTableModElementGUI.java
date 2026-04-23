@@ -127,7 +127,10 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         var edit = new JButton(UIRES.get("16px.edit"));
         edit.addMouseListener(new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent e) {
-                edit.setToolTipText("Edit the element " + elementNameSupplier.get().getName());
+                var el = elementNameSupplier.get();
+                if (el != null) {
+                    edit.setToolTipText("Edit the element " + el.getName());
+                }
             }
         });
 

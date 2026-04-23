@@ -77,8 +77,8 @@ public class TriggerImplementationModElementGUI
         addElementSelectorConfiguration("trigger_element_name", triggerFileName, () -> this.triggerElementName);
 
         eventName.setValidator(() -> {
-            if (eventName.getText().contains("$")){
-                return new ValidationResult(ValidationResult.Type.ERROR,"Invalid char $");
+            if (eventName.getText().contains("$")) {
+                return new ValidationResult(ValidationResult.Type.ERROR, "Invalid char $");
             }
             if (eventName.getText() == null || eventName.getText().isEmpty()) {
                 return new ValidationResult(ValidationResult.Type.ERROR, "Not empty");
@@ -104,7 +104,7 @@ public class TriggerImplementationModElementGUI
     @Override public void initAfterAll() {
         initGUI();
         finalizeGUI();
-        if (methodToolBar.getComponents().length == 0){
+        if (methodToolBar.getComponents().length == 0) {
             reloadToolBar();
         }
     }
@@ -163,6 +163,9 @@ public class TriggerImplementationModElementGUI
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(triggerFileName, stringArrayList);
+        if (!isEditingMode()) {
+            triggerFileName.setSelectedIndex(stringArrayList.size() - 1);
+        }
     }
 
     private CompletionProvider createCompletionProvider() {
@@ -172,7 +175,7 @@ public class TriggerImplementationModElementGUI
         provider.addCompletion(new BasicCompletion(provider, "<#assign"));
         provider.addCompletion(new BasicCompletion(provider, "@procedureDependenciesCode"));
         provider.addCompletion(new BasicCompletion(provider, "execute()"));
-        provider.addCompletion(new BasicCompletion(provider,"event"));
+        provider.addCompletion(new BasicCompletion(provider, "event"));
 
         Utils.initCompletionWithGenerator(provider, mcreator.getGenerator());
 

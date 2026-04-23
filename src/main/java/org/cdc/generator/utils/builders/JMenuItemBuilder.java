@@ -34,6 +34,7 @@ public class JMenuItemBuilder {
 
     public JMenuItem build() {
         var menuitem = new JMenuItem(L10N.t("menus." + parentMenuName + "." + name));
+        menuitem.setName(name);
         menuitem.addActionListener(actionListener);
         return menuitem;
     }

@@ -213,6 +213,10 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(datalistName, stringArrayList);
+        if (!isEditingMode()){
+
+            datalistName.setSelectedIndex(stringArrayList.size() - 1);
+        }
     }
 
     public void doSearch(Map.Entry<String, String> search) {

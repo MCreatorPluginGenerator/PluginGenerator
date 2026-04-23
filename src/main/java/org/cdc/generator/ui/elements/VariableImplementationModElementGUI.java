@@ -186,6 +186,9 @@ public class VariableImplementationModElementGUI
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(variableElementName, stringArrayList);
+        if (!isEditingMode()){
+            variableElementName.setSelectedIndex(stringArrayList.size() - 1);
+        }
     }
 
     private CompletionProvider createCompletionProvider() {

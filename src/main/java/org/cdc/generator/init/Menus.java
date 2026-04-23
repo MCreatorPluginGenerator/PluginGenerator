@@ -57,8 +57,8 @@ public class Menus {
     }
 
     public static void registerAllSubMenus(MCreator mcreator) {
-        PLUGIN_MAKER.get()
-                .add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("load_from_external").setReload(a -> {
+        PLUGIN_MAKER.add(
+                new JMenuBuilder().setParentMenuName("plugin_maker").setName("load_from_external").setReload(a -> {
                     final var langmap = mcreator.getWorkspace().getLanguageMap();
                     for (String s : langmap.keySet()) {
                         var menuItem = new JMenuItem(s);
@@ -79,15 +79,15 @@ public class Menus {
                         a.add(menuItem);
                     }
                 }).build());
-        PLUGIN_MAKER.get().add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_repository")
+        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_repository")
                 .setActionListener(a -> {
                     DesktopUtils.browseSafe("https://mcreator.net/repository");
                     // TODO: change to use updateinfo to select supported mcreator version.
                     // MCreatorApplication.WEB_API.getUpdateInfo();
                 }).build());
-        PLUGIN_MAKER.get().add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")
+        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")
                 .setActionListener(a -> DesktopUtils.browseSafe("https://mcreator.net/changelog")).build());
-        DATALIST_UTILS.get().add(new JMenuBuilder().setParentMenuName("datalist_utils").setName("builtin_entries")
+        DATALIST_UTILS.add(new JMenuBuilder().setParentMenuName("datalist_utils").setName("builtin_entries")
                 .setInit(menu -> Stream.of(Constants.builtEntriesInDataList).forEach(a -> {
                     JMenuItem menuItem = new JMenuItem(a);
                     menuItem.addActionListener(event -> {
@@ -100,8 +100,8 @@ public class Menus {
                     });
                     menu.add(menuItem);
                 })).build());
-        DATALIST_UTILS.get().add(new JMenuBuilder().setParentMenuName("datalist_utils").setName("calculate_types")
-                .setReload(jMenu -> {
+        DATALIST_UTILS.add(
+                new JMenuBuilder().setParentMenuName("datalist_utils").setName("calculate_types").setReload(jMenu -> {
                     if (mcreator.getTabs().getCurrentTab()
                             .getContent() instanceof DataListModElementGUI dataListModElementGUI) {
                         jMenu.removeAll();
@@ -116,8 +116,8 @@ public class Menus {
                         });
                     }
                 }).build());
-        PLUGIN_PROCEDURE_UTILS.get()
-                .add(new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("generate_warnings")
+        PLUGIN_PROCEDURE_UTILS.add(
+                new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("generate_warnings")
                         .setActionListener(a -> {
                             if (mcreator.getTabs().getCurrentTab()
                                     .getContent() instanceof PluginProceduresElementGUI pluginProceduresElementGUI) {
@@ -129,39 +129,41 @@ public class Menus {
                                 }
                             }
                         }).build());
-        PLUGIN_PROCEDURE_UTILS.get().add(new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("refresh_inputs_and_fields").setActionListener(a->{
-            if (mcreator.getTabs().getCurrentTab()
-                    .getContent() instanceof PluginProceduresElementGUI pluginProceduresElementGUI) {
-                var inputs = new ArrayList<String>();
-                var fields = new ArrayList<String>();
-                var statements = new ArrayList<String>();
-                for (ArgTypeProxy argTypeProxy : pluginProceduresElementGUI.getModel()) {
-                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.INPUT){
-                        inputs.add(argTypeProxy.getUniqueName());
-                    }
-                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.FIELD){
-                        fields.add(argTypeProxy.getUniqueName());
-                    }
-                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.STATEMENT){
-                        statements.add(argTypeProxy.getUniqueName());
-                    }
-                }
-                var inputs1 = new HashSet<String>();
-                inputs1.addAll(pluginProceduresElementGUI.getInputs().getTextList());
-                inputs1.addAll(inputs);
-                pluginProceduresElementGUI.getInputs().setTextList(inputs1);
+        PLUGIN_PROCEDURE_UTILS.add(
+                new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("refresh_inputs_and_fields")
+                        .setActionListener(a -> {
+                            if (mcreator.getTabs().getCurrentTab()
+                                    .getContent() instanceof PluginProceduresElementGUI pluginProceduresElementGUI) {
+                                var inputs = new ArrayList<String>();
+                                var fields = new ArrayList<String>();
+                                var statements = new ArrayList<String>();
+                                for (ArgTypeProxy argTypeProxy : pluginProceduresElementGUI.getModel()) {
+                                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.INPUT) {
+                                        inputs.add(argTypeProxy.getUniqueName());
+                                    }
+                                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.FIELD) {
+                                        fields.add(argTypeProxy.getUniqueName());
+                                    }
+                                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.STATEMENT) {
+                                        statements.add(argTypeProxy.getUniqueName());
+                                    }
+                                }
+                                var inputs1 = new HashSet<String>();
+                                inputs1.addAll(pluginProceduresElementGUI.getInputs().getTextList());
+                                inputs1.addAll(inputs);
+                                pluginProceduresElementGUI.getInputs().setTextList(inputs1);
 
-                var fields1 = new HashSet<String>();
-                fields1.addAll(pluginProceduresElementGUI.getFields().getTextList());
-                fields1.addAll(fields);
-                pluginProceduresElementGUI.getFields().setTextList(fields1);
+                                var fields1 = new HashSet<String>();
+                                fields1.addAll(pluginProceduresElementGUI.getFields().getTextList());
+                                fields1.addAll(fields);
+                                pluginProceduresElementGUI.getFields().setTextList(fields1);
 
-                var statements1 = new HashSet<String>();
-                statements1.addAll(pluginProceduresElementGUI.getStatements().getTextList());
-                statements1.addAll(statements);
-                pluginProceduresElementGUI.getStatements().setTextList(statements1);
-            }
-        }).build());
+                                var statements1 = new HashSet<String>();
+                                statements1.addAll(pluginProceduresElementGUI.getStatements().getTextList());
+                                statements1.addAll(statements);
+                                pluginProceduresElementGUI.getStatements().setTextList(statements1);
+                            }
+                        }).build());
         // TODO: Mapping_utils functions: like temporary plugin to add item and blocks.
     }
 }

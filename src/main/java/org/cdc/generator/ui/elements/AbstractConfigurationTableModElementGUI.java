@@ -2,6 +2,7 @@ package org.cdc.generator.ui.elements;
 
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.help.HelpUtils;
@@ -20,6 +21,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 public abstract class AbstractConfigurationTableModElementGUI<E extends GeneratableElement> extends ModElementGUI<E> {
@@ -74,9 +76,8 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
      */
     protected void addGeneratorConfiguration(VComboBox<String> generator) {
         generator.setValidator(new NotEmptyValidator(generator::getSelectedItem));
-        for (String supportedGenerator : Utils.getAllSupportedGenerators()) {
-            generator.addItem(supportedGenerator);
-        }
+        var generators = new ArrayList<>(Utils.getAllSupportedGenerators());
+        ComboBoxUtil.updateComboBoxContents(generator, generators);
         generator.setSelectedItem(PluginMakerPreference.INSTANCE.preferGenerator.get());
         generator.setEditable(true);
         generator.setPreferredSize(Utils.tryToGetTextFieldSize());

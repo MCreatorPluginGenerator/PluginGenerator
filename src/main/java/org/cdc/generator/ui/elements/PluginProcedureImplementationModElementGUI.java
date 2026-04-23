@@ -152,6 +152,9 @@ public class PluginProcedureImplementationModElementGUI
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(procedureFileName, stringArrayList);
+        if (!isEditingMode()){
+            procedureFileName.setSelectedIndex(stringArrayList.size() - 1);
+        }
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {

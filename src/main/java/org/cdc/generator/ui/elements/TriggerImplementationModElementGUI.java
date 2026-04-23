@@ -40,7 +40,6 @@ public class TriggerImplementationModElementGUI
 
     private final VComboBox<String> generator = new VComboBox<>();
     private final VComboBox<String> triggerFileName = new VComboBox<>();
-    private String triggerElementName;
 
     private final VTextField eventName = new VTextField();
     private final RSyntaxTextArea methodBody = new RSyntaxTextArea();
@@ -51,10 +50,19 @@ public class TriggerImplementationModElementGUI
     public TriggerImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
-        if (isUnique()) {
+        if (editingMode && isUnique()) {
             generator.setEnabled(false);
             triggerFileName.setEnabled(false);
         }
+    }
+
+    @Override public void initAfterAll() {
+        initGUI();
+        finalizeGUI();
+        if (methodToolBar.getComponents().length == 0) {
+            reloadToolBar();
+        }
+
     }
 
     @Override protected void initGUI() {
@@ -69,14 +77,16 @@ public class TriggerImplementationModElementGUI
                 var registry = ElementsUtils.getProcedureFileName(getModElement().getWorkspace(),
                         a.getItem().toString());
                 if (registry != null) {
-                    triggerElementName = a.getItem().toString();
                     triggerFileName.setSelectedItem(registry);
                 }
             }
         });
-        addElementSelectorConfiguration("trigger_element_name", triggerFileName, () -> this.triggerElementName);
+        addElementSelectorConfiguration("trigger_element_name", triggerFileName,
+                () -> getTriggerModElement().getModElement());
 
-        eventName.setValidator(() -> {
+        eventName.setValidator(() ->
+
+        {
             if (eventName.getText().contains("$")) {
                 return new ValidationResult(ValidationResult.Type.ERROR, "Invalid char $");
             }
@@ -85,28 +95,35 @@ public class TriggerImplementationModElementGUI
             }
             return ValidationResult.PASSED;
         });
+
         addConfigurationWithHelpEntry("event_name", eventName);
 
-        methodToolBar = new JToolBar();
+        methodToolBar = new
+
+                JToolBar();
+
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(methodBody, mcreator);
         AutoCompletionFactory.createDefaultCompletion(methodBody, this::createCompletionProvider);
         var panel = PanelUtils.northAndCenterElement(methodToolBar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
-        generator.addItemListener(eventName -> reloadToolBar());
-        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator)
-                .validate(triggerFileName).validate(eventName).lazyValidate(
-                        () -> methodBody.getText().contains("@Placeholder") ?
-                                new AggregatedValidationResult.FAIL("You should replace the placeholder") :
-                                new AggregatedValidationResult.PASS());
-    }
+        generator.addItemListener(eventName ->
 
-    @Override public void initAfterAll() {
-        initGUI();
-        finalizeGUI();
-        if (methodToolBar.getComponents().length == 0) {
-            reloadToolBar();
-        }
+                reloadToolBar());
+
+        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).
+
+                validate(generator).
+
+                validate(triggerFileName).
+
+                validate(eventName).
+
+                lazyValidate(() -> methodBody.getText().
+
+                contains("@Placeholder") ?
+                new AggregatedValidationResult.FAIL("You should replace the placeholder") :
+                new AggregatedValidationResult.PASS());
     }
 
     private void reloadToolBar() {
@@ -149,9 +166,10 @@ public class TriggerImplementationModElementGUI
     }
 
     public TriggerModElement getTriggerModElement() {
-        var trigger = mcreator.getWorkspace().getModElementByName(triggerElementName);
-        if (trigger.getGeneratableElement() instanceof TriggerModElement triggerModElement) {
-            return triggerModElement;
+        for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
+            if (modElement.getRegistryName().equals(triggerFileName.getSelectedItem())) {
+                return (TriggerModElement) modElement.getGeneratableElement();
+            }
         }
         return null;
     }

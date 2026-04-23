@@ -38,6 +38,7 @@ base_templates:
   - template: pluginbase/plugin.json.ftl
     writer: json
     name: "@RESROOT/plugin.json"
+# TODO
 #  - template: pluginbase/plugin.java.ftl
 #    writer: java
 #    name: "@SRCROOT/@BASEPACKAGEPATH/PluginMain.java"

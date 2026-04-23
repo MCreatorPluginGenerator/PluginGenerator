@@ -123,16 +123,16 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     }
 
     protected void addElementSelectorConfiguration(String name, JComponent component,
-            Supplier<String> elementNameSupplier) {
+            Supplier<ModElement> elementNameSupplier) {
         var edit = new JButton(UIRES.get("16px.edit"));
         edit.addMouseListener(new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent e) {
-                edit.setToolTipText("Edit the element " + elementNameSupplier.get());
+                edit.setToolTipText("Edit the element " + elementNameSupplier.get().getName());
             }
         });
 
         edit.addActionListener(a -> {
-            var element = mcreator.getWorkspace().getModElementByName(elementNameSupplier.get());
+            var element = elementNameSupplier.get();
             if (element != null) {
                 element.getType().getModElementGUI(mcreator, element, true).showView();
             } else {
@@ -180,7 +180,6 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         if (modElement.getGeneratableElement() instanceof IUniqueElement unique) {
             return mcreator.getWorkspaceInfo().getGElementsOfType(modElement.getTypeString()).stream().noneMatch(a -> {
                 if (unique != a && a instanceof IUniqueElement unique1) {
-                    System.out.println(unique1.getUniqueID());
                     return unique1.getUniqueID().equals(unique.getUniqueID());
                 }
                 return false;

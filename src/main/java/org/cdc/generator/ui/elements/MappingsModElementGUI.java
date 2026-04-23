@@ -49,7 +49,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         this.mappingEntries = new ArrayList<>();
         this.lastSearchResult = new ArrayList<>(List.of(0));
 
-        if (isUnique()) {
+        if (editingMode && isUnique()) {
             generator.setEnabled(false);
             datalistName.setEnabled(false);
         }
@@ -65,7 +65,8 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
 
         datalistName.setEditable(false);
         datalistName.setValidator(new NotEmptyValidator(datalistName::getSelectedItem));
-        addElementSelectorConfiguration("datalist_name", datalistName, datalistName::getSelectedItem);
+        addElementSelectorConfiguration("datalist_name", datalistName,
+                () -> mcreator.getWorkspace().getModElementByName(datalistName.getName()));
 
         JToolBar bar = new JToolBar();
         bar.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));

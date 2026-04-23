@@ -16,6 +16,7 @@ import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
+import org.cdc.generator.utils.ioc.InjectField;
 import org.fife.ui.autocomplete.AutoCompletion;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
@@ -35,22 +36,35 @@ public class PluginProcedureImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<PluginProcedureImplementationModElement> {
     private final VComboBox<String> generator = new VComboBox<>();
     private final VComboBox<String> procedureFileName = new VComboBox<>();
-    private String elementName;
 
     private final RSyntaxTextArea content = new RSyntaxTextArea();
     private AutoCompletion lastAutoCompletion;
+
+    @InjectField org.apache.logging.log4j.Logger LOG;
 
     public PluginProcedureImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
             boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
-        if (isUnique()) {
+        if (editingMode && isUnique()) {
             generator.setEnabled(false);
             procedureFileName.setEnabled(false);
         }
+    }
 
+    @Override public void initAfterAll() {
         this.initGUI();
         this.finalizeGUI();
+
+        procedureFileName.addItemListener(a -> reloadComplete());
+        reloadComplete();
+    }
+
+    private void reloadComplete() {
+        if (lastAutoCompletion != null) {
+            lastAutoCompletion.uninstall();
+        }
+        lastAutoCompletion = AutoCompletionFactory.createDefaultCompletion(content, this::createCompletionProvider);
     }
 
     @Override protected void initGUI() {
@@ -64,12 +78,11 @@ public class PluginProcedureImplementationModElementGUI
                 var registry = ElementsUtils.getProcedureFileName(getModElement().getWorkspace(),
                         a.getItem().toString());
                 if (registry != null) {
-                    elementName = a.getItem().toString();
                     procedureFileName.setSelectedItem(registry);
                 }
             }
         });
-        addElementSelectorConfiguration("pluginprocedure_element_name", procedureFileName, () -> this.elementName);
+        addElementSelectorConfiguration("pluginprocedure_element_name", procedureFileName, () -> getPluginProcedureModElement().getModElement());
 
         var toolbar = new JToolBar();
         JButton generate = new JButton(UIRES.get("18px.import"));
@@ -98,33 +111,25 @@ public class PluginProcedureImplementationModElementGUI
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
-        procedureFileName.addItemListener(a -> {
-            if (lastAutoCompletion != null) {
-                lastAutoCompletion.uninstall();
-            }
-            if (getPluginProcedureModElement() == null) {
-                return;
-            }
-            lastAutoCompletion = AutoCompletionFactory.createDefaultCompletion(content, this::createCompletionProvider);
-        });
-
         addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator);
     }
 
     private CompletionProvider createCompletionProvider() {
         var complete = new DefaultCompletionProvider();
         var element = getPluginProcedureModElement();
-        for (String input : element.inputs) {
-            complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getInputPlaceHolder(input)));
-            complete.addCompletion(new BasicCompletion(complete, "input$" + input));
-        }
-        for (String field : element.fields) {
-            complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getFieldPlaceHolder(field)));
-            complete.addCompletion(new BasicCompletion(complete, "field$" + field));
-        }
-        for (String statement : element.statements) {
-            complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getStatementPlaceHolder(statement)));
-            complete.addCompletion(new BasicCompletion(complete, "statement$" + statement));
+        if (element != null) {
+            for (String input : element.inputs) {
+                complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getInputPlaceHolder(input)));
+                complete.addCompletion(new BasicCompletion(complete, "input$" + input));
+            }
+            for (String field : element.fields) {
+                complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getFieldPlaceHolder(field)));
+                complete.addCompletion(new BasicCompletion(complete, "field$" + field));
+            }
+            for (String statement : element.statements) {
+                complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getStatementPlaceHolder(statement)));
+                complete.addCompletion(new BasicCompletion(complete, "statement$" + statement));
+            }
         }
         Utils.initCompletionWithGenerator(complete, mcreator.getGenerator());
 
@@ -134,6 +139,7 @@ public class PluginProcedureImplementationModElementGUI
     @Override protected void openInEditingMode(PluginProcedureImplementationModElement generatableElement) {
         this.generator.setSelectedItem(generatableElement.generator);
         this.procedureFileName.setSelectedItem(generatableElement.procedureFileName);
+
         this.content.setText(generatableElement.content);
     }
 
@@ -152,7 +158,7 @@ public class PluginProcedureImplementationModElementGUI
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(procedureFileName, stringArrayList);
-        if (!isEditingMode()){
+        if (!isEditingMode()) {
             procedureFileName.setSelectedIndex(stringArrayList.size() - 1);
         }
     }
@@ -162,12 +168,10 @@ public class PluginProcedureImplementationModElementGUI
     }
 
     public PluginProcedureModElement getPluginProcedureModElement() {
-        var procedureElement = mcreator.getWorkspace().getModElementByName(elementName);
-        if (procedureElement == null) {
-            return null;
-        }
-        if (procedureElement.getGeneratableElement() instanceof PluginProcedureModElement pluginProcedure) {
-            return pluginProcedure;
+        for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
+            if (modElement.getRegistryName().equals(procedureFileName.getSelectedItem())) {
+                return (PluginProcedureModElement) modElement.getGeneratableElement();
+            }
         }
         return null;
     }

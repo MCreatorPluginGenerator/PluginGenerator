@@ -56,7 +56,7 @@ public class VariableImplementationModElementGUI
     public VariableImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Scope name", "Init", "Get", "Set", "Read", "Write" });
 
-        if (isUnique()) {
+        if (editingMode && isUnique()) {
             generator.setEnabled(false);
             variableElementName.setEnabled(false);
         }
@@ -88,7 +88,7 @@ public class VariableImplementationModElementGUI
             }
         });
         addElementSelectorConfiguration("variable_element_name", variableElementName,
-                variableElementName::getSelectedItem);
+                () -> mcreator.getWorkspace().getModElementByName(variableElementName.getSelectedItem()));
 
         defaultValue.setText("null");
         defaultValue.setValidator(new NotEmptyValidator(defaultValue::getText));
@@ -186,7 +186,7 @@ public class VariableImplementationModElementGUI
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(variableElementName, stringArrayList);
-        if (!isEditingMode()){
+        if (!isEditingMode()) {
             variableElementName.setSelectedIndex(stringArrayList.size() - 1);
         }
     }

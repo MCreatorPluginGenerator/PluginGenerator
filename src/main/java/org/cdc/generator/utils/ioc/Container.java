@@ -38,6 +38,7 @@ public class Container {
 
     /**
      * object will be cleared after call endTemporaryLift
+     *
      * @param name
      * @param objectSupplier
      */
@@ -58,7 +59,8 @@ public class Container {
             if (field.isAnnotationPresent(InjectField.class) && map.containsKey(field.getName())) {
                 field.setAccessible(true);
                 var value = map.get(field.getName()).get();
-                if (field.getType().isAssignableFrom(value.getClass()) || field.getType().equals(value.getClass())) {
+                var ann = field.getAnnotation(InjectField.class);
+                if (ann.force() || field.getType().isPrimitive() ||field.getType().isAssignableFrom(value.getClass())) {
                     try {
                         field.set(object, value);
                     } catch (IllegalAccessException e) {

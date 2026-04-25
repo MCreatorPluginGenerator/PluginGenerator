@@ -37,6 +37,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.ItemEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -285,24 +286,29 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
             //inject
             container.registerObject("modElementGui", () -> this);
             container.registerTemporaryObject("index", () -> arg0List.getSelectedIndex());
-            container.inject(proxy.getArg0Type());
+            var argtype = proxy.getArg0Type();
+            container.inject(argtype);
             container.endTemporaryLife();
             //inject
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("type", proxy.getArg0Type().getName());
+            jsonObject.addProperty("type", proxy.getArg0TypeName());
+
             var configurationPanel = new JPanel(new GridLayout(1, 2));
             var typeName = new VComboBox<String>();
             IArg0Type.arg0types.stream().map(a -> a.get().getName()).forEach(typeName::addItem);
             typeName.setOpaque(false);
-            typeName.setSelectedItem(proxy.getArg0Type().getName());
+            typeName.setSelectedItem(proxy.getArg0TypeName());
             typeName.addItemListener(a -> {
-                jsonObject.addProperty("type", typeName.getSelectedItem());
-                reloadComponent(rightComponent);
+                if (a.getStateChange() == ItemEvent.SELECTED) {
+                    jsonObject.addProperty("type", typeName.getSelectedItem());
+                    reloadComponent(rightComponent);
+                }
             });
             configurationPanel.add(L10N.label("elementgui.arg0.type"));
             configurationPanel.add(typeName);
             rightComponent.add("North", configurationPanel);
-            rightComponent.add("Center", proxy.getArg0Type().getEditor(proxy.getArg0Json(), jsonObject));
+
+            rightComponent.add("Center", argtype.getEditor(proxy.getArg0Json(), jsonObject));
             proxy.setArg0Json(jsonObject);
         }
         SwingUtilities.invokeLater(() -> {

@@ -4,14 +4,23 @@ import com.google.gson.JsonObject;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 
 public class ArgTypeProxy {
+
+
     public static IArg0Type getArg0Type(JsonObject jsonObject) {
         String type = jsonObject.get("type").getAsString();
         IArg0Type type1 = null;
+        CustomArgType customArgType = null;
         for (IArg0Type arg0type : IArg0Type.arg0types) {
+            if (arg0type instanceof CustomArgType){
+                customArgType = (CustomArgType) arg0type;
+            }
             if (arg0type.getName().equals(type)) {
                 type1 = arg0type;
                 break;
             }
+        }
+        if (type1 == null){
+            return customArgType;
         }
         return type1;
     }

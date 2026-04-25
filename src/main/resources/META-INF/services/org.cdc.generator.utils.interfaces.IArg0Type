@@ -12,3 +12,4 @@ org.cdc.generator.services.types.FieldDataListDropdownArgType
 org.cdc.generator.services.types.FieldResourceLocationArgType
 org.cdc.generator.services.types.FieldColorSelectorArgType
 org.cdc.generator.services.types.InputStatementArgType
+org.cdc.generator.services.types.CustomArgType

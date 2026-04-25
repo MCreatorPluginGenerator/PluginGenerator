@@ -3,10 +3,7 @@ package org.cdc.generator.elements;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class DataListModElement extends GeneratableElement {
 
@@ -166,6 +163,19 @@ public class DataListModElement extends GeneratableElement {
             } catch (CloneNotSupportedException e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        @Override public boolean equals(Object object) {
+            if (object == null || getClass() != object.getClass())
+                return false;
+            DataListEntry that = (DataListEntry) object;
+            return Objects.equals(name, that.name) && Objects.equals(readableName,
+                    that.readableName) && Objects.equals(type, that.type) && Objects.equals(texture, that.texture)
+                    && Objects.equals(description, that.description) && Objects.equals(others, that.others);
+        }
+
+        @Override public int hashCode() {
+            return Objects.hash(name, readableName, type, texture, description, others);
         }
 
         public static class Builder {

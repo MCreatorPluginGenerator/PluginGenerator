@@ -198,7 +198,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         var element = new MappingsModElement(modElement);
         element.datalistElementName = datalistName.getSelectedItem();
         element.generatorName = generator.getSelectedItem();
-        element.mappingsContent = mappingEntries.stream().map(MappingsModElement.MappingEntry::clone).toList();
+        element.mappingsContent = mappingEntries.stream().map(MappingsModElement.MappingEntry::clone).filter(a->a.isEdited()).toList();
         modElement.setRegistryName(element.getDatalistName());
         return element;
     }
@@ -215,7 +215,6 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         }
         ComboBoxUtil.updateComboBoxContents(datalistName, stringArrayList);
         if (!isEditingMode()) {
-
             datalistName.setSelectedIndex(stringArrayList.size() - 1);
         }
     }

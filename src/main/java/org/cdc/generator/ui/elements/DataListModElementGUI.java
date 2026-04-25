@@ -73,7 +73,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     @Override protected void initGUI() {
         initConfiguration(new GridLayout(3, 2));
 
-        var iconsFuture = CompletableFuture.supplyAsync(()->{
+        var iconsFuture = CompletableFuture.supplyAsync(() -> {
             var cachedIcon = new ArrayList<String>();
             var file = Utils.tryToFindCorePlugin();
             if (file.isDirectory()) {
@@ -245,17 +245,27 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override protected void openInEditingMode(DataListModElement generatableElement) {
-        this.entries.addAll(generatableElement.entries);
+        var hashmap = new HashMap<String, DataListModElement.DataListEntry>();
+        for (DataListModElement.DataListEntry entry : generatableElement.entries) {
+            hashmap.put(entry.getName(), entry);
+        }
+        for (DataListModElement.DataListEntry entry : entries) {
+            if (hashmap.containsKey(entry.getName())) {
+                entry.setBuiltIn(false);
+                hashmap.remove(entry.getName());
+            }
+        }
+        entries.addAll(hashmap.values());
         this.generateDataList.setSelected(generatableElement.generateDataList);
         this.dialogMessage.setText(generatableElement.dialogMessage);
-
     }
 
     @Override public DataListModElement getElementFromGUI() {
         modElement.setRegistryName(datalistName.getSelectedItem());
         DataListModElement dataListModElement = new DataListModElement(modElement);
         dataListModElement.generateDataList = generateDataList.isSelected();
-        dataListModElement.entries = entries.stream().map(DataListModElement.DataListEntry::clone).toList();
+        dataListModElement.entries = entries.stream().map(DataListModElement.DataListEntry::clone)
+                .filter(a -> !a.isBuiltIn()).toList();
         dataListModElement.dialogMessage = dialogMessage.getText();
         return dataListModElement;
     }
@@ -265,9 +275,8 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override public void reloadDataLists() {
-        if (DataListLoader.getCache().containsKey(datalistName.getSelectedItem()) && !isEditingMode()) {
-            entries.clear();
-            var compl = CompletableFuture.supplyAsync(()->{
+        if (DataListLoader.getCache().containsKey(datalistName.getSelectedItem())) {
+            var compl = CompletableFuture.supplyAsync(() -> {
                 var types = new HashSet<String>();
                 for (DataListEntry dataListEntry : DataListLoader.loadDataList(datalistName.getSelectedItem())) {
                     types.add(dataListEntry.getType());
@@ -277,7 +286,8 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
             for (DataListEntry dataListEntry : DataListLoader.loadDataList(datalistName.getSelectedItem())) {
                 var dataListEntry1 = DataListModElement.DataListEntry.copyValueOf(dataListEntry);
                 dataListEntry1.setBuiltIn(true);
-                entries.add(dataListEntry1);
+                if (!entries.contains(dataListEntry1))
+                    entries.add(dataListEntry1);
             }
             try {
                 types = compl.get();

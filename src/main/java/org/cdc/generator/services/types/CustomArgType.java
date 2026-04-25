@@ -22,8 +22,6 @@ public class CustomArgType extends JPanel implements IArg0Type {
 
     private JTextArea textArea;
 
-    private Arg0InputType type = Arg0InputType.DEPENDENCY;
-
     private FocusListener focusListener;
 
     public CustomArgType() {
@@ -59,7 +57,7 @@ public class CustomArgType extends JPanel implements IArg0Type {
     }
 
     @Override public Arg0InputType getType() {
-        return type;
+        return Arg0InputType.DEPENDENCY;
     }
 
     @Override public String getUniqueName(JsonObject jsonObject) {

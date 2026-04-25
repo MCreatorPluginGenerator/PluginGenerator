@@ -34,6 +34,7 @@ import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -51,12 +52,15 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     private ResourcePanelIcons resourcePanelIcons;
     private HashSet<String> types;
 
+    private List<String> cachedIcon;
+
     public DataListModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode,
                 new String[] { "Name", "Readable name", "Type", "Texture", "Description", "Others" });
 
         this.entries = new ArrayList<>();
         this.lastSearchResult = new ArrayList<>(List.of(0));
+        this.cachedIcon = new ArrayList<>();
 
         if (editingMode) {
             datalistName.setEnabled(false);
@@ -68,6 +72,20 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
 
     @Override protected void initGUI() {
         initConfiguration(new GridLayout(3, 2));
+
+        var iconsFuture = CompletableFuture.supplyAsync(()->{
+            var cachedIcon = new ArrayList<String>();
+            var file = Utils.tryToFindCorePlugin();
+            if (file.isDirectory()) {
+                var file1 = new File(file, "datalists/icons");
+                for (File listFile : Objects.requireNonNullElse(file1.listFiles(), new File[0])) {
+                    cachedIcon.add(Files.getNameWithoutExtension(listFile.getName()));
+                }
+            } else {
+                cachedIcon.addAll(ZipUtils.tryToGetTexturesFromZip(file));
+            }
+            return cachedIcon;
+        });
 
         datalistName.setEditable(true);
         datalistName.setValidator(Rules.getFileNameValidator(datalistName::getSelectedItem));
@@ -136,16 +154,8 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                     for (File element : resourcePanelIcons.getAllElements()) {
                         comboBox.addItem(Files.getNameWithoutExtension(element.getName()));
                     }
-                    var file = Utils.tryToFindCorePlugin();
-                    if (file.isDirectory()) {
-                        var file1 = new File(file, "datalists/icons");
-                        for (File listFile : Objects.requireNonNullElse(file1.listFiles(), new File[0])) {
-                            comboBox.addItem(Files.getNameWithoutExtension(listFile.getName()));
-                        }
-                    } else {
-                        for (String s : ZipUtils.tryToGetTexturesFromZip(file)) {
-                            comboBox.addItem(s);
-                        }
+                    for (String s : cachedIcon) {
+                        comboBox.addItem(s);
                     }
                 } else if ("Type".equals(columns[column])) {
                     for (String type : types) {
@@ -193,6 +203,12 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
             refreshTable();
         });
 
+        try {
+            cachedIcon = iconsFuture.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+
         addPage("Configuration",
                 PanelUtils.northAndCenterElement(configurationPanel, toolbarAndTable(bar))).lazyValidate(
                 new DuplicatedElementValidator(
@@ -232,9 +248,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         this.entries.addAll(generatableElement.entries);
         this.generateDataList.setSelected(generatableElement.generateDataList);
         this.dialogMessage.setText(generatableElement.dialogMessage);
-        for (DataListModElement.DataListEntry entry : entries) {
-            types.add(entry.getType());
-        }
+
     }
 
     @Override public DataListModElement getElementFromGUI() {
@@ -253,10 +267,22 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     @Override public void reloadDataLists() {
         if (DataListLoader.getCache().containsKey(datalistName.getSelectedItem()) && !isEditingMode()) {
             entries.clear();
+            var compl = CompletableFuture.supplyAsync(()->{
+                var types = new HashSet<String>();
+                for (DataListEntry dataListEntry : DataListLoader.loadDataList(datalistName.getSelectedItem())) {
+                    types.add(dataListEntry.getType());
+                }
+                return types;
+            });
             for (DataListEntry dataListEntry : DataListLoader.loadDataList(datalistName.getSelectedItem())) {
                 var dataListEntry1 = DataListModElement.DataListEntry.copyValueOf(dataListEntry);
                 dataListEntry1.setBuiltIn(true);
                 entries.add(dataListEntry1);
+            }
+            try {
+                types = compl.get();
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RuntimeException(e);
             }
         }
     }

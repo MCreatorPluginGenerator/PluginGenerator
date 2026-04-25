@@ -33,7 +33,7 @@ public class ZipUtils {
             var list = new ArrayList<String>();
 			ZipFile core = new ZipFile(coreZip);
             core.stream().forEach(a->{
-                if (a.getName().startsWith("datalists/icons/")){
+                if (!a.isDirectory() && a.getName().startsWith("datalists/icons/")){
                     list.add(a.getName().replace("datalists/icons/","").replaceFirst(".png$",""));
                 }
             });

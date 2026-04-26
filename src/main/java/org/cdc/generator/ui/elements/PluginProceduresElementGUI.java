@@ -74,7 +74,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     @InjectField private Container container;
 
     public PluginProceduresElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
-        super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
+        super(mcreator, modElement, editingMode, new String[] { "Dependency name", "Type" });
         this.inputsInline = createDefaultCheckBox();
         this.color = new JColor(mcreator, false, false);
         this.builtInColor = new VComboBox<>(Utils.getAllBuiltinColors());
@@ -458,7 +458,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
 
         @Override public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             var row = dependencies.get(rowIndex);
-            if (columns[columnIndex].equals("Name")) {
+            if (columns[columnIndex].equals("Dependency name")) {
                 row.setName(aValue.toString());
             } else if (columns[columnIndex].equals("Type")) {
                 row.setType(aValue.toString());

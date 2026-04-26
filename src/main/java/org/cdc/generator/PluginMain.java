@@ -5,6 +5,7 @@ import net.mcreator.io.FileIO;
 import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.events.ApplicationLoadedEvent;
+import net.mcreator.plugin.events.ModifyTemplateResultEvent;
 import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
 import net.mcreator.plugin.events.ui.BlocklyPanelRegisterDOMData;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
@@ -25,6 +26,8 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class PluginMain extends JavaPlugin {
     public static final Logger LOG = LogManager.getLogger("PluginMaker");
@@ -69,6 +72,13 @@ public class PluginMain extends JavaPlugin {
 
         addListener(BlocklyPanelRegisterDOMData.class, a -> {
             a.addJavaScriptBridge("devUtils", new JavaScriptBridge());
+        });
+
+        addListener(ModifyTemplateResultEvent.class,event -> {
+            if (event.getTemplateName().endsWith("yaml.ftl")){
+                var sp = event.getTemplateOutputOriginal().split("(\n|\r\n)");
+                event.setTemplateOutput(Arrays.stream(sp).filter(a->!a.isBlank()).collect(Collectors.joining(System.lineSeparator())));
+            }
         });
 
         Menus.registerMenuVisibleControls(this);

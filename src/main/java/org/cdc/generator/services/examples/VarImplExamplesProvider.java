@@ -42,6 +42,16 @@ import java.util.function.Consumer;
             }
         });
         componentConsumer.accept(logic);
+        JButton custom = new JButton("Custom");
+        custom.setOpaque(false);
+        custom.addActionListener(a->{
+            var generator = Generator.GENERATOR_CACHE.get(generatorName);
+            if (generator != null) {
+                var num = getVariableScope(JOptionPane.showInputDialog("Type name"), name, columnName, generator);
+                exampleConsumer.accept(String.join("\n", num));
+            }
+        });
+        componentConsumer.accept(custom);
     }
 
     private static @NonNull List<String> getVariableScope(String variableName, String scopeName, String phaseName,

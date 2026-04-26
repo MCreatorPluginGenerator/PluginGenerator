@@ -165,7 +165,7 @@ public class DataListModElement extends GeneratableElement {
 
         @UsedByReflection public boolean hasAttributes() {
             return Stream.of(readableName, type, texture, description).anyMatch(Objects::nonNull)
-                    && !getOther().isEmpty();
+                    || !getOther().isEmpty();
         }
 
         @Override public boolean equals(Object object) {

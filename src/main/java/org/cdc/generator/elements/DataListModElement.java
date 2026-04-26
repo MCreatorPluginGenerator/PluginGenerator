@@ -1,9 +1,11 @@
 package org.cdc.generator.elements;
 
+import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 public class DataListModElement extends GeneratableElement {
 
@@ -17,7 +19,7 @@ public class DataListModElement extends GeneratableElement {
     }
 
     public String getDialogMessage() {
-        if (dialogMessage != null && dialogMessage.isBlank()){
+        if (dialogMessage != null && dialogMessage.isBlank()) {
             return "empty";
         }
         return dialogMessage;
@@ -26,7 +28,13 @@ public class DataListModElement extends GeneratableElement {
     public static class DataListEntry implements Cloneable {
         public static DataListEntry copyValueOf(net.mcreator.minecraft.DataListEntry dataListEntry) {
             var dataListEntry1 = new DataListModElement.DataListEntry(dataListEntry.getName());
-            dataListEntry1.readableName = dataListEntry.getReadableName();
+            try {
+                var field = net.mcreator.minecraft.DataListEntry.class.getDeclaredField("readableName");
+                field.setAccessible(true);
+                dataListEntry1.readableName = (String) field.get(dataListEntry);
+                field.setAccessible(false);
+            } catch (Exception ignored) {
+            }
             dataListEntry1.type = dataListEntry.getType();
             dataListEntry1.texture = dataListEntry.getTexture();
             dataListEntry1.description = dataListEntry.getDescription();
@@ -110,14 +118,6 @@ public class DataListModElement extends GeneratableElement {
 
         public void setName(String name) {
             this.name = name;
-            if (name.charAt(0) == '_') {
-                setBuiltIn(true);
-                setReadableName(null);
-                setDescription(null);
-                setType(null);
-                setTexture(null);
-                setOthers(Map.of());
-            }
         }
 
         public void setReadableName(String readable_name) {
@@ -145,8 +145,6 @@ public class DataListModElement extends GeneratableElement {
         }
 
         public boolean isBuiltIn() {
-            if (name.charAt(0) == '_')
-                builtIn = true;
             return builtIn;
         }
 
@@ -165,13 +163,18 @@ public class DataListModElement extends GeneratableElement {
             }
         }
 
+        @UsedByReflection public boolean hasAttributes() {
+            return Stream.of(readableName, type, texture, description).anyMatch(Objects::nonNull)
+                    && !getOther().isEmpty();
+        }
+
         @Override public boolean equals(Object object) {
             if (object == null || getClass() != object.getClass())
                 return false;
             DataListEntry that = (DataListEntry) object;
-            return Objects.equals(name, that.name) && Objects.equals(readableName,
-                    that.readableName) && Objects.equals(type, that.type) && Objects.equals(texture, that.texture)
-                    && Objects.equals(description, that.description) && Objects.equals(others, that.others);
+            return Objects.equals(name, that.name) && Objects.equals(readableName, that.readableName) && Objects.equals(
+                    type, that.type) && Objects.equals(texture, that.texture) && Objects.equals(description,
+                    that.description) && Objects.equals(others, that.others);
         }
 
         @Override public int hashCode() {

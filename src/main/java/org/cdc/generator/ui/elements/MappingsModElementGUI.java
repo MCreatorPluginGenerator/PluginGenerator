@@ -154,25 +154,26 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
                         set.add(a.getName());
                     }
                 });
-                mappingEntries.clear();
+                // add custom
+                for (DataListModElement.DataListEntry entry : ((DataListModElement) Objects.requireNonNull(
+                        datalist.getGeneratableElement())).entries) {
+                    if (set.isEmpty() || !set.contains(entry.getName())) {
+                        set.add(entry.getName());
+                        mappingEntries.add(new MappingsModElement.MappingEntry(entry.getName(), new ArrayList<>()));
+                    }
+                }
                 if (memory != null) {
                     for (Map.Entry<?, ?> entry : memory.entrySet()) {
                         var key = entry.getKey().toString();
                         // exclude
-                        if (!set.contains(key)) {
+                        if (set.isEmpty() || !set.contains(key)) {
                             set.add(key);
                             mappingEntries.add(new MappingsModElement.MappingEntry(key,
                                     Utils.convertYamlToList(entry.getValue())));
                         }
                     }
                 }
-                // add custom
-                for (DataListModElement.DataListEntry entry : ((DataListModElement) Objects.requireNonNull(
-                        datalist.getGeneratableElement())).entries) {
-                    if (set.isEmpty() || !set.contains(entry.getName()))
-                        mappingEntries.add(new MappingsModElement.MappingEntry(entry.getName(), new ArrayList<>()));
-                }
-                mappingEntries.addAll(cacheSet);
+
                 JOptionPane.showMessageDialog(mcreator,
                         "Total: " + mappingEntries.size() + ", Edited: " + cacheSet.size());
             }
@@ -198,7 +199,8 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         var element = new MappingsModElement(modElement);
         element.datalistElementName = datalistName.getSelectedItem();
         element.generatorName = generator.getSelectedItem();
-        element.mappingsContent = mappingEntries.stream().map(MappingsModElement.MappingEntry::clone).filter(a->a.isEdited()).toList();
+        element.mappingsContent = mappingEntries.stream().map(MappingsModElement.MappingEntry::clone)
+                .filter(a -> a.isEdited()).toList();
         modElement.setRegistryName(element.getDatalistName());
         return element;
     }

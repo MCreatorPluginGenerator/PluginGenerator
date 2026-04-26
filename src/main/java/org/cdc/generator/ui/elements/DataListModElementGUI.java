@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DataListModElementGUI extends AbstractConfigurationTableModElementGUI<DataListModElement>
@@ -46,6 +47,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     private final VTextField dialogMessage = new VTextField();
 
     public List<DataListModElement.DataListEntry> entries;
+    public List<DataListModElement.DataListEntry> myEntries;
 
     // the 0 is the last search index
     private final ArrayList<Integer> lastSearchResult;
@@ -59,6 +61,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                 new String[] { "Name", "Readable name", "Type", "Texture", "Description", "Others" });
 
         this.entries = new ArrayList<>();
+        this.myEntries = new ArrayList<>();
         this.lastSearchResult = new ArrayList<>(List.of(0));
         this.cachedIcon = new ArrayList<>();
 
@@ -245,17 +248,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override protected void openInEditingMode(DataListModElement generatableElement) {
-        var hashmap = new HashMap<String, DataListModElement.DataListEntry>();
-        for (DataListModElement.DataListEntry entry : generatableElement.entries) {
-            hashmap.put(entry.getName(), entry);
-        }
-        for (DataListModElement.DataListEntry entry : entries) {
-            if (hashmap.containsKey(entry.getName())) {
-                entry.setBuiltIn(false);
-                hashmap.remove(entry.getName());
-            }
-        }
-        entries.addAll(hashmap.values());
+        myEntries.addAll(generatableElement.entries);
         this.generateDataList.setSelected(generatableElement.generateDataList);
         this.dialogMessage.setText(generatableElement.dialogMessage);
     }
@@ -283,10 +276,13 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                 }
                 return types;
             });
+            entries.clear();
+            entries.addAll(myEntries);
+            Set<String> keys = entries.stream().map(DataListModElement.DataListEntry::getName).collect(Collectors.toSet());
             for (DataListEntry dataListEntry : DataListLoader.loadDataList(datalistName.getSelectedItem())) {
                 var dataListEntry1 = DataListModElement.DataListEntry.copyValueOf(dataListEntry);
                 dataListEntry1.setBuiltIn(true);
-                if (!entries.contains(dataListEntry1))
+                if (!keys.contains(dataListEntry1.getName()))
                     entries.add(dataListEntry1);
             }
             try {

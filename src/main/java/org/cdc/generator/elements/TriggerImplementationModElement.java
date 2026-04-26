@@ -8,6 +8,7 @@ import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.utils.YamlUtils;
 
 import java.awt.image.BufferedImage;
+import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -17,9 +18,12 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
 
     public String generatorName;
     public String triggerFileName;
+    public boolean enableCustom;
 
     public String eventName;
     public String methodBody;
+
+    public List<AbstractMap.SimpleEntry<String,String>> mappingEntries;
 
     public TriggerImplementationModElement(ModElement element) {
         super(element);
@@ -36,6 +40,9 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
     // a probable bug: if neoforge or forge change their event registration in new version, the solution will be invalid
     // so here needs a new solution.
     @UsedByReflection public String getGeneratorFlavor() {
+        if (enableCustom){
+            return "CUSTOM";
+        }
         return generatorName.split("-")[0].toUpperCase(Locale.ROOT);
     }
 

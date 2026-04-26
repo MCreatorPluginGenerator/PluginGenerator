@@ -23,9 +23,14 @@ public class TriggerImplGoldenFabricExamplesProvider implements IExamplesProvide
         JButton generate = new JButton(UIRES.get("16px.fabric"));
         generate.setToolTipText("Generate golden fabric code");
         generate.addActionListener(e -> {
+            var mappingEntries = modElementGui.getMappingEntries();
             var map = new HashMap<String, String>();
             for (TriggerModElement.Dependency dependency : modElementGui.getTriggerModElement().dependencies_provided) {
-                map.put(dependency.getName(), dependency.getType());
+                if (mappingEntries.containsKey(dependency.getName())){
+                    map.put(dependency.getName(),mappingEntries.get(dependency.getName()));
+                } else {
+                    map.put(dependency.getName(), dependency.getType());
+                }
             }
             var str = """
                     (@Placeholder world,pos and so on@) -> {

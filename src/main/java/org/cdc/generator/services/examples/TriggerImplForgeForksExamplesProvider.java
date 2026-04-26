@@ -21,9 +21,14 @@ public class TriggerImplForgeForksExamplesProvider implements IExamplesProvider 
         JButton generate = new JButton(UIRES.get("16px.forge"));
         generate.setToolTipText("Generate forge code");
         generate.addActionListener(e -> {
+            var mappingEntries = modElementGui.getMappingEntries();
             var map = new HashMap<String,String>();
             for (TriggerModElement.Dependency dependency : modElementGui.getTriggerModElement().dependencies_provided) {
-                map.put(dependency.getName(),dependency.getType());
+                if (mappingEntries.containsKey(dependency.getName())){
+                    map.put(dependency.getName(),mappingEntries.get(dependency.getName()));
+                } else {
+                    map.put(dependency.getName(), dependency.getType());
+                }
             }
             var str = BuilderUtils.generateTriggerDependencies(map);
             exampleConsumer.accept(str);

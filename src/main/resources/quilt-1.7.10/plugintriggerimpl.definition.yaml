@@ -1,4 +1,8 @@
 templates:
+  - template: triggerimpl/custom.java.ftl.ftl
+    condition: 'getGeneratorFlavor() %= CUSTOM'
+    writer: file
+    name: "@RESROOT/@[getGeneratorName()]/triggers/@[getTriggerName()].java.ftl"
   - template: triggerimpl/neoforge.java.ftl.ftl
     condition: 'getGeneratorFlavor() %= NEOFORGE'
     writer: file

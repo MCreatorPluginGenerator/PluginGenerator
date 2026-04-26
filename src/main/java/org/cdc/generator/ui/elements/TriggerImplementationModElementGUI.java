@@ -28,27 +28,33 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
+import java.util.List;
 
 public class TriggerImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<TriggerImplementationModElement> {
 
     private final VComboBox<String> generator = new VComboBox<>();
     private final VComboBox<String> triggerFileName = new VComboBox<>();
+    private final JCheckBox enableCustom = createDefaultCheckBox();
 
     private final VTextField eventName = new VTextField();
     private final RSyntaxTextArea methodBody = new RSyntaxTextArea();
+
+    public List<AbstractMap.SimpleEntry<String, String>> mappingEntries;
 
     @InjectField Container container;
     private JToolBar methodToolBar;
 
     public TriggerImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
-        super(mcreator, modElement, editingMode, null);
+        super(mcreator, modElement, editingMode, new String[] { "Name", "Map" });
+
+        this.mappingEntries = new ArrayList<>();
 
         if (editingMode && isUnique()) {
             generator.setEnabled(false);
@@ -66,7 +72,7 @@ public class TriggerImplementationModElementGUI
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(3, 2));
+        initConfiguration(new GridLayout(4, 2));
 
         addGeneratorConfiguration(generator);
 
@@ -84,9 +90,9 @@ public class TriggerImplementationModElementGUI
         addElementSelectorConfiguration("trigger_element_name", triggerFileName,
                 () -> getTriggerModElement().getModElement());
 
-        eventName.setValidator(() ->
+        addConfigurationWithHelpEntry("enable_custom", enableCustom);
 
-        {
+        eventName.setValidator(() -> {
             if (eventName.getText().contains("$")) {
                 return new ValidationResult(ValidationResult.Type.ERROR, "Invalid char $");
             }
@@ -98,32 +104,23 @@ public class TriggerImplementationModElementGUI
 
         addConfigurationWithHelpEntry("event_name", eventName);
 
-        methodToolBar = new
-
-                JToolBar();
+        methodToolBar = new JToolBar();
 
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(methodBody, mcreator);
         AutoCompletionFactory.createDefaultCompletion(methodBody, this::createCompletionProvider);
         var panel = PanelUtils.northAndCenterElement(methodToolBar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
-        generator.addItemListener(eventName ->
+        generator.addItemListener(eventName -> reloadToolBar());
+        addPage("Configuration", PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator)
+                .validate(triggerFileName).validate(eventName).lazyValidate(
+                        () -> methodBody.getText().contains("@Placeholder") ?
+                                new AggregatedValidationResult.FAIL("You should replace the placeholder") :
+                                new AggregatedValidationResult.PASS());
 
-                reloadToolBar());
+        initTable(new MappingTableModel());
 
-        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).
-
-                validate(generator).
-
-                validate(triggerFileName).
-
-                validate(eventName).
-
-                lazyValidate(() -> methodBody.getText().
-
-                contains("@Placeholder") ?
-                new AggregatedValidationResult.FAIL("You should replace the placeholder") :
-                new AggregatedValidationResult.PASS());
+        addPage("Map", wrapTable());
     }
 
     private void reloadToolBar() {
@@ -148,16 +145,21 @@ public class TriggerImplementationModElementGUI
     @Override protected void openInEditingMode(TriggerImplementationModElement generatableElement) {
         this.generator.setSelectedItem(generatableElement.generatorName);
         this.triggerFileName.setSelectedItem(generatableElement.triggerFileName);
+        this.enableCustom.setSelected(generatableElement.enableCustom);
         this.eventName.setText(generatableElement.eventName);
         this.methodBody.setText(generatableElement.methodBody);
+        this.mappingEntries = Objects.requireNonNullElse(generatableElement.mappingEntries,new ArrayList<>());
     }
 
     @Override public TriggerImplementationModElement getElementFromGUI() {
         var element = new TriggerImplementationModElement(modElement);
         element.triggerFileName = triggerFileName.getSelectedItem();
         element.generatorName = generator.getSelectedItem();
+        element.enableCustom = enableCustom.isSelected();
         element.eventName = eventName.getText();
         element.methodBody = methodBody.getText();
+        element.mappingEntries = mappingEntries.stream()
+                .map(a -> new AbstractMap.SimpleEntry<>(a.getKey(), a.getValue())).toList();
         return element;
     }
 
@@ -184,6 +186,12 @@ public class TriggerImplementationModElementGUI
         if (!isEditingMode()) {
             triggerFileName.setSelectedIndex(stringArrayList.size() - 1);
         }
+
+        var map = getMappingEntries();
+        for (TriggerModElement.Dependency dependency : getTriggerModElement().dependencies_provided) {
+            if (!map.containsKey(dependency.getName()))
+                mappingEntries.add(new AbstractMap.SimpleEntry<>(dependency.getName(), dependency.getType()));
+        }
     }
 
     private CompletionProvider createCompletionProvider() {
@@ -196,8 +204,51 @@ public class TriggerImplementationModElementGUI
         provider.addCompletion(new BasicCompletion(provider, "event"));
 
         Utils.initCompletionWithGenerator(provider, mcreator.getGenerator());
-
         return provider;
+    }
 
+    public Map<String, String> getMappingEntries() {
+        var map = new HashMap<String, String>();
+        for (AbstractMap.SimpleEntry<String,String> mappingEntry : mappingEntries) {
+            map.put(mappingEntry.getKey(), mappingEntry.getValue());
+        }
+        return map;
+    }
+
+    private class MappingTableModel extends AbstractTableModel {
+
+        @Override public int getRowCount() {
+            return mappingEntries.size();
+        }
+
+        @Override public int getColumnCount() {
+            return columns.length;
+        }
+
+        @Override public Object getValueAt(int rowIndex, int columnIndex) {
+            var row = mappingEntries.get(rowIndex);
+            var columns = new String[] { row.getKey(), row.getValue() };
+            return columns[columnIndex];
+        }
+
+        @Override public String getColumnName(int column) {
+            return columns[column];
+        }
+
+        @Override public Class<?> getColumnClass(int columnIndex) {
+            return String.class;
+        }
+
+        @Override public boolean isCellEditable(int rowIndex, int columnIndex) {
+            return true;
+        }
+
+        @Override public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            var column = columns[columnIndex];
+            var row = mappingEntries.get(rowIndex);
+            if ("Map".equals(column)) {
+                row.setValue(aValue.toString());
+            }
+        }
     }
 }

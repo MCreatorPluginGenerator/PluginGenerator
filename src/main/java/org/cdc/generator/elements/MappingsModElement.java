@@ -53,6 +53,10 @@ public class MappingsModElement extends GeneratableElement implements IGenerator
             return name;
         }
 
+        public void setName(String name) {
+            this.name = name;
+        }
+
         public List<String> getMappingContent() {
             if (mappingContent == null)
                 mappingContent = new ArrayList<>();

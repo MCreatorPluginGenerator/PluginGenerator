@@ -167,7 +167,6 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
                         var key = entry.getKey().toString();
                         // exclude
                         if (set.isEmpty() || !set.contains(key)) {
-                            set.add(key);
                             mappingEntries.add(new MappingsModElement.MappingEntry(key,
                                     Utils.convertYamlToList(entry.getValue())));
                         }
@@ -283,7 +282,11 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         }
 
         @Override public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            super.setValueAt(aValue, rowIndex, columnIndex);
+            var column = columns[columnIndex];
+            var row = mappingEntries.get(rowIndex);
+            if ("Name".equals(column)){
+                row.setName(aValue.toString());
+            }
         }
     }
 }

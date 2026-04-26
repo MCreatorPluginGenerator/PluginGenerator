@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DataListModElementGUI extends AbstractConfigurationTableModElementGUI<DataListModElement>
@@ -277,8 +276,11 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                 return types;
             });
             entries.clear();
-            entries.addAll(myEntries);
-            Set<String> keys = entries.stream().map(DataListModElement.DataListEntry::getName).collect(Collectors.toSet());
+            Set<String> keys = new HashSet<>();
+            for (DataListModElement.DataListEntry myEntry : myEntries) {
+                keys.add(myEntry.getName());
+                entries.add(myEntry);
+            }
             for (DataListEntry dataListEntry : DataListLoader.loadDataList(datalistName.getSelectedItem())) {
                 var dataListEntry1 = DataListModElement.DataListEntry.copyValueOf(dataListEntry);
                 dataListEntry1.setBuiltIn(true);

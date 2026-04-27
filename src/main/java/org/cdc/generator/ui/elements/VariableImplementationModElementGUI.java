@@ -4,6 +4,7 @@ import jdk.jfr.Description;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
+import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
@@ -154,7 +155,10 @@ public class VariableImplementationModElementGUI
                 variableElementName).validate(generator).validate(defaultValue).lazyValidate(
                 () -> scopeList.stream().anyMatch(VariableImplementationModElement.VariableScope::hasNotNull) ?
                         new AggregatedValidationResult.PASS() :
-                        new AggregatedValidationResult.FAIL("You should edit at least one scope"));
+                        new AggregatedValidationResult.FAIL("You should edit at least one scope")).lazyValidate(() ->
+                isUnique() ?
+                        new AggregatedValidationResult.PASS() :
+                        new AggregatedValidationResult.FAIL(L10N.t("warnings.should_be_unique")));
 
     }
 
@@ -162,7 +166,7 @@ public class VariableImplementationModElementGUI
         this.generator.setSelectedItem(generatableElement.getGeneratorName());
         this.variableElementName.setSelectedItem(generatableElement.variableElementName);
         this.defaultValue.setText(generatableElement.defaultValue);
-        this.scopeList = Objects.requireNonNullElse(generatableElement.scopes,new ArrayList<>());
+        this.scopeList = Objects.requireNonNullElse(generatableElement.scopes, new ArrayList<>());
     }
 
     @Override public VariableImplementationModElement getElementFromGUI() {
@@ -170,7 +174,8 @@ public class VariableImplementationModElementGUI
         element.generator = generator.getSelectedItem();
         element.variableElementName = variableElementName.getSelectedItem();
         element.defaultValue = defaultValue.getText();
-        element.scopes = new ArrayList<>(scopeList.stream().map(VariableImplementationModElement.VariableScope::clone).toList());
+        element.scopes = new ArrayList<>(
+                scopeList.stream().map(VariableImplementationModElement.VariableScope::clone).toList());
         return element;
     }
 

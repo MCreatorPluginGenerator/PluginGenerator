@@ -84,7 +84,8 @@ public class PluginProcedureImplementationModElementGUI
                 }
             }
         });
-        addElementSelectorConfiguration("pluginprocedure_element_name", procedureFileName, () -> getPluginProcedureModElement().getModElement());
+        addElementSelectorConfiguration("pluginprocedure_element_name", procedureFileName,
+                () -> getPluginProcedureModElement().getModElement());
 
         var toolbar = new JToolBar();
         JButton generate = new JButton(UIRES.get("18px.import"));
@@ -113,8 +114,10 @@ public class PluginProcedureImplementationModElementGUI
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
-        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator).lazyValidate(()->isUnique()?new AggregatedValidationResult.PASS():new AggregatedValidationResult.FAIL(
-                L10N.t("warnings.should_be_unique")));
+        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator).lazyValidate(() ->
+                isUnique() ?
+                        new AggregatedValidationResult.PASS() :
+                        new AggregatedValidationResult.FAIL(L10N.t("warnings.should_be_unique")));
     }
 
     private CompletionProvider createCompletionProvider() {

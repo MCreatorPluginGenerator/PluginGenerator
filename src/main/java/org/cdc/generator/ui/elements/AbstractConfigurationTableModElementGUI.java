@@ -179,30 +179,20 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         return L10N.checkbox("elementgui.common.enable");
     }
 
+    private Boolean cachedBoolean;
+
     protected boolean isUnique() {
+        if (cachedBoolean != null) {
+            return cachedBoolean;
+        }
         if (modElement.getGeneratableElement() instanceof IUniqueElement unique) {
             return mcreator.getWorkspaceInfo().getGElementsOfType(modElement.getTypeString()).stream().noneMatch(a -> {
                 if (unique != a && a instanceof IUniqueElement unique1) {
-                    return unique1.getUniqueID().equals(unique.getUniqueID());
+                    return cachedBoolean = unique1.getUniqueID().equals(unique.getUniqueID());
                 }
-                return false;
+                return cachedBoolean = false;
             });
         }
-        return true;
-    }
-
-    /**
-     * Check if current element provided by the gui is unique.
-     */
-    protected boolean recheckUnique() {
-        if (getElementFromGUI() instanceof IUniqueElement unique) {
-            return mcreator.getWorkspaceInfo().getGElementsOfType(modElement.getTypeString()).stream().noneMatch(a -> {
-                if (modElement.getGeneratableElement() != a && a instanceof IUniqueElement unique1) {
-                    return unique1.getUniqueID().equals(unique.getUniqueID());
-                }
-                return false;
-            });
-        }
-        return true;
+        return cachedBoolean = true;
     }
 }

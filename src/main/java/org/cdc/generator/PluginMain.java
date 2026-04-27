@@ -10,10 +10,13 @@ import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
 import net.mcreator.plugin.events.ui.BlocklyPanelRegisterDOMData;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.plugin.events.workspace.WorkspaceBuildStartedEvent;
+import net.mcreator.plugin.events.workspace.WorkspaceTaskFinishedEvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.MCreatorApplication;
+import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.init.Menus;
 import org.cdc.generator.init.ResourcePanels;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
@@ -23,10 +26,11 @@ import org.cdc.generator.utils.ioc.Container;
 import org.cdc.js.JavaScriptBridge;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.Arrays;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PluginMain extends JavaPlugin {
@@ -64,6 +68,33 @@ public class PluginMain extends JavaPlugin {
             FileIO.removeEmptyDirs(event.getMCreator().getGenerator().getModAssetsRoot());
         });
 
+        addListener(WorkspaceTaskFinishedEvent.TaskCompleted.class, event -> {
+            if (Utils.isNotPluginGenerator(event.getMCreator().getGenerator())) {
+                return;
+            }
+            var hashMap = new HashMap<String, ArrayList<String>>();
+            for (ModElement modElement : event.getMCreator().getWorkspace().getModElements()) {
+                if (modElement.getGeneratableElement() instanceof IUniqueElement uniqueElement) {
+                    hashMap.compute(uniqueElement.getUniqueID(), (a, b) -> {
+                        if (b == null) {
+                            b = new ArrayList<>();
+                        }
+                        b.add(modElement.getRegistryName());
+                        return b;
+                    });
+                }
+            }
+            for (Map.Entry<String, ArrayList<String>> stringArrayListEntry : new HashSet<>(hashMap.entrySet())) {
+                if (stringArrayListEntry.getValue().size() == 1) {
+                    hashMap.remove(stringArrayListEntry.getKey());
+                }
+            }
+            if (!hashMap.isEmpty()) {
+                event.getMCreator().getGradleConsole().appendPlainText(hashMap.entrySet().stream().map(Object::toString).collect(
+                        Collectors.joining("\n")), Color.RED);
+            }
+        });
+
         addListener(ApplicationLoadedEvent.class, event -> {
             application = event.getMCreatorApplication();
             PluginMakerPreference.INSTANCE = new PluginMakerPreference("plugin_generator");
@@ -74,10 +105,11 @@ public class PluginMain extends JavaPlugin {
             a.addJavaScriptBridge("devUtils", new JavaScriptBridge());
         });
 
-        addListener(ModifyTemplateResultEvent.class,event -> {
-            if (event.getTemplateName().endsWith("yaml.ftl")){
+        addListener(ModifyTemplateResultEvent.class, event -> {
+            if (event.getTemplateName().endsWith("yaml.ftl")) {
                 var sp = event.getTemplateOutputOriginal().split("(\n|\r\n)");
-                event.setTemplateOutput(Arrays.stream(sp).filter(a->!a.isBlank()).collect(Collectors.joining(System.lineSeparator())));
+                event.setTemplateOutput(Arrays.stream(sp).filter(a -> !a.isBlank())
+                        .collect(Collectors.joining(System.lineSeparator())));
             }
         });
 

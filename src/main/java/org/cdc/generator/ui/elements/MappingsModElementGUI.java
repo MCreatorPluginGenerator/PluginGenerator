@@ -4,9 +4,7 @@ import net.mcreator.generator.Generator;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
-import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
-import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.DataListModElement;
@@ -187,9 +185,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         bar.add(initSearchBar(lastSearchResult));
 
         addPage("edit", PanelUtils.northAndCenterElement(configurationPanel, toolbarAndTable(bar))).validate(generator)
-                .validate(datalistName).lazyValidate(() -> recheckUnique() ?
-                        new AggregatedValidationResult.PASS() :
-                        new AggregatedValidationResult.FAIL(L10N.t("warnings.should_be_unique")));
+                .validate(datalistName);
     }
 
     @Override protected void openInEditingMode(MappingsModElement generatableElement) {

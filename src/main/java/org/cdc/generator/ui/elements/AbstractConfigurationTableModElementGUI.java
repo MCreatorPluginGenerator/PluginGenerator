@@ -190,4 +190,19 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         }
         return true;
     }
+
+    /**
+     * Check if current element provided by the gui is unique.
+     */
+    protected boolean recheckUnique() {
+        if (getElementFromGUI() instanceof IUniqueElement unique) {
+            return mcreator.getWorkspaceInfo().getGElementsOfType(modElement.getTypeString()).stream().noneMatch(a -> {
+                if (modElement.getGeneratableElement() != a && a instanceof IUniqueElement unique1) {
+                    return unique1.getUniqueID().equals(unique.getUniqueID());
+                }
+                return false;
+            });
+        }
+        return true;
+    }
 }

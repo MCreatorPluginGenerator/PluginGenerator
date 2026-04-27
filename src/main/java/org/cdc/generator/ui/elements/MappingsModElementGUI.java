@@ -187,7 +187,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         bar.add(initSearchBar(lastSearchResult));
 
         addPage("edit", PanelUtils.northAndCenterElement(configurationPanel, toolbarAndTable(bar))).validate(generator)
-                .validate(datalistName).lazyValidate(() -> isUnique() ?
+                .validate(datalistName).lazyValidate(() -> recheckUnique() ?
                         new AggregatedValidationResult.PASS() :
                         new AggregatedValidationResult.FAIL(L10N.t("warnings.should_be_unique")));
     }

@@ -156,7 +156,7 @@ public class VariableImplementationModElementGUI
                 () -> scopeList.stream().anyMatch(VariableImplementationModElement.VariableScope::hasNotNull) ?
                         new AggregatedValidationResult.PASS() :
                         new AggregatedValidationResult.FAIL("You should edit at least one scope")).lazyValidate(() ->
-                isUnique() ?
+                recheckUnique() ?
                         new AggregatedValidationResult.PASS() :
                         new AggregatedValidationResult.FAIL(L10N.t("warnings.should_be_unique")));
 

@@ -117,7 +117,7 @@ public class TriggerImplementationModElementGUI
                 .validate(triggerFileName).validate(eventName).lazyValidate(
                         () -> methodBody.getText().contains("@Placeholder") ?
                                 new AggregatedValidationResult.FAIL("You should replace the placeholder") :
-                                new AggregatedValidationResult.PASS()).lazyValidate(()->isUnique()?new AggregatedValidationResult.PASS():new AggregatedValidationResult.FAIL(
+                                new AggregatedValidationResult.PASS()).lazyValidate(()-> recheckUnique()?new AggregatedValidationResult.PASS():new AggregatedValidationResult.FAIL(
                         L10N.t("warnings.should_be_unique")));
 
         initTable(new MappingTableModel());

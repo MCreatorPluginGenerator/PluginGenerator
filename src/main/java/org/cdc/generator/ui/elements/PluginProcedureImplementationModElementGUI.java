@@ -115,7 +115,7 @@ public class PluginProcedureImplementationModElementGUI
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
         addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator).lazyValidate(() ->
-                isUnique() ?
+                recheckUnique() ?
                         new AggregatedValidationResult.PASS() :
                         new AggregatedValidationResult.FAIL(L10N.t("warnings.should_be_unique")));
     }

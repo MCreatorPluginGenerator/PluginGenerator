@@ -163,7 +163,7 @@ public class VariableImplementationModElementGUI
         this.generator.setSelectedItem(generatableElement.getGeneratorName());
         this.variableElementName.setSelectedItem(generatableElement.variableElementName);
         this.defaultValue.setText(generatableElement.defaultValue);
-        this.scopeList = generatableElement.scopes;
+        this.scopeList = Objects.requireNonNullElse(generatableElement.scopes,new ArrayList<>());
     }
 
     @Override public VariableImplementationModElement getElementFromGUI() {
@@ -171,7 +171,7 @@ public class VariableImplementationModElementGUI
         element.generator = generator.getSelectedItem();
         element.variableElementName = variableElementName.getSelectedItem();
         element.defaultValue = defaultValue.getText();
-        element.scopes = scopeList.stream().map(VariableImplementationModElement.VariableScope::clone).toList();
+        element.scopes = new ArrayList<>(scopeList.stream().map(VariableImplementationModElement.VariableScope::clone).toList());
         return element;
     }
 

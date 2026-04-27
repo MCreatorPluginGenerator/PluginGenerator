@@ -22,7 +22,7 @@ public class VariableImplementationModElement extends GeneratableElement impleme
     public String variableElementName;
     public String defaultValue;
 
-    public List<VariableScope> scopes;
+    public ArrayList<VariableScope> scopes;
 
     public VariableImplementationModElement(ModElement element) {
         super(element);

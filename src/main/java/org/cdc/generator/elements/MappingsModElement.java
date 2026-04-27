@@ -16,7 +16,7 @@ public class MappingsModElement extends GeneratableElement implements IGenerator
 
     public String generatorName;
     public String datalistElementName;
-    public List<MappingEntry> mappingsContent;
+    public ArrayList<MappingEntry> mappingsContent;
 
     public MappingsModElement(ModElement element) {
         super(element);

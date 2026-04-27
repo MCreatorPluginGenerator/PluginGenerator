@@ -247,7 +247,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override protected void openInEditingMode(DataListModElement generatableElement) {
-        myEntries.addAll(generatableElement.entries);
+        entries = Objects.requireNonNullElse(generatableElement.entries,new ArrayList<>());
         this.generateDataList.setSelected(generatableElement.generateDataList);
         this.dialogMessage.setText(generatableElement.dialogMessage);
     }
@@ -256,8 +256,8 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         modElement.setRegistryName(datalistName.getSelectedItem());
         DataListModElement dataListModElement = new DataListModElement(modElement);
         dataListModElement.generateDataList = generateDataList.isSelected();
-        dataListModElement.entries = entries.stream().map(DataListModElement.DataListEntry::clone)
-                .filter(a -> !a.isBuiltIn()).toList();
+        dataListModElement.entries = new ArrayList<>(entries.stream().map(DataListModElement.DataListEntry::clone)
+                .filter(a -> !a.isBuiltIn()).toList());
         dataListModElement.dialogMessage = dialogMessage.getText();
         return dataListModElement;
     }
@@ -275,11 +275,9 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                 }
                 return types;
             });
-            entries.clear();
             Set<String> keys = new HashSet<>();
-            for (DataListModElement.DataListEntry myEntry : myEntries) {
+            for (DataListModElement.DataListEntry myEntry : entries) {
                 keys.add(myEntry.getName());
-                entries.add(myEntry);
             }
             for (DataListEntry dataListEntry : DataListLoader.loadDataList(datalistName.getSelectedItem())) {
                 var dataListEntry1 = DataListModElement.DataListEntry.copyValueOf(dataListEntry);

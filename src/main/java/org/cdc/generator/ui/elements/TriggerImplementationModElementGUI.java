@@ -158,8 +158,8 @@ public class TriggerImplementationModElementGUI
         element.enableCustom = enableCustom.isSelected();
         element.eventName = eventName.getText();
         element.methodBody = methodBody.getText();
-        element.mappingEntries = mappingEntries.stream()
-                .map(a -> new AbstractMap.SimpleEntry<>(a.getKey(), a.getValue())).toList();
+        element.mappingEntries = new ArrayList<>(mappingEntries.stream()
+                .map(a -> new AbstractMap.SimpleEntry<>(a.getKey(), a.getValue())).toList());
         return element;
     }
 

@@ -191,15 +191,15 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
     @Override protected void openInEditingMode(MappingsModElement generatableElement) {
         datalistName.setSelectedItem(generatableElement.datalistElementName);
         generator.setSelectedItem(generatableElement.generatorName);
-        mappingEntries = new ArrayList<>(generatableElement.mappingsContent);
+        mappingEntries = Objects.requireNonNullElse(generatableElement.mappingsContent, new ArrayList<>());
     }
 
     @Override public MappingsModElement getElementFromGUI() {
         var element = new MappingsModElement(modElement);
         element.datalistElementName = datalistName.getSelectedItem();
         element.generatorName = generator.getSelectedItem();
-        element.mappingsContent = mappingEntries.stream().map(MappingsModElement.MappingEntry::clone)
-                .filter(a -> a.isEdited()).toList();
+        element.mappingsContent = new ArrayList<>(mappingEntries.stream().map(MappingsModElement.MappingEntry::clone)
+                .filter(MappingsModElement.MappingEntry::isEdited).toList());
         modElement.setRegistryName(element.getDatalistName());
         return element;
     }
@@ -284,7 +284,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         @Override public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             var column = columns[columnIndex];
             var row = mappingEntries.get(rowIndex);
-            if ("Name".equals(column)){
+            if ("Name".equals(column)) {
                 row.setName(aValue.toString());
             }
         }

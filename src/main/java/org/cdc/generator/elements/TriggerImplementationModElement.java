@@ -8,10 +8,7 @@ import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.utils.YamlUtils;
 
 import java.awt.image.BufferedImage;
-import java.util.AbstractMap;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TriggerImplementationModElement extends GeneratableElement implements IGeneratorElement, IUniqueElement {
@@ -23,7 +20,7 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
     public String eventName;
     public String methodBody;
 
-    public List<AbstractMap.SimpleEntry<String,String>> mappingEntries;
+    public ArrayList<AbstractMap.SimpleEntry<String,String>> mappingEntries;
 
     public TriggerImplementationModElement(ModElement element) {
         super(element);

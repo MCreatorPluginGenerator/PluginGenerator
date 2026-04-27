@@ -12,7 +12,7 @@ public class DataListModElement extends GeneratableElement {
     public boolean generateDataList;
     public String dialogMessage;
 
-    public List<DataListEntry> entries;
+    public ArrayList<DataListEntry> entries;
 
     public DataListModElement(ModElement element) {
         super(element);

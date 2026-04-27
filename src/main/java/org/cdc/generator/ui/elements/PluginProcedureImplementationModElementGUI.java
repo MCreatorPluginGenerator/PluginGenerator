@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
+import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.component.VComboBox;
@@ -112,7 +113,8 @@ public class PluginProcedureImplementationModElementGUI
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
-        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator).lazyValidate(()->isUnique()?new AggregatedValidationResult.PASS():new AggregatedValidationResult.FAIL("It should be unique"));
+        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator).lazyValidate(()->isUnique()?new AggregatedValidationResult.PASS():new AggregatedValidationResult.FAIL(
+                L10N.t("warnings.should_be_unique")));
     }
 
     private CompletionProvider createCompletionProvider() {

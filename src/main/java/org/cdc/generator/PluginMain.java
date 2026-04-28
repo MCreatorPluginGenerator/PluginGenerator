@@ -79,7 +79,7 @@ public class PluginMain extends JavaPlugin {
                         if (b == null) {
                             b = new ArrayList<>();
                         }
-                        b.add(modElement.getRegistryName());
+                        b.add(modElement.getName());
                         return b;
                     });
                 }

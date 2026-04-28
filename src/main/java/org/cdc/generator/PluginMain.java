@@ -141,7 +141,11 @@ public class PluginMain extends JavaPlugin {
             mcreator.getWorkspaceSettings().dependants.add("weight_0");
         }
 
-        var libs = new File(mcreator.getWorkspaceFolder(), "libs");
+        var libs = new File(mcreator.getWorkspaceFolder(), ".mcreator/libs");
+        var oldLibs = new File(mcreator.getWorkspaceFolder(),"libs");
+        if (oldLibs.isDirectory()){
+            FileIO.deleteDir(oldLibs);
+        }
         if (libs.isDirectory() && !Launcher.version.isDevelopment()) {
             FileIO.deleteDir(libs);
             LOG.debug("Plugin maker has removed all old jars");
@@ -156,6 +160,7 @@ public class PluginMain extends JavaPlugin {
         } else if (mcreatorExe.isFile()) {
             try {
                 var pureMCreatorJar = ZipUtils.tryToConvertExeToJar(mcreatorExe);
+                FileIO.copyFile(pureMCreatorJar, mcreatorJar);
                 FileIO.copyFile(pureMCreatorJar, mcreatorLibJar);
                 LOG.debug("Plugin maker has copied main mcreator libs, type: exe");
                 Files.deleteIfExists(pureMCreatorJar.toPath());

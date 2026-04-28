@@ -38,6 +38,8 @@ import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ItemEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -115,7 +117,21 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
 
         inputsInline.setSelected(true);
         addConfigurationWithHelpEntry("inputs_inline", inputsInline);
+        previousStatement.addMouseListener(new MouseAdapter() {
+            @Override public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3 && previousStatement.getText().isBlank()){
+                    previousStatement.setText("null");
+                }
+            }
+        });
         addConfigurationWithHelpEntry("previous_statement", previousStatement);
+        nextStatement.addMouseListener(new MouseAdapter() {
+            @Override public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3 && nextStatement.getText().isBlank()){
+                    nextStatement.setText("null");
+                }
+            }
+        });
         addConfigurationWithHelpEntry("next_statement", nextStatement);
 
         addConfigurationWithHelpEntry("color", color);

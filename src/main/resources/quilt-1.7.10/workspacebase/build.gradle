@@ -28,7 +28,7 @@ tasks.register('exportToMyMCreator', Copy) {
     }
 }
 
-private File getUserFolder() {
+private static File getUserFolder() {
     if (System.getenv("MCREATOR_HOME") != null) {
         return new File(System.getenv("MCREATOR_HOME"))
     }

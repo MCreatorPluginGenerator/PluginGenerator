@@ -20,6 +20,7 @@ import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.init.Menus;
 import org.cdc.generator.init.ResourcePanels;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
+import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ZipUtils;
 import org.cdc.generator.utils.ioc.Container;
@@ -31,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class PluginMain extends JavaPlugin {
@@ -72,16 +74,23 @@ public class PluginMain extends JavaPlugin {
             if (Utils.isNotPluginGenerator(event.getMCreator().getGenerator())) {
                 return;
             }
+            var mcreator = event.getMCreator();
             var hashMap = new HashMap<String, ArrayList<String>>();
-            for (ModElement modElement : event.getMCreator().getWorkspace().getModElements()) {
+            var elements = new ArrayList<ModElement>();
+            for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
                 if (modElement.getGeneratableElement() instanceof IUniqueElement uniqueElement) {
-                    hashMap.compute(uniqueElement.getUniqueID(), (a, b) -> {
+                    hashMap.compute("duplicated "+uniqueElement.getUniqueID(), (a, b) -> {
                         if (b == null) {
                             b = new ArrayList<>();
                         }
                         b.add(modElement.getName());
                         return b;
                     });
+                }
+
+                if (modElement.getAssociatedFiles().stream().anyMatch(a -> !a.exists())) {
+                    modElement.setCompiles(false);
+                    elements.add(modElement);
                 }
             }
             for (Map.Entry<String, ArrayList<String>> stringArrayListEntry : new HashSet<>(hashMap.entrySet())) {
@@ -90,8 +99,24 @@ public class PluginMain extends JavaPlugin {
                 }
             }
             if (!hashMap.isEmpty()) {
-                event.getMCreator().getGradleConsole().appendPlainText(hashMap.entrySet().stream().map(Object::toString).collect(
-                        Collectors.joining("\n")), Color.RED);
+                mcreator.getGradleConsole().appendPlainText("Duplicated: ", Color.RED);
+                mcreator.getGradleConsole().appendPlainText(
+                        hashMap.entrySet().stream().map(Object::toString).collect(Collectors.joining("\n")), Color.RED);
+
+                for (Map.Entry<String, ArrayList<String>> stringArrayListEntry : hashMap.entrySet()) {
+                    for (String s : stringArrayListEntry.getValue()) {
+                        var element = mcreator.getWorkspace().getModElementByName(s);
+                        element.setCompiles(false);
+                        elements.add(element);
+                    }
+                }
+            }
+
+            if (!elements.isEmpty()) {
+                mcreator.getGradleConsole().appendPlainText("If you find this line, you should know the fact that your workspace may not generate some elements or has duplicated elements.",Color.BLUE);
+                CompletableFuture.runAsync(() -> {
+                    DialogUtils.showErrorElementDialog(mcreator, elements);
+                });
             }
         });
 
@@ -142,8 +167,8 @@ public class PluginMain extends JavaPlugin {
         }
 
         var libs = new File(mcreator.getWorkspaceFolder(), ".mcreator/libs");
-        var oldLibs = new File(mcreator.getWorkspaceFolder(),"libs");
-        if (oldLibs.isDirectory()){
+        var oldLibs = new File(mcreator.getWorkspaceFolder(), "libs");
+        if (oldLibs.isDirectory()) {
             FileIO.deleteDir(oldLibs);
         }
         if (libs.isDirectory() && !Launcher.version.isDevelopment()) {

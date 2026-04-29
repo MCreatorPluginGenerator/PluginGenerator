@@ -1,4 +1,4 @@
 templates:
   - template: pluginprocedureimpl.java.ftl.ftl
     writer: file
-    name: "@RESROOT/@[getGeneratorName()]/procedures/@[getProcedureFileName()].java.ftl"
+    name: "@RESROOT/@[getGeneratorName()]/procedures/@[appendTemplatePath()]@[getProcedureFileName()].java.ftl"

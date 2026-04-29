@@ -14,6 +14,7 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
 
     public String generator;
     public String procedureFileName;
+    public boolean isTemplate;
 
     public String content;
 
@@ -38,6 +39,13 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
     }
 
     @Override public String getUniqueID() {
-        return getModElement().getTypeString() + getGeneratorName() + procedureFileName;
+        return getModElement().getTypeString() + getGeneratorName() + procedureFileName + isTemplate;
+    }
+
+    @UsedByReflection public String appendTemplatePath() {
+        if (isTemplate) {
+            return "utils/";
+        }
+        return "";
     }
 }

@@ -20,6 +20,7 @@ import org.cdc.generator.utils.interfaces.ITypeProvider;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.autocomplete.ShorthandCompletion;
+import org.fife.ui.autocomplete.TemplateCompletion;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -213,8 +214,14 @@ public class Utils {
                 }
             }
         });
-        provider.addCompletion(new ShorthandCompletion(provider, "mcelements", "<#include \"mcelements.ftl\">"));
-        provider.addCompletion(new ShorthandCompletion(provider, "mcitems", "<#include \"mcitems.ftl\">"));
+        provider.addCompletion(new ShorthandCompletion(provider, "inmcelements", "<#include \"mcelements.ftl\">"));
+        provider.addCompletion(new ShorthandCompletion(provider, "inmcitems", "<#include \"mcitems.ftl\">"));
+        provider.addCompletion(new ShorthandCompletion(provider,"intriggers","<#include \"triggers.ftl\">"));
+
+        provider.addCompletion(new TemplateCompletion(provider,"include","include","<#include \"${include}\">${cursor}"));
+        provider.addCompletion(new TemplateCompletion(provider,"if","if-template","<#if ${condition}>${cursor}</#if>"));
+        provider.addCompletion(new TemplateCompletion(provider,"list","list-template","<#list ${array} as ${element}>${cursor}</#if>"));
+        provider.addCompletion(new TemplateCompletion(provider,"assign","assign-template","<#assign ${name}=${value}>"));
     }
 
     public static String convertColor(Color color) {

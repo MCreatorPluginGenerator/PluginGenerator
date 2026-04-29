@@ -14,6 +14,7 @@ public class AutoCompletionFactory {
             Supplier<CompletionProvider> providerSupplier) {
         AutoCompletion autoCompletion = new AutoCompletion(providerSupplier.get());
         autoCompletion.install(rSyntaxTextArea);
+        autoCompletion.setParameterAssistanceEnabled(true);
         autoCompletion.setTriggerKey(KeyStroke.getKeyStroke(KeyEvent.VK_1, InputEvent.CTRL_DOWN_MASK));
         return autoCompletion;
     }

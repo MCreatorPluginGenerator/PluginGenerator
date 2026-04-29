@@ -1,6 +1,7 @@
 package org.cdc.generator.ui.elements;
 
 import com.google.gson.JsonArray;
+import net.mcreator.element.GeneratableElement;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
@@ -17,10 +18,7 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.ioc.InjectField;
-import org.fife.ui.autocomplete.AutoCompletion;
-import org.fife.ui.autocomplete.BasicCompletion;
-import org.fife.ui.autocomplete.CompletionProvider;
-import org.fife.ui.autocomplete.DefaultCompletionProvider;
+import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
@@ -36,6 +34,7 @@ public class PluginProcedureImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<PluginProcedureImplementationModElement> {
     private final VComboBox<String> generator = new VComboBox<>();
     private final VComboBox<String> procedureFileName = new VComboBox<>();
+    private final JCheckBox isTemplate = createDefaultCheckBox();
 
     private final RSyntaxTextArea content = new RSyntaxTextArea();
     private AutoCompletion lastAutoCompletion;
@@ -49,6 +48,7 @@ public class PluginProcedureImplementationModElementGUI
         if (editingMode && isUnique()) {
             generator.setEnabled(false);
             procedureFileName.setEnabled(false);
+            isTemplate.setEnabled(false);
         }
     }
 
@@ -68,7 +68,7 @@ public class PluginProcedureImplementationModElementGUI
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(2, 2, 5, 5));
+        initConfiguration(new GridLayout(3, 2, 5, 5));
         addGeneratorConfiguration(generator);
 
         procedureFileName.setEditable(true);
@@ -84,6 +84,8 @@ public class PluginProcedureImplementationModElementGUI
         });
         addElementSelectorConfiguration("pluginprocedure_element_name", procedureFileName,
                 () -> getPluginProcedureModElement().getModElement());
+
+        addConfigurationWithHelpEntry("is_template", isTemplate);
 
         var toolbar = new JToolBar();
         JButton generate = new JButton(UIRES.get("18px.import"));
@@ -131,7 +133,22 @@ public class PluginProcedureImplementationModElementGUI
                 complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getStatementPlaceHolder(statement)));
                 complete.addCompletion(new BasicCompletion(complete, "statement$" + statement));
             }
+            for (PluginProcedureModElement.Dependency dependency : element.dependencies) {
+                complete.addCompletion(new BasicCompletion(complete,dependency.getName(),dependency.getType()));
+            }
         }
+        //addTemplate
+        for (GeneratableElement generatableElement : mcreator.getWorkspaceInfo()
+                .getGElementsOfType(ModElementTypes.PROCEDURE_IMPLEMENTATION.getRegistryName())) {
+            if (generatableElement instanceof PluginProcedureImplementationModElement _modelement)
+                if (_modelement.isTemplate) {
+                    complete.addCompletion(new BasicCompletion(complete,
+                            "<@addTemplate file=\"utils/" + _modelement.getProcedureFileName() + ".java.ftl\"/>"));
+                }
+        }
+        complete.addCompletion(new TemplateCompletion(complete,"head","head","<@head>${cursor}</@head>"));
+        complete.addCompletion(new TemplateCompletion(complete,"tail","tail","<@tail>${cursor}</@tail>"));
+        complete.addCompletion(new BasicCompletion(complete, "addTemplate"));
         Utils.initCompletionWithGenerator(complete, mcreator.getGenerator());
 
         return complete;
@@ -140,6 +157,7 @@ public class PluginProcedureImplementationModElementGUI
     @Override protected void openInEditingMode(PluginProcedureImplementationModElement generatableElement) {
         this.generator.setSelectedItem(generatableElement.generator);
         this.procedureFileName.setSelectedItem(generatableElement.procedureFileName);
+        this.isTemplate.setSelected(generatableElement.isTemplate);
 
         this.content.setText(generatableElement.content);
     }
@@ -149,6 +167,7 @@ public class PluginProcedureImplementationModElementGUI
         element.generator = generator.getSelectedItem();
         element.procedureFileName = procedureFileName.getSelectedItem();
         element.content = content.getText();
+        element.isTemplate = isTemplate.isSelected();
         return element;
     }
 

@@ -71,9 +71,6 @@ public class PluginMain extends JavaPlugin {
         });
 
         addListener(WorkspaceTaskFinishedEvent.TaskCompleted.class, event -> {
-            if (Utils.isNotPluginGenerator(event.getMCreator().getGenerator())) {
-                return;
-            }
             var mcreator = event.getMCreator();
             var hashMap = new HashMap<String, ArrayList<String>>();
             var elements = new ArrayList<ModElement>();
@@ -97,6 +94,9 @@ public class PluginMain extends JavaPlugin {
                 if (stringArrayListEntry.getValue().size() == 1) {
                     hashMap.remove(stringArrayListEntry.getKey());
                 }
+            }
+            if (Utils.isNotPluginGenerator(mcreator.getGenerator())){
+                return;
             }
             if (!hashMap.isEmpty()) {
                 mcreator.getGradleConsole().appendPlainText("Duplicated elements: ", Color.RED);

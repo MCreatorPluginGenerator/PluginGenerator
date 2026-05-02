@@ -66,7 +66,7 @@ public class ProcedureCategoryModElementGUI
 
         addConfigurationWithHelpEntry("is_api", isApi);
 
-        addPage("edit", PanelUtils.totalCenterInPanel(configurationPanel));
+        addPage("edit", PanelUtils.totalCenterInPanel(configurationPanel)).validate(name);
     }
 
     @Override protected void openInEditingMode(ProcedureCategoryModElement generatableElement) {

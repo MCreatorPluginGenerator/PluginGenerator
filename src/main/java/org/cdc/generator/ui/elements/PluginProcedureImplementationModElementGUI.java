@@ -114,7 +114,7 @@ public class PluginProcedureImplementationModElementGUI
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
-        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator);
+        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator).validate(procedureFileName);
     }
 
     private CompletionProvider createCompletionProvider() {

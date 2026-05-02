@@ -99,7 +99,7 @@ public class PluginMain extends JavaPlugin {
                 }
             }
             if (!hashMap.isEmpty()) {
-                mcreator.getGradleConsole().appendPlainText("Duplicated: ", Color.RED);
+                mcreator.getGradleConsole().appendPlainText("Duplicated elements: ", Color.RED);
                 mcreator.getGradleConsole().appendPlainText(
                         hashMap.entrySet().stream().map(Object::toString).collect(Collectors.joining("\n")), Color.RED);
 
@@ -113,6 +113,7 @@ public class PluginMain extends JavaPlugin {
             }
 
             if (!elements.isEmpty()) {
+                mcreator.getGradleConsole().append("");
                 mcreator.getGradleConsole().appendPlainText("If you find this line, you should know the fact that your workspace may not generate some elements or has duplicated elements.",Color.BLUE);
                 CompletableFuture.runAsync(() -> {
                     DialogUtils.showErrorElementDialog(mcreator, elements);

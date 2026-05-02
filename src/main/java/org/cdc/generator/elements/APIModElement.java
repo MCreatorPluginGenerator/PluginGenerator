@@ -6,6 +6,7 @@ import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.utils.YamlUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class APIModElement extends GeneratableElement {
@@ -24,8 +25,8 @@ public class APIModElement extends GeneratableElement {
         private String gradle;
         private List<String> updateFiles;
         private String versionRange;
-        //TODO How to use it?
-        private String resource_paths;
+        //Used in vallia
+        private HashMap<String, String> resourcePaths;
 
         public Configuration() {
             this.updateFiles = new ArrayList<>();
@@ -88,6 +89,15 @@ public class APIModElement extends GeneratableElement {
 
         public void setVersionRange(String versionRange) {
             this.versionRange = versionRange;
+        }
+
+        @UsedByReflection public List<String> getResourcePaths() {
+            return resourcePaths.entrySet().stream()
+                    .map(a -> YamlUtils.keyAndValue(a.getKey(), YamlUtils.str(a.getValue()))).sorted().toList();
+        }
+
+        @UsedByReflection public boolean hasResourcePaths() {
+            return resourcePaths != null && !resourcePaths.isEmpty();
         }
 
         @Override public Configuration clone() {

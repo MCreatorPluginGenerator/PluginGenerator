@@ -21,6 +21,8 @@ public class VariableModElement extends GeneratableElement implements IColorElem
     public boolean ignoredByCoverage;
     public boolean nullable;
     public String customVariableDependencyLocalization;
+    public String getterLocalization;
+    public String setterLocalization;
 
     @Nullable public List<String> required_apis;
 
@@ -32,12 +34,22 @@ public class VariableModElement extends GeneratableElement implements IColorElem
         return name;
     }
 
-    @UsedByReflection public boolean isGenerate() {
-        return generate;
+    @UsedByReflection public String getGetterLocalization() {
+        if (getterLocalization == null) {
+            return "get " + blocklyVariableType;
+        }
+        return getterLocalization;
     }
 
-    @UsedByReflection public String getCustomVariableDependencyLocalization() {
-        return customVariableDependencyLocalization;
+    @UsedByReflection public String getSetterLocalization() {
+        if (setterLocalization == null) {
+            return "set " + blocklyVariableType;
+        }
+        return setterLocalization;
+    }
+
+    @UsedByReflection public boolean isGenerate() {
+        return generate;
     }
 
     @Override public @org.jetbrains.annotations.Nullable String getBuiltinColor() {

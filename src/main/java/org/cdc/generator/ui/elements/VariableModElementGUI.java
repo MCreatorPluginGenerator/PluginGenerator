@@ -36,6 +36,8 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
     private final JColor color;
     private final VComboBox<String> builtInColor;
     private final VTextField customVariableDependencyLocalization;
+    private final VTextField setterLocalization;
+    private final VTextField getterLocalization;
 
     public VariableModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
@@ -47,13 +49,15 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
             name.setEnabled(false);
         }
         this.customVariableDependencyLocalization = new VTextField();
+        this.setterLocalization = new VTextField();
+        this.getterLocalization = new VTextField();
 
         this.initGUI();
         this.finalizeGUI();
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(9, 2, 5, 5));
+        initConfiguration(new GridLayout(11, 2, 5, 5));
 
         name.setEditable(true);
         name.setSelectedItem(modElement.getRegistryName());
@@ -82,10 +86,21 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         builtInColor.setEditable(true);
         addConfigurationWithHelpEntry("builtincolor", builtInColor);
 
-        customVariableDependencyLocalization.setValidator(new NotEmptyValidator(customVariableDependencyLocalization::getText));
-        addConfigurationWithHelpEntry("dependency_localization",customVariableDependencyLocalization);
+        customVariableDependencyLocalization.setText("dependency " + modElement.getName());
+        customVariableDependencyLocalization.setValidator(
+                new NotEmptyValidator(customVariableDependencyLocalization::getText));
+        addConfigurationWithHelpEntry("dependency_localization", customVariableDependencyLocalization);
 
-        addPage(PanelUtils.totalCenterInPanel(configurationPanel)).validate(name).validate(customVariableDependencyLocalization);
+        setterLocalization.setText("set " + modElement.getName());
+        setterLocalization.setValidator(new NotEmptyValidator(setterLocalization::getText));
+        addConfigurationWithHelpEntry("setter_localization", setterLocalization);
+
+        getterLocalization.setText("get " + modElement.getName());
+        getterLocalization.setValidator(new NotEmptyValidator(getterLocalization::getText));
+        addConfigurationWithHelpEntry("getter_localization", getterLocalization);
+
+        addPage(PanelUtils.totalCenterInPanel(configurationPanel)).validate(name)
+                .validate(customVariableDependencyLocalization);
     }
 
     @Override protected void openInEditingMode(VariableModElement generatableElement) {
@@ -98,6 +113,8 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         this.color.setColor(generatableElement.color);
         this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.builtinColor));
         this.customVariableDependencyLocalization.setText(generatableElement.customVariableDependencyLocalization);
+        this.getterLocalization.setText(generatableElement.getterLocalization);
+        this.setterLocalization.setText(generatableElement.setterLocalization);
     }
 
     @Override public VariableModElement getElementFromGUI() {
@@ -111,6 +128,8 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         variableModElement.color = color.getColor();
         variableModElement.builtinColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem());
         variableModElement.customVariableDependencyLocalization = customVariableDependencyLocalization.getText();
+        variableModElement.setterLocalization = setterLocalization.getText();
+        variableModElement.getterLocalization = getterLocalization.getText();
         return variableModElement;
     }
 

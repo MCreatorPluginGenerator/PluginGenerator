@@ -102,7 +102,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
                 return label;
             }
         });
-        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(modElement.getTypeString() + "/generator"),
+        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(getHelpEntryAndLocalizationPrefix() + "/generator"),
                 L10N.label("elementgui.common.generator")));
         configurationPanel.add(generator);
     }
@@ -110,15 +110,15 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     protected void addNameConfiguration(JComponent component) {
         component.setOpaque(false);
         component.setPreferredSize(Utils.tryToGetTextFieldSize());
-        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(modElement.getTypeString() + "/name"),
+        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(getHelpEntryAndLocalizationPrefix() + "/name"),
                 L10N.label("elementgui.common.name")));
         configurationPanel.add(component);
     }
 
     protected void addConfigurationWithHelpEntry(String name, JComponent component) {
         component.setOpaque(false);
-        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(modElement.getTypeString() + "/" + name),
-                L10N.label("elementgui." + modElement.getTypeString() + "." + name)));
+        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(getHelpEntryAndLocalizationPrefix() + "/" + name),
+                L10N.label("elementgui." + getHelpEntryAndLocalizationPrefix() + "." + name)));
         configurationPanel.add(component);
     }
 
@@ -194,5 +194,9 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
             });
         }
         return cachedBoolean = true;
+    }
+
+    protected String getHelpEntryAndLocalizationPrefix(){
+        return modElement.getTypeString();
     }
 }

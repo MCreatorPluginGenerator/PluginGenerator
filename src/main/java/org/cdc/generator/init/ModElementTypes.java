@@ -31,6 +31,10 @@ import javax.annotation.Nullable;
     public static final ModElementType<PluginProcedureImplementationModElement> PROCEDURE_IMPLEMENTATION = register(
             "pluginprocedureimpl", null, PluginProcedureImplementationModElementGUI::new,
             PluginProcedureImplementationModElement.class);
+    public static final ModElementType<PluginCmdArgsCategoryModElement> CMD_ARGS_CATEGORY = register("plugincmdargscategory",null,PluginCmdArgsCategoryModElementGUI::new,
+            PluginCmdArgsCategoryModElement.class);
+    public static final ModElementType<PluginAITasksCategoryModElement> AI_TASKS_CATEGORY = register("pluginaitaskcategory",null,PluginAITasksCategoryModElementGUI::new,
+            PluginAITasksCategoryModElement.class);
 
     private static <E extends GeneratableElement> ModElementType<E> register(String registryName,
             @Nullable Character shortcut, ModElementType.ModElementGUIProvider<E> modElementGUIProvider,

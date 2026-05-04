@@ -1,7 +1,6 @@
 package org.cdc.generator.ui.elements;
 
 import com.google.gson.JsonObject;
-import net.mcreator.blockly.data.BlocklyLoader;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.JColor;
@@ -18,7 +17,9 @@ import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.framework.utils.BuilderUtils;
 import org.cdc.generator.elements.PluginProcedureModElement;
+import org.cdc.generator.elements.ProcedureCategoryModElement;
 import org.cdc.generator.elements.VariableModElement;
+import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.utils.Constants;
@@ -47,7 +48,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class PluginProceduresElementGUI extends AbstractConfigurationTableModElementGUI<PluginProcedureModElement>
-        implements ISearchable {
+        implements ISearchable,IListBlocklyCategoriesModElementGUI {
 
     protected final VTextField name = new VTextField();
     protected final JCheckBox inputsInline;
@@ -68,7 +69,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     protected final VTextField localizationValue;
     protected final VTextField tooltip;
 
-    private final ArrayListListModel<ArgTypeProxy> model;
+    protected final ArrayListListModel<ArgTypeProxy> model;
     public JList<ArgTypeProxy> arg0List;
 
     public List<PluginProcedureModElement.Dependency> dependencies;
@@ -119,7 +120,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         addConfigurationWithHelpEntry("inputs_inline", inputsInline);
         previousStatement.addMouseListener(new MouseAdapter() {
             @Override public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON3 && previousStatement.getText().isBlank()){
+                if (e.getButton() == MouseEvent.BUTTON3 && previousStatement.getText().isBlank()) {
                     previousStatement.setText("null");
                 }
             }
@@ -127,7 +128,7 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
         addConfigurationWithHelpEntry("previous_statement", previousStatement);
         nextStatement.addMouseListener(new MouseAdapter() {
             @Override public void mouseReleased(MouseEvent e) {
-                if (e.getButton() == MouseEvent.BUTTON3 && nextStatement.getText().isBlank()){
+                if (e.getButton() == MouseEvent.BUTTON3 && nextStatement.getText().isBlank()) {
                     nextStatement.setText("null");
                 }
             }
@@ -395,17 +396,8 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     }
 
     @Override public void reloadDataLists() {
-        var stringArrayList = new HashSet<String>();
-        for (ModElement element : mcreator.getWorkspaceInfo()
-                .getElementsOfType(ModElementTypes.PROCEDURE_CATEGORY.getRegistryName())) {
-            stringArrayList.add(element.getRegistryName());
-        }
-        stringArrayList.addAll(BlocklyLoader.getBuiltinCategories());
-        BlocklyLoader.INSTANCE.getBlockLoader(BlocklyEditorType.PROCEDURE).getDefinedBlocks().values().forEach(a -> {
-            if (a.getToolboxCategory() != null) {
-                stringArrayList.add(a.getToolboxCategoryRaw());
-            }
-        });
+        var stringArrayList = Utils.getAllCategories(mcreator, getBlocklyEditorType(),
+                getBlocklyCategoryClass(), hasBuiltinCategories());
         ComboBoxUtil.updateComboBoxContents(toolboxId, stringArrayList.stream().sorted().toList());
 
         ArrayList<String> types = new ArrayList<>();
@@ -442,6 +434,18 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
 
     @Override public void showSearch(int index) {
 
+    }
+
+    @Override public BlocklyEditorType getBlocklyEditorType() {
+        return BlocklyEditorType.PROCEDURE;
+    }
+
+    @Override public Class<? extends IBlocklyCategoryElement> getBlocklyCategoryClass() {
+        return ProcedureCategoryModElement.class;
+    }
+
+    @Override public boolean hasBuiltinCategories() {
+        return true;
     }
 
     private class DependenciesTableModule extends AbstractTableModel {
@@ -501,5 +505,4 @@ public class PluginProceduresElementGUI extends AbstractConfigurationTableModEle
     public JStringListField getStatements() {
         return statements;
     }
-
 }

@@ -3,13 +3,15 @@ package org.cdc.generator.elements;
 import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
+import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.elements.interfaces.IColorElement;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
 
-public class ProcedureCategoryModElement extends GeneratableElement implements IBlocklyElement, IColorElement {
+public class ProcedureCategoryModElement extends GeneratableElement implements IBlocklyElement, IColorElement,
+        IBlocklyCategoryElement {
 
     public String readableName;
 

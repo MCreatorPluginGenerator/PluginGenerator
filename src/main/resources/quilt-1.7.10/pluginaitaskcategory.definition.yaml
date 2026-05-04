@@ -1,0 +1,8 @@
+templates:
+  - template: proecedurecategory.json.ftl
+    writer: json
+    name: "@RESROOT/@[getBlocklyFolder()]/$@registryname.json"
+
+localizationkeys:
+  - key: blockly.category.@registryname
+    mapto: getSuggestedName()

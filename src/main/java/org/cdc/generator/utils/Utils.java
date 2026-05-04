@@ -1,10 +1,12 @@
 package org.cdc.generator.utils;
 
+import net.mcreator.blockly.data.BlocklyLoader;
 import net.mcreator.generator.Generator;
 import net.mcreator.generator.template.base.BaseDataModelProvider;
 import net.mcreator.minecraft.DataListLoader;
 import net.mcreator.plugin.PluginLoader;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
@@ -14,6 +16,7 @@ import net.mcreator.util.ColorUtils;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableType;
 import org.cdc.generator.PluginMain;
+import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.elements.ISearchable;
 import org.cdc.generator.utils.interfaces.ITypeProvider;
@@ -31,6 +34,8 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public class Utils {
 
@@ -257,5 +262,32 @@ public class Utils {
         }
         list.addAll(DataListLoader.getCache().keySet().stream().sorted().toList());
         return list;
+    }
+
+    public static <E extends IBlocklyCategoryElement> HashSet<String> getAllCategories(MCreator mcreator,BlocklyEditorType blocklyEditorType,Class<E> eClass,boolean appendBuiltin){
+        var getter = CompletableFuture.supplyAsync(()->{
+            var stringArrayList1 = new HashSet<String>();
+            BlocklyLoader.INSTANCE.getBlockLoader(blocklyEditorType).getDefinedBlocks().values().forEach(a -> {
+                if (a.getToolboxCategory() != null) {
+                    stringArrayList1.add(a.getToolboxCategoryRaw());
+                }
+            });
+            return stringArrayList1;
+        });
+        var stringArrayList = new HashSet<String>();
+        for (ModElement element : mcreator.getWorkspace().getModElements()) {
+            if (eClass.isInstance(element.getGeneratableElement())) {
+                stringArrayList.add(element.getRegistryName());
+            }
+        }
+        if (appendBuiltin) {
+            stringArrayList.addAll(BlocklyLoader.getBuiltinCategories());
+        }
+        try {
+            stringArrayList.addAll(getter.get());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        return stringArrayList;
     }
 }

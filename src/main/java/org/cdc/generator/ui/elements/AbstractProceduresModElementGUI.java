@@ -42,8 +42,8 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public abstract class AbstractProceduresModElementGUI<E extends GeneratableElement & IBlocklyElement> extends AbstractConfigurationTableModElementGUI<E>
-        implements ISearchable,IListBlocklyCategoriesModElementGUI {
+public abstract class AbstractProceduresModElementGUI<E extends GeneratableElement & IBlocklyElement>
+        extends AbstractConfigurationTableModElementGUI<E> implements ISearchable, IListBlocklyCategoriesModElementGUI {
 
     protected final VTextField name = new VTextField();
     protected final JCheckBox inputsInline;
@@ -51,6 +51,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     protected final VTextField nextStatement = new VTextField();
     protected final JColor color;
     protected final VComboBox<String> builtInColor;
+    protected final VTextField mutator;
     protected final VComboBox<String> outputs;
     protected final JStringListField extensions;
     protected final VComboBox<String> toolboxId = new VComboBox<>();
@@ -74,6 +75,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.inputsInline = createDefaultCheckBox();
         this.color = new JColor(mcreator, false, false);
         this.builtInColor = new VComboBox<>(Utils.getAllBuiltinColors());
+        this.mutator = new VTextField();
         this.outputs = new VComboBox<>();
         this.extensions = new JStringListField(mcreator, null);
         this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);
@@ -100,7 +102,6 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(18, 2, 5, 5));
 
         name.setText(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getText));
@@ -130,6 +131,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         builtInColor.setEditable(true);
         addConfigurationWithHelpEntry("builtincolor", builtInColor);
 
+        addConfigurationWithHelpEntry("mutator", mutator);
         addConfigurationWithHelpEntry("outputs", outputs);
         addConfigurationWithHelpEntry("extensions", extensions);
 
@@ -220,7 +222,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             refreshTable();
         });
 
-        addPage("Configuration", PanelUtils.northAndCenterElement(configurationPanel, toolbarAndTable(bar))).validate(
+        addPage("Configuration", PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(bar))).validate(
                 name).validate(localizationValue);
 
         JToolBar args0ToolBar = new JToolBar();
@@ -352,8 +354,8 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     }
 
     @Override public void reloadDataLists() {
-        var stringArrayList = Utils.getAllCategories(mcreator, getBlocklyEditorType(),
-                getBlocklyCategoryClass(), hasBuiltinCategories());
+        var stringArrayList = Utils.getAllCategories(mcreator, getBlocklyEditorType(), getBlocklyCategoryClass(),
+                hasBuiltinCategories());
         ComboBoxUtil.updateComboBoxContents(toolboxId, stringArrayList.stream().sorted().toList());
 
         ArrayList<String> types = new ArrayList<>();

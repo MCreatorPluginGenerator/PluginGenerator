@@ -11,7 +11,7 @@ import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.DataListModElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
-import org.cdc.generator.ui.elements.PluginProceduresElementGUI;
+import org.cdc.generator.ui.elements.PluginProceduresModElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.MenuProvider;
@@ -47,7 +47,7 @@ public class Menus {
         PLUGIN_PROCEDURE_UTILS.setVisible(false);
         pluginMain.addListener(TabEvent.Shown.class, event -> {
             DATALIST_UTILS.setVisible(event.getTab().getContent() instanceof DataListModElementGUI);
-            PLUGIN_PROCEDURE_UTILS.setVisible(event.getTab().getContent() instanceof PluginProceduresElementGUI);
+            PLUGIN_PROCEDURE_UTILS.setVisible(event.getTab().getContent() instanceof PluginProceduresModElementGUI);
         });
     }
 
@@ -128,7 +128,7 @@ public class Menus {
                 new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("generate_warnings")
                         .setActionListener(a -> {
                             if (mcreator.getTabs().getCurrentTab()
-                                    .getContent() instanceof PluginProceduresElementGUI pluginProceduresElementGUI) {
+                                    .getContent() instanceof PluginProceduresModElementGUI pluginProceduresElementGUI) {
                                 for (String s : pluginProceduresElementGUI.getWarnings().getTextList()) {
                                     for (LinkedHashMap<String, String> value : mcreator.getWorkspace().getLanguageMap()
                                             .values()) {
@@ -141,7 +141,7 @@ public class Menus {
                 new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("refresh_inputs_and_fields")
                         .setActionListener(a -> {
                             if (mcreator.getTabs().getCurrentTab()
-                                    .getContent() instanceof PluginProceduresElementGUI pluginProceduresElementGUI) {
+                                    .getContent() instanceof PluginProceduresModElementGUI pluginProceduresElementGUI) {
                                 var inputs = new ArrayList<String>();
                                 var fields = new ArrayList<String>();
                                 var statements = new ArrayList<String>();

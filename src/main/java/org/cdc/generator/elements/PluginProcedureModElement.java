@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class PluginProcedureModElement extends GeneratableElement implements IBlocklyElement, IColorElement {
-
     public List<ArgTypeProxy> arg0;
     public boolean inputsInline;
     public String previousStatement;

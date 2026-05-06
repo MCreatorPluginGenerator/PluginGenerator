@@ -73,8 +73,6 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(3, 2));
-
         var iconsFuture = CompletableFuture.supplyAsync(() -> {
             var cachedIcon = new ArrayList<String>();
             var file = Utils.tryToFindCorePlugin();
@@ -212,7 +210,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         }
 
         addPage("Configuration",
-                PanelUtils.northAndCenterElement(configurationPanel, toolbarAndTable(bar))).lazyValidate(
+                PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(bar))).lazyValidate(
                 new DuplicatedElementValidator(
                         () -> entries.stream().map(DataListModElement.DataListEntry::getName).toList(),
                         b -> jTable.changeSelection(b, 0, false, false))).validate(datalistName);
@@ -247,7 +245,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override protected void openInEditingMode(DataListModElement generatableElement) {
-        entries = Objects.requireNonNullElse(generatableElement.entries,new ArrayList<>());
+        entries = Objects.requireNonNullElse(generatableElement.entries, new ArrayList<>());
         this.generateDataList.setSelected(generatableElement.generateDataList);
         this.dialogMessage.setText(generatableElement.dialogMessage);
     }
@@ -256,8 +254,8 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         modElement.setRegistryName(datalistName.getSelectedItem());
         DataListModElement dataListModElement = new DataListModElement(modElement);
         dataListModElement.generateDataList = generateDataList.isSelected();
-        dataListModElement.entries = new ArrayList<>(entries.stream().map(DataListModElement.DataListEntry::clone)
-                .filter(a -> !a.isBuiltIn()).toList());
+        dataListModElement.entries = new ArrayList<>(
+                entries.stream().map(DataListModElement.DataListEntry::clone).filter(a -> !a.isBuiltIn()).toList());
         dataListModElement.dialogMessage = dialogMessage.getText();
         return dataListModElement;
     }

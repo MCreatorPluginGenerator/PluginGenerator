@@ -17,12 +17,11 @@ import org.jspecify.annotations.NonNull;
 
 import javax.annotation.Nullable;
 import javax.swing.*;
-import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 public abstract class AbstractProcedureCategoryModElementGUI<E extends GeneratableElement & IBlocklyElement>
-        extends AbstractConfigurationTableModElementGUI<E> implements IListBlocklyCategoriesModElementGUI{
+        extends AbstractConfigurationTableModElementGUI<E> implements IListBlocklyCategoriesModElementGUI {
 
     // aitasks and so on can extends the class.
     protected final VTextField name;
@@ -32,7 +31,8 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
     protected final VTextField customCategory;
     protected final JCheckBox isApi;
 
-    public AbstractProcedureCategoryModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public AbstractProcedureCategoryModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
+            boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
         this.name = new VTextField();
         this.readableName = new VTextField();
@@ -43,15 +43,12 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(6, 2, 5, 5));
-
         name.setText(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getText));
         addNameConfiguration(name);
 
         readableName.setText(modElement.getName());
         addConfigurationWithHelpEntry("readable_name", readableName);
-
 
         addConfigurationWithHelpEntry("color", color);
 
@@ -62,7 +59,7 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
 
         addConfigurationWithHelpEntry("is_api", isApi);
 
-        addPage("edit", PanelUtils.totalCenterInPanel(configurationPanel)).validate(name);
+        addPage("edit", PanelUtils.totalCenterInPanel(buildConfiguration(2))).validate(name);
     }
 
     protected void openInEditingMode0(ProcedureCategoryModElement generatableElement) {
@@ -78,7 +75,8 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
     }
 
     @Override public void reloadDataLists() {
-        var stringArrayList = Utils.getAllCategories(mcreator,getBlocklyEditorType(),getBlocklyCategoryClass(),hasBuiltinCategories());
+        var stringArrayList = Utils.getAllCategories(mcreator, getBlocklyEditorType(), getBlocklyCategoryClass(),
+                hasBuiltinCategories());
         stringArrayList.add(Constants.NONE);
         ComboBoxUtil.updateComboBoxContents(parentCategory, stringArrayList.stream().sorted().toList());
     }

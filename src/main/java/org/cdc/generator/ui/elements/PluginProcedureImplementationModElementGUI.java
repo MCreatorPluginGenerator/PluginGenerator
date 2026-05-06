@@ -7,10 +7,12 @@ import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.component.VComboBox;
+import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.framework.utils.BuilderUtils;
 import org.cdc.generator.elements.PluginProcedureImplementationModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
+import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Rules;
@@ -24,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 public class PluginProcedureImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<PluginProcedureImplementationModElement> {
     private final VComboBox<String> generator = new VComboBox<>();
+    private final VTextField parentFolder = new VTextField();
     private final VComboBox<String> procedureFileName = new VComboBox<>();
     private final JCheckBox isTemplate = createDefaultCheckBox();
 
@@ -49,6 +51,7 @@ public class PluginProcedureImplementationModElementGUI
             generator.setEnabled(false);
             procedureFileName.setEnabled(false);
             isTemplate.setEnabled(false);
+            parentFolder.setEnabled(false);
         }
     }
 
@@ -68,17 +71,23 @@ public class PluginProcedureImplementationModElementGUI
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(3, 2, 5, 5));
         addGeneratorConfiguration(generator);
+
+        parentFolder.setText("procedures");
+        addConfigurationWithHelpEntry("parent_folder", parentFolder);
 
         procedureFileName.setEditable(true);
         procedureFileName.setValidator(Rules.getFileNameValidator(procedureFileName::getSelectedItem));
         procedureFileName.addItemListener(a -> {
             if (a.getStateChange() == ItemEvent.SELECTED) {
-                var registry = ElementsUtils.getProcedureFileName(getModElement().getWorkspace(),
-                        a.getItem().toString());
+                var selected = a.getItem().toString();
+                var registry = ElementsUtils.getProcedureFileName(getModElement().getWorkspace(), selected);
                 if (registry != null) {
                     procedureFileName.setSelectedItem(registry);
+                    if (mcreator.getWorkspace().getModElementByName(selected)
+                            .getGeneratableElement() instanceof IBlocklyElement blocklyElement) {
+                        parentFolder.setText(blocklyElement.getBlocklyFolder());
+                    }
                 }
             }
         });
@@ -114,7 +123,8 @@ public class PluginProcedureImplementationModElementGUI
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
-        addPage(PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator).validate(procedureFileName);
+        addPage(PanelUtils.northAndCenterElement(buildConfiguration(2), panel)).validate(generator)
+                .validate(procedureFileName);
     }
 
     private CompletionProvider createCompletionProvider() {
@@ -134,7 +144,7 @@ public class PluginProcedureImplementationModElementGUI
                 complete.addCompletion(new BasicCompletion(complete, "statement$" + statement));
             }
             for (PluginProcedureModElement.Dependency dependency : element.dependencies) {
-                complete.addCompletion(new BasicCompletion(complete,dependency.getName(),dependency.getType()));
+                complete.addCompletion(new BasicCompletion(complete, dependency.getName(), dependency.getType()));
             }
         }
         //addTemplate
@@ -146,8 +156,8 @@ public class PluginProcedureImplementationModElementGUI
                             "<@addTemplate file=\"utils/" + _modelement.getProcedureFileName() + ".java.ftl\"/>"));
                 }
         }
-        complete.addCompletion(new TemplateCompletion(complete,"head","head","<@head>${cursor}</@head>"));
-        complete.addCompletion(new TemplateCompletion(complete,"tail","tail","<@tail>${cursor}</@tail>"));
+        complete.addCompletion(new TemplateCompletion(complete, "head", "head", "<@head>${cursor}</@head>"));
+        complete.addCompletion(new TemplateCompletion(complete, "tail", "tail", "<@tail>${cursor}</@tail>"));
         complete.addCompletion(new BasicCompletion(complete, "addTemplate"));
         Utils.initCompletionWithGenerator(complete, mcreator.getGenerator());
 
@@ -158,6 +168,7 @@ public class PluginProcedureImplementationModElementGUI
         this.generator.setSelectedItem(generatableElement.generator);
         this.procedureFileName.setSelectedItem(generatableElement.procedureFileName);
         this.isTemplate.setSelected(generatableElement.isTemplate);
+        this.parentFolder.setText(generatableElement.procedureFolder);
 
         this.content.setText(generatableElement.content);
     }
@@ -165,6 +176,7 @@ public class PluginProcedureImplementationModElementGUI
     @Override public PluginProcedureImplementationModElement getElementFromGUI() {
         var element = new PluginProcedureImplementationModElement(modElement);
         element.generator = generator.getSelectedItem();
+        element.procedureFolder = parentFolder.getText();
         element.procedureFileName = procedureFileName.getSelectedItem();
         element.content = content.getText();
         element.isTemplate = isTemplate.isSelected();

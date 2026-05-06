@@ -29,12 +29,10 @@ import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.List;
 
 public class TriggerImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<TriggerImplementationModElement> {
@@ -72,8 +70,6 @@ public class TriggerImplementationModElementGUI
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(4, 2));
-
         addGeneratorConfiguration(generator);
 
         triggerFileName.setEditable(true);
@@ -112,7 +108,7 @@ public class TriggerImplementationModElementGUI
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
         generator.addItemListener(eventName -> reloadToolBar());
-        addPage("Configuration", PanelUtils.northAndCenterElement(configurationPanel, panel)).validate(generator)
+        addPage("Configuration", PanelUtils.northAndCenterElement(buildConfiguration(2), panel)).validate(generator)
                 .validate(triggerFileName).validate(eventName).lazyValidate(
                         () -> methodBody.getText().contains("@Placeholder") ?
                                 new AggregatedValidationResult.FAIL("You should replace the placeholder") :
@@ -148,7 +144,7 @@ public class TriggerImplementationModElementGUI
         this.enableCustom.setSelected(generatableElement.enableCustom);
         this.eventName.setText(generatableElement.eventName);
         this.methodBody.setText(generatableElement.methodBody);
-        this.mappingEntries = Objects.requireNonNullElse(generatableElement.mappingEntries,new ArrayList<>());
+        this.mappingEntries = Objects.requireNonNullElse(generatableElement.mappingEntries, new ArrayList<>());
     }
 
     @Override public TriggerImplementationModElement getElementFromGUI() {
@@ -158,8 +154,8 @@ public class TriggerImplementationModElementGUI
         element.enableCustom = enableCustom.isSelected();
         element.eventName = eventName.getText();
         element.methodBody = methodBody.getText();
-        element.mappingEntries = new ArrayList<>(mappingEntries.stream()
-                .map(a -> new AbstractMap.SimpleEntry<>(a.getKey(), a.getValue())).toList());
+        element.mappingEntries = new ArrayList<>(
+                mappingEntries.stream().map(a -> new AbstractMap.SimpleEntry<>(a.getKey(), a.getValue())).toList());
         return element;
     }
 
@@ -209,7 +205,7 @@ public class TriggerImplementationModElementGUI
 
     public Map<String, String> getMappingEntries() {
         var map = new HashMap<String, String>();
-        for (AbstractMap.SimpleEntry<String,String> mappingEntry : mappingEntries) {
+        for (AbstractMap.SimpleEntry<String, String> mappingEntry : mappingEntries) {
             map.put(mappingEntry.getKey(), mappingEntry.getValue());
         }
         return map;

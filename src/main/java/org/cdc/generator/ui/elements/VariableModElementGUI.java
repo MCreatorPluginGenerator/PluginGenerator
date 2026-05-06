@@ -19,7 +19,6 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -57,8 +56,6 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(11, 2, 5, 5));
-
         name.setEditable(true);
         name.setSelectedItem(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getSelectedItem));
@@ -99,7 +96,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         getterLocalization.setValidator(new NotEmptyValidator(getterLocalization::getText));
         addConfigurationWithHelpEntry("getter_localization", getterLocalization);
 
-        addPage(PanelUtils.totalCenterInPanel(configurationPanel)).validate(name)
+        addPage(PanelUtils.totalCenterInPanel(buildConfiguration(2))).validate(name)
                 .validate(customVariableDependencyLocalization);
     }
 

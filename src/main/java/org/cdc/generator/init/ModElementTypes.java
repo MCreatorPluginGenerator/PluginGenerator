@@ -27,7 +27,7 @@ import javax.annotation.Nullable;
     public static final ModElementType<ProcedureCategoryModElement> PROCEDURE_CATEGORY = register(
             "pluginprocedurecategory", null, ProcedureCategoryModElementGUI::new, ProcedureCategoryModElement.class);
     public static final ModElementType<PluginProcedureModElement> PROCEDURE = register("pluginprocedure", null,
-            PluginProceduresElementGUI::new, PluginProcedureModElement.class);
+            PluginProceduresModElementGUI::new, PluginProcedureModElement.class);
     public static final ModElementType<PluginProcedureImplementationModElement> PROCEDURE_IMPLEMENTATION = register(
             "pluginprocedureimpl", null, PluginProcedureImplementationModElementGUI::new,
             PluginProcedureImplementationModElement.class);

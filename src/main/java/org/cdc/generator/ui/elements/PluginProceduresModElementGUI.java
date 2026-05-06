@@ -18,10 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class PluginProceduresElementGUI extends AbstractProceduresModElementGUI<PluginProcedureModElement> {
+public class PluginProceduresModElementGUI extends AbstractProceduresModElementGUI<PluginProcedureModElement> {
     @InjectField private Container container;
 
-    public PluginProceduresElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
+    public PluginProceduresModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode);
 
         this.initGUI();

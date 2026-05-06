@@ -20,6 +20,7 @@ import org.jspecify.annotations.NonNull;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -29,13 +30,16 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
 
     protected final String[] columns;
 
-    protected JPanel configurationPanel;
+    private JPanel configurationPanel;
     protected JTable jTable;
+
+    protected ArrayList<JComponent> componentList;
 
     public AbstractConfigurationTableModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
             boolean editingMode, String[] columns) {
         super(mcreator, modElement, editingMode);
         this.columns = columns;
+        this.componentList = new ArrayList<>();
     }
 
     /**
@@ -48,7 +52,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     /**
      * init configurationPanel. You can call it optional.
      */
-    protected void initConfiguration(LayoutManager layoutManager) {
+    @Deprecated protected void initConfiguration(LayoutManager layoutManager) {
         configurationPanel = new JPanel(layoutManager);
         configurationPanel.setOpaque(false);
         configurationPanel.setBorder(BorderFactory.createTitledBorder("Configuration"));
@@ -102,24 +106,45 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
                 return label;
             }
         });
-        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(getHelpEntryAndLocalizationPrefix() + "/generator"),
-                L10N.label("elementgui.common.generator")));
-        configurationPanel.add(generator);
+        componentList.add(
+                HelpUtils.wrapWithHelpButton(this.withEntry(getHelpEntryAndLocalizationPrefix() + "/generator"),
+                        L10N.label("elementgui.common.generator")));
+        componentList.add(generator);
     }
 
     protected void addNameConfiguration(JComponent component) {
         component.setOpaque(false);
         component.setPreferredSize(Utils.tryToGetTextFieldSize());
-        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(getHelpEntryAndLocalizationPrefix() + "/name"),
+        componentList.add(HelpUtils.wrapWithHelpButton(this.withEntry(getHelpEntryAndLocalizationPrefix() + "/name"),
                 L10N.label("elementgui.common.name")));
-        configurationPanel.add(component);
+        componentList.add(component);
     }
 
     protected void addConfigurationWithHelpEntry(String name, JComponent component) {
         component.setOpaque(false);
-        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry(getHelpEntryAndLocalizationPrefix() + "/" + name),
-                L10N.label("elementgui." + getHelpEntryAndLocalizationPrefix() + "." + name)));
-        configurationPanel.add(component);
+        var label = L10N.label("elementgui." + getHelpEntryAndLocalizationPrefix() + "." + name);
+        label.addMouseListener(new MouseAdapter() {
+            @Override public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON3) {
+                    var content = new StringSelection(label.getText());
+                    label.getToolkit().getSystemClipboard().setContents(content, content);
+                }
+            }
+        });
+        componentList.add(
+                HelpUtils.wrapWithHelpButton(this.withEntry(getHelpEntryAndLocalizationPrefix() + "/" + name), label));
+        componentList.add(component);
+    }
+
+    protected JPanel buildConfiguration(int columns) {
+        configurationPanel = new JPanel(new GridLayout(componentList.size() / columns, columns, 5, 5));
+        configurationPanel.setOpaque(false);
+        configurationPanel.setBorder(BorderFactory.createTitledBorder("Configuration"));
+        for (JComponent component : componentList) {
+            configurationPanel.add(component);
+        }
+
+        return configurationPanel;
     }
 
     protected void addElementSelectorConfiguration(String name, JComponent component,
@@ -196,7 +221,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         return cachedBoolean = true;
     }
 
-    protected String getHelpEntryAndLocalizationPrefix(){
+    protected String getHelpEntryAndLocalizationPrefix() {
         return modElement.getTypeString();
     }
 }

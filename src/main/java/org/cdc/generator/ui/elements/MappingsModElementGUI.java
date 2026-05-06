@@ -59,8 +59,6 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(2, 2));
-
         addGeneratorConfiguration(generator);
 
         datalistName.setEditable(false);
@@ -184,8 +182,8 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         bar.add(syncDatalist);
         bar.add(initSearchBar(lastSearchResult));
 
-        addPage("edit", PanelUtils.northAndCenterElement(configurationPanel, toolbarAndTable(bar))).validate(generator)
-                .validate(datalistName);
+        addPage("edit", PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(bar))).validate(
+                generator).validate(datalistName);
     }
 
     @Override protected void openInEditingMode(MappingsModElement generatableElement) {

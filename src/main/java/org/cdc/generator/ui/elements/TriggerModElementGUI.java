@@ -68,7 +68,6 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(6, 2, 5, 5));
 
         this.name.setText(modElement.getRegistryName());
         this.name.setValidator(Rules.getFileNameValidator(this.name::getText));
@@ -85,9 +84,9 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         this.side.setPreferredSize(Utils.tryToGetTextFieldSize());
         addConfigurationWithHelpEntry("side", side);
 
-        configurationPanel.add(HelpUtils.wrapWithHelpButton(this.withEntry("plugintrigger/required_apis"),
+        componentList.add(HelpUtils.wrapWithHelpButton(this.withEntry("plugintrigger/required_apis"),
                 L10N.label("elementgui.common.required_apis")));
-        configurationPanel.add(requiredApis);
+        componentList.add(requiredApis);
 
         var typeComboBox = new VComboBox<String>();
         typeComboBox.setOpaque(false);
@@ -160,7 +159,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             refreshTable();
         });
 
-        addPage("Attributes", PanelUtils.totalCenterInPanel(configurationPanel)).validate(name);
+        addPage("Attributes", PanelUtils.totalCenterInPanel(buildConfiguration(2))).validate(name);
 
         addPage("Parameters", toolbarAndTable(bar)).lazyValidate(new DuplicatedElementValidator(
                 () -> dependencies.stream().map(TriggerModElement.Dependency::getName).toList(),

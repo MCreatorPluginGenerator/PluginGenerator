@@ -66,8 +66,6 @@ public class VariableImplementationModElementGUI
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(3, 2));
-
         addGeneratorConfiguration(generator);
 
         variableElementName.setEditable(false);
@@ -150,7 +148,7 @@ public class VariableImplementationModElementGUI
             scopeList.add(new VariableImplementationModElement.VariableScope(s));
         }
 
-        addPage("Configuration", PanelUtils.northAndCenterElement(configurationPanel, wrapTable())).validate(
+        addPage("Configuration", PanelUtils.northAndCenterElement(buildConfiguration(2), wrapTable())).validate(
                 variableElementName).validate(generator).validate(defaultValue).lazyValidate(
                 () -> scopeList.stream().anyMatch(VariableImplementationModElement.VariableScope::hasNotNull) ?
                         new AggregatedValidationResult.PASS() :

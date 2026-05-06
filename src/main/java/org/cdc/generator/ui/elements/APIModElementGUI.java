@@ -58,7 +58,6 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
     }
 
     @Override protected void initGUI() {
-        initConfiguration(new GridLayout(2, 2, 5, 5));
 
         name.setValidator(Rules.getFileNameValidator(name::getText));
         name.setText(modElement.getRegistryName());
@@ -190,7 +189,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
             refreshTable();
         });
 
-        addPage("edit", PanelUtils.northAndCenterElement(configurationPanel, toolbarAndTable(bar))).validate(name);
+        addPage("edit", PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(bar))).validate(name);
     }
 
     @Override protected void openInEditingMode(APIModElement generatableElement) {
@@ -236,7 +235,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
     }
 
     @Override public CompletableFuture<Void> refreshTable() {
-        return CompletableFuture.runAsync(()->{
+        return CompletableFuture.runAsync(() -> {
             jTable.repaint();
             jTable.revalidate();
         });

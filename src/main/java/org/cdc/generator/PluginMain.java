@@ -76,7 +76,7 @@ public class PluginMain extends JavaPlugin {
             var elements = new ArrayList<ModElement>();
             for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
                 if (modElement.getGeneratableElement() instanceof IUniqueElement uniqueElement) {
-                    hashMap.compute("duplicated "+uniqueElement.getUniqueID(), (a, b) -> {
+                    hashMap.compute("duplicated " + uniqueElement.getUniqueID(), (a, b) -> {
                         if (b == null) {
                             b = new ArrayList<>();
                         }
@@ -95,7 +95,7 @@ public class PluginMain extends JavaPlugin {
                     hashMap.remove(stringArrayListEntry.getKey());
                 }
             }
-            if (Utils.isNotPluginGenerator(mcreator.getGenerator())){
+            if (Utils.isNotPluginGenerator(mcreator.getGenerator())) {
                 return;
             }
             if (!hashMap.isEmpty()) {
@@ -114,7 +114,9 @@ public class PluginMain extends JavaPlugin {
 
             if (!elements.isEmpty()) {
                 mcreator.getGradleConsole().append("");
-                mcreator.getGradleConsole().appendPlainText("If you find this line, you should know the fact that your workspace may not generate some elements or has duplicated elements.",Color.BLUE);
+                mcreator.getGradleConsole().appendPlainText(
+                        "If you find this line, you should know the fact that your workspace may not generate some elements or has duplicated elements.",
+                        Color.BLUE);
                 CompletableFuture.runAsync(() -> {
                     DialogUtils.showErrorElementDialog(mcreator, elements);
                 });
@@ -152,19 +154,14 @@ public class PluginMain extends JavaPlugin {
 
         registerAll(mcreator);
 
-        // ensure that the plugin support self
-        var selfDependants = "mcreator" + Launcher.version.versionlong;
-        if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
-            LOG.debug("Try to add self to dependants");
+        if (mcreator.getWorkspaceSettings().dependants.stream().noneMatch(str -> str.startsWith("weight_"))) {
+            LOG.debug("Try to add weight_0 to dependants");
+            mcreator.getWorkspaceSettings().dependants.add("weight_0");
+
             SwingUtilities.invokeLater(() -> {
                 JOptionPane.showMessageDialog(null,
                         "But for the help from community, this will be not finished. If you encounter a bug, please report.");
             });
-            mcreator.getWorkspaceSettings().dependants.add(selfDependants);
-        }
-        if (mcreator.getWorkspaceSettings().dependants.stream().noneMatch(str -> str.startsWith("weight_"))) {
-            LOG.debug("Try to add weight_0 to dependants");
-            mcreator.getWorkspaceSettings().dependants.add("weight_0");
         }
 
         var libs = new File(mcreator.getWorkspaceFolder(), ".mcreator/libs");

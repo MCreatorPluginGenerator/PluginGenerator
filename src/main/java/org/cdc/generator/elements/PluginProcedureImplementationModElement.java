@@ -27,6 +27,9 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
     }
 
     @Override public String getBlocklyFolder() {
+        if (isTemplate) {
+            return "procedures/utils";
+        }
         return "procedures";
     }
 
@@ -40,12 +43,5 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
 
     @Override public String getUniqueID() {
         return getModElement().getTypeString() + getGeneratorName() + procedureFileName + isTemplate;
-    }
-
-    @UsedByReflection public String appendTemplatePath() {
-        if (isTemplate) {
-            return "utils/";
-        }
-        return "";
     }
 }

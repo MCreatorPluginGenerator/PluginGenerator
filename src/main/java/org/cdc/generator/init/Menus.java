@@ -1,5 +1,6 @@
 package org.cdc.generator.init;
 
+import net.mcreator.Launcher;
 import net.mcreator.plugin.events.ui.TabEvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.dialogs.file.FileDialogs;
@@ -87,6 +88,13 @@ public class Menus {
                 }).build());
         PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")
                 .setActionListener(a -> DesktopUtils.browseSafe("https://mcreator.net/changelog")).build());
+        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("append_current").setActionListener(a->{
+            var selfDependants = "mcreator" + Launcher.version.versionlong;
+            if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
+                mcreator.getWorkspaceSettings().dependants.add(selfDependants);
+                mcreator.getStatusBar().setPersistentMessage("Appended");
+            }
+        }).build());
         DATALIST_UTILS.add(new JMenuBuilder().setParentMenuName("datalist_utils").setName("builtin_entries")
                 .setInit(menu -> Stream.of(Constants.builtEntriesInDataList).forEach(a -> {
                     JMenuItem menuItem = new JMenuItem(a);

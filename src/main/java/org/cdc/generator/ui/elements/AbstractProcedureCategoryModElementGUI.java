@@ -1,5 +1,6 @@
 package org.cdc.generator.ui.elements;
 
+import net.mcreator.element.GeneratableElement;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JColor;
 import net.mcreator.ui.component.SearchableComboBox;
@@ -8,6 +9,7 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.ProcedureCategoryModElement;
+import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
@@ -19,7 +21,7 @@ import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public abstract class AbstractProcedureCategoryModElementGUI<E extends ProcedureCategoryModElement>
+public abstract class AbstractProcedureCategoryModElementGUI<E extends GeneratableElement & IBlocklyElement>
         extends AbstractConfigurationTableModElementGUI<E> implements IListBlocklyCategoriesModElementGUI{
 
     // aitasks and so on can extends the class.

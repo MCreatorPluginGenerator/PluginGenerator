@@ -28,6 +28,10 @@ public class PluginProceduresElementGUI extends AbstractProceduresModElementGUI<
         this.finalizeGUI();
     }
 
+    @Override protected Container getContainer() {
+        return container;
+    }
+
     @Override protected void openInEditingMode(PluginProcedureModElement generatableElement) {
         super.openInEditingMode0(generatableElement);
     }

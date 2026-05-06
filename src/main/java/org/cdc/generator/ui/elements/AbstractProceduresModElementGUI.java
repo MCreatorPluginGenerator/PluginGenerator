@@ -27,7 +27,6 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.VariableType;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 import org.cdc.generator.utils.ioc.Container;
-import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 
 import javax.annotation.Nonnull;
@@ -69,8 +68,6 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     public JList<ArgTypeProxy> arg0List;
 
     public List<PluginProcedureModElement.Dependency> dependencies;
-
-    @InjectField private Container container;
 
     public AbstractProceduresModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Dependency name", "Type" });
@@ -289,11 +286,14 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         addPage("Args0", PanelUtils.northAndCenterElement(args0ToolBar, splitPane));
     }
 
+    protected abstract Container getContainer();
+
     private void reloadComponent(JPanel rightComponent) {
         rightComponent.removeAll();
         var proxy = arg0List.getSelectedValue();
         if (proxy != null) {
             //inject
+            var container = getContainer();
             container.registerObject("modElementGui", () -> this);
             container.registerTemporaryObject("index", () -> arg0List.getSelectedIndex());
             var argtype = proxy.getArg0Type();

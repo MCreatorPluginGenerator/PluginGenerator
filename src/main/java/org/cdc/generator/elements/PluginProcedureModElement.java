@@ -6,6 +6,7 @@ import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.elements.interfaces.IColorElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
+import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.YamlUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,8 +45,6 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
         super(element);
     }
 
-
-
     @UsedByReflection public String getOutputs() {
         if (outputs.isEmpty()) {
             return null;
@@ -66,8 +65,7 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
 
     @UsedByReflection public String getTooltip() {
         if (tooltip.isBlank()) {
-            // mcreator will not check non-null.....So we only return a placeholder.
-            return "Practice makes perfect";
+            return PluginMakerPreference.INSTANCE.defaultProcedureTooltip.get();
         }
         return tooltip;
     }

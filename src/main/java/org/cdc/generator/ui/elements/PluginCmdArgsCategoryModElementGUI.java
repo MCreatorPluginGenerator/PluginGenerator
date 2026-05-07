@@ -2,6 +2,7 @@ package org.cdc.generator.ui.elements;
 
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
+import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.PluginCmdArgsCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
@@ -13,6 +14,12 @@ public class PluginCmdArgsCategoryModElementGUI extends AbstractProcedureCategor
 
         initGUI();
         finalizeGUI();
+    }
+
+    @Override protected void initGUI() {
+        super.initGUI();
+
+        addPage("edit", PanelUtils.totalCenterInPanel(buildConfiguration(2))).validate(name);
     }
 
     @Override public BlocklyEditorType getBlocklyEditorType() {

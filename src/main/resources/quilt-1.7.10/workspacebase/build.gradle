@@ -22,10 +22,28 @@ tasks.jar {
 tasks.register('exportToMyMCreator', Copy) {
     dependsOn jar
     from("build/libs/demo-plugin.zip")
-    destinationDir(new File(getUserFolder(), "plugins"))
+    destinationDir(new File(getUserFolder(), "plugins/"))
+    rename { String fileName ->
+        fileName == "demo-plugin.zip" ? "demo-plugin" + UUID.randomUUID() + ".zip" : fileName
+    }
     doLast {
         println("You can restart your mcreator with folder: " + destinationDir)
     }
+}
+
+tasks.register('runMCreatorWithPlugin', JavaExec) {
+    dependsOn jar
+
+    environment("MCREATOR_HOME", file("./run"))
+    environment("MCREATOR_PLUGINS_FOLDER", file("./build/libs"))
+
+    jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
+
+    classpath = sourceSets.main.runtimeClasspath
+
+    mainClass = 'net.mcreator.Launcher'
+
+    workingDir = file("./run")
 }
 
 private static File getUserFolder() {

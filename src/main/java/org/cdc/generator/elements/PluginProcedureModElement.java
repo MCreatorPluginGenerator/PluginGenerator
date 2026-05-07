@@ -19,6 +19,7 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     public boolean inputsInline;
     public String previousStatement;
     public String nextStatement;
+    public String mutator;
     public Color colour;
     public String builtInColor;
     public List<String> outputs;
@@ -67,6 +68,13 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
             return PluginMakerPreference.INSTANCE.defaultProcedureTooltip.get();
         }
         return tooltip;
+    }
+
+    @UsedByReflection public String getMutator() {
+        if (mutator != null && mutator.isBlank()) {
+            return null;
+        }
+        return mutator;
     }
 
     // compatible with previous version.

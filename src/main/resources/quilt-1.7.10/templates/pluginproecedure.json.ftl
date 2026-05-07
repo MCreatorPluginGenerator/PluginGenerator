@@ -24,6 +24,9 @@
   <#if !data.nextStatement.isEmpty()>
   ,"nextStatement": "${data.nextStatement}"
   </#if>
+  <#if data.getMutator()??>
+   ,"mutator": "${data.getMutator()}"
+  </#if>
    ,"mcreator": {
        "toolbox_id": "${data.toolbox_id}"
        <#if !data.group.isBlank()>

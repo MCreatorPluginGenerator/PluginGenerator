@@ -154,49 +154,64 @@ public class PluginMain extends JavaPlugin {
 
         registerAll(mcreator);
 
-        if (mcreator.getWorkspaceSettings().dependants.stream().noneMatch(str -> str.startsWith("weight_"))) {
-            LOG.debug("Try to add weight_0 to dependants");
-            mcreator.getWorkspaceSettings().dependants.add("weight_0");
+        CompletableFuture.runAsync(() -> {
+            if (mcreator.getWorkspaceSettings().dependants.stream().noneMatch(str -> str.startsWith("weight_"))) {
+                LOG.debug("Try to add weight_0 to dependants");
+                mcreator.getWorkspaceSettings().dependants.add("weight_0");
 
-            SwingUtilities.invokeLater(() -> {
-                JOptionPane.showMessageDialog(null,
-                        "But for the help from community, this will be not finished. If you encounter a bug, please report.");
-            });
-        }
-
-        var libs = new File(mcreator.getWorkspaceFolder(), ".mcreator/libs");
-        var oldLibs = new File(mcreator.getWorkspaceFolder(), "libs");
-        if (oldLibs.isDirectory()) {
-            FileIO.deleteDir(oldLibs);
-        }
-        if (libs.isDirectory() && !Launcher.version.isDevelopment()) {
-            FileIO.deleteDir(libs);
-            LOG.debug("Plugin maker has removed all old jars");
-        }
-
-        var mcreatorJar = new File("mcreator.jar");
-        var mcreatorExe = new File("mcreator.exe");
-        var mcreatorLibJar = new File(libs, "mcreator.jar");
-        if (mcreatorJar.isFile()) {
-            FileIO.copyFile(mcreatorJar, mcreatorLibJar);
-            LOG.debug("Plugin maker has copied main mcreator lib, type: jar");
-        } else if (mcreatorExe.isFile()) {
-            try {
-                var pureMCreatorJar = ZipUtils.tryToConvertExeToJar(mcreatorExe);
-                FileIO.copyFile(pureMCreatorJar, mcreatorJar);
-                FileIO.copyFile(pureMCreatorJar, mcreatorLibJar);
-                LOG.debug("Plugin maker has copied main mcreator libs, type: exe");
-                Files.deleteIfExists(pureMCreatorJar.toPath());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                SwingUtilities.invokeLater(() -> {
+                    JOptionPane.showMessageDialog(null,
+                            "But for the help from community, this will be not finished. If you encounter a bug, please report.");
+                });
             }
-        }
 
-        var mcreatorLibs = new File("lib");
-        if (mcreatorLibs.isDirectory()) {
-            FileIO.copyDirectory(mcreatorLibs, libs);
-            LOG.debug("Plugin maker has copied all mcreator libs");
-        }
+            var libs = new File(mcreator.getWorkspaceFolder(), ".mcreator/libs");
+            var oldLibs = new File(mcreator.getWorkspaceFolder(), "libs");
+            if (oldLibs.isDirectory()) {
+                FileIO.deleteDir(oldLibs);
+            }
+            if (libs.isDirectory() && !Launcher.version.isDevelopment()) {
+                FileIO.deleteDir(libs);
+                LOG.debug("Plugin maker has removed all old jars");
+            }
+
+            var mcreatorJar = new File("mcreator.jar");
+            var mcreatorExe = new File("mcreator.exe");
+            var mcreatorLibJar = new File(libs, "mcreator.jar");
+            if (mcreatorJar.isFile()) {
+                FileIO.copyFile(mcreatorJar, mcreatorLibJar);
+                LOG.debug("Plugin maker has copied main mcreator lib, type: jar");
+            } else if (mcreatorExe.isFile()) {
+                try {
+                    var pureMCreatorJar = ZipUtils.tryToConvertExeToJar(mcreatorExe);
+                    FileIO.copyFile(pureMCreatorJar, mcreatorJar);
+                    FileIO.copyFile(pureMCreatorJar, mcreatorLibJar);
+                    LOG.debug("Plugin maker has copied main mcreator libs, type: exe");
+                    Files.deleteIfExists(pureMCreatorJar.toPath());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+
+            var mcreatorLibs = new File("lib");
+            if (mcreatorLibs.isDirectory()) {
+                FileIO.copyDirectory(mcreatorLibs, libs);
+                LOG.debug("Plugin maker has copied all mcreator libs");
+            }
+
+            if (!Launcher.version.isDevelopment()) {
+                var runPlugins = new File(mcreator.getWorkspaceFolder(), "run/plugins");
+                if (runPlugins.isDirectory()) {
+                    FileIO.deleteDir(runPlugins);
+                }
+
+                var mcreatorPlugins = new File("plugins");
+                if (mcreatorPlugins.isDirectory()) {
+                    FileIO.copyDirectory(mcreatorPlugins, runPlugins);
+                    LOG.debug("Plugin maker has copied all mcreator plugins");
+                }
+            }
+        });
     }
 
     public void registerAll(MCreator mcreator) {

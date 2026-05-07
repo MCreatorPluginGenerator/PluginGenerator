@@ -5,7 +5,6 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JColor;
 import net.mcreator.ui.component.SearchableComboBox;
 import net.mcreator.ui.component.util.ComboBoxUtil;
-import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.ProcedureCategoryModElement;
@@ -58,8 +57,6 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
         addConfigurationWithHelpEntry("custom_parent_category", customCategory);
 
         addConfigurationWithHelpEntry("is_api", isApi);
-
-        addPage("edit", PanelUtils.totalCenterInPanel(buildConfiguration(2))).validate(name);
     }
 
     protected void openInEditingMode0(ProcedureCategoryModElement generatableElement) {

@@ -6,7 +6,6 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JColor;
 import net.mcreator.ui.component.JStringListField;
 import net.mcreator.ui.component.util.ComboBoxUtil;
-import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.validation.ValidationResult;
@@ -69,6 +68,9 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     public JList<ArgTypeProxy> arg0List;
 
     public List<PluginProcedureModElement.Dependency> dependencies;
+    protected JToolBar args0ToolBar;
+    protected JSplitPane splitPane;
+    protected JToolBar dependenciesToolBar;
 
     public AbstractProceduresModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Dependency name", "Type" });
@@ -132,6 +134,8 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         addConfigurationWithHelpEntry("builtincolor", builtInColor);
 
         addConfigurationWithHelpEntry("mutator", mutator);
+
+        outputs.setEditable(true);
         addConfigurationWithHelpEntry("outputs", outputs);
         addConfigurationWithHelpEntry("extensions", extensions);
 
@@ -197,15 +201,15 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             }
         });
 
-        JToolBar bar = new JToolBar();
-        bar.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
-        bar.setFloatable(false);
-        bar.setOpaque(false);
+        dependenciesToolBar = new JToolBar();
+        dependenciesToolBar.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));
+        dependenciesToolBar.setFloatable(false);
+        dependenciesToolBar.setOpaque(false);
 
         JButton addrow = createAddButton();
-        bar.add(addrow);
+        dependenciesToolBar.add(addrow);
         JButton remrow = createRemoveRowButton();
-        bar.add(remrow);
+        dependenciesToolBar.add(remrow);
 
         addrow.addActionListener(a -> {
             dependencies.add(new PluginProcedureModElement.Dependency("name" + dependencies.size(), "type"));
@@ -222,14 +226,11 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             refreshTable();
         });
 
-        addPage("Configuration", PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(bar))).validate(
-                name).validate(localizationValue);
-
-        JToolBar args0ToolBar = new JToolBar();
+        args0ToolBar = new JToolBar();
 
         JButton addLine = createAddButton();
         JButton removeLine = createRemoveRowButton();
-        JSplitPane splitPane = new JSplitPane();
+        splitPane = new JSplitPane();
         arg0List.setBorder(BorderFactory.createTitledBorder("List"));
         arg0List.setOpaque(false);
         arg0List.setVisibleRowCount(20);
@@ -285,7 +286,6 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             }
         });
 
-        addPage("Args0", PanelUtils.northAndCenterElement(args0ToolBar, splitPane));
     }
 
     protected abstract Container getContainer();
@@ -312,7 +312,10 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             typeName.setSelectedItem(proxy.getArg0TypeName());
             typeName.addItemListener(a -> {
                 if (a.getStateChange() == ItemEvent.SELECTED) {
-                    jsonObject.addProperty("type", typeName.getSelectedItem());
+                    var type = typeName.getSelectedItem();
+                    if (!"custom_type".equals(type)) {
+                        jsonObject.addProperty("type", type);
+                    }
                     reloadComponent(rightComponent);
                 }
             });

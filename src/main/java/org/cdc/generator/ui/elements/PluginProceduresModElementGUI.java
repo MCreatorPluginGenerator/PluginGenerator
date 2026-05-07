@@ -2,6 +2,7 @@ package org.cdc.generator.ui.elements;
 
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
+import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.ProcedureCategoryModElement;
@@ -28,6 +29,14 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
         this.finalizeGUI();
     }
 
+    @Override protected void initGUI() {
+        super.initGUI();
+        addPage("Configuration",
+                PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(dependenciesToolBar))).validate(
+                name).validate(localizationValue);
+        addPage("Args0", PanelUtils.northAndCenterElement(args0ToolBar, splitPane));
+    }
+
     @Override protected Container getContainer() {
         return container;
     }
@@ -44,17 +53,17 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
         element.nextStatement = this.nextStatement.getText();
         element.colour = this.color.getColor();
         element.builtInColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem());
-
+        element.mutator = this.mutator.getText();
         // compatible with previous version.
         if (outputs.getSelectedIndex() == 0) {
             element.outputs = List.of();
         } else {
-            element.outputs = List.of(Objects.requireNonNull(outputs.getSelectedItem()));
+            element.outputs = List.of(Objects.requireNonNull(this.outputs.getSelectedItem()));
         }
-        element.extensions = extensions.getTextList();
+        element.extensions = this.extensions.getTextList();
         element.toolbox_id = this.toolboxId.getSelectedItem();
         element.group = this.group.getText();
-        element.warnings = Objects.requireNonNullElse(warnings.getTextList(), List.of());
+        element.warnings = Objects.requireNonNullElse(this.warnings.getTextList(), List.of());
         element.required_apis = Objects.requireNonNullElse(requiredApis.getTextList(), List.of());
         element.arg0 = new ArrayList<>(model);
         element.inputs = this.inputs.getTextList();

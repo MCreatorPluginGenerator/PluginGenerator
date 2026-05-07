@@ -1,13 +1,13 @@
 name: Plugin maker @buildfileversion
 status: experimental
-buildfileversion: 1.7.10.1
+buildfileversion: 1.7.10.2
 is_plugin_maker: true
 
 # gradle task definitions
 gradle:
   export_file: "build/libs/demo-plugin.zip"
   # this will keep the resource tab still exist.
-  run_client: exportToMCreator
+  run_client: exportToMyMCreator
 
 import_formatter:
   duplicates_whitelist:

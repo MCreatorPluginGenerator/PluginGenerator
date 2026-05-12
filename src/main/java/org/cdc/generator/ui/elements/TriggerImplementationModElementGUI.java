@@ -103,7 +103,7 @@ public class TriggerImplementationModElementGUI
         methodToolBar = new JToolBar();
 
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(methodBody, mcreator);
-        AutoCompletionFactory.createDefaultCompletion(methodBody, this::createCompletionProvider);
+        AutoCompletionFactory.createDefaultParameterCompletion(methodBody, this::createCompletionProvider);
         var panel = PanelUtils.northAndCenterElement(methodToolBar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 

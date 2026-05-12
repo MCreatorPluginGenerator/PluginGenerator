@@ -255,7 +255,13 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         DataListModElement dataListModElement = new DataListModElement(modElement);
         dataListModElement.generateDataList = generateDataList.isSelected();
         dataListModElement.entries = new ArrayList<>(
-                entries.stream().map(DataListModElement.DataListEntry::clone).filter(a -> !a.isBuiltIn()).toList());
+                entries.stream().map(DataListModElement.DataListEntry::clone).filter(a -> !a.isBuiltIn())
+                        .sorted(Comparator.comparing(a -> {
+                            if (a.getName().charAt(0) == '_') {
+                                return -1;
+                            }
+                            return 0;
+                        })).toList());
         dataListModElement.dialogMessage = dialogMessage.getText();
         return dataListModElement;
     }

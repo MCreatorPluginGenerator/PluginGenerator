@@ -37,6 +37,10 @@ public class MappingsModElement extends GeneratableElement implements IGenerator
         return getModElement().getTypeString() + getGeneratorName() + datalistElementName;
     }
 
+    @UsedByReflection public ArrayList<MappingEntry> getMappingsContent() {
+        return mappingsContent;
+    }
+
     public static class MappingEntry implements Cloneable {
         private String name;
         private List<String> mappingContent;

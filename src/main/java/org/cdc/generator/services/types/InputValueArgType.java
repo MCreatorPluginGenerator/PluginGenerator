@@ -1,6 +1,7 @@
 package org.cdc.generator.services.types;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.VariableTypeLoader;
@@ -11,6 +12,7 @@ import org.cdc.generator.utils.VariableType;
 import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
+import java.util.Objects;
 
 public class InputValueArgType extends AbstractArgType {
     @InjectField PluginProceduresModElementGUI modElementGui;
@@ -28,21 +30,34 @@ public class InputValueArgType extends AbstractArgType {
         super.getEditor(jsonObject, newJsonObject);
 
         var name = new VTextField();
-        if (jsonObject.has("name")) {
-            name.setText(jsonObject.get("name").getAsString());
+        if (newJsonObject.has("name")) {
+            name.setText(newJsonObject.get("name").getAsString());
         }
         addConfiguration("name", name);
         var check = new VComboBox<String>();
-        for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
-            check.addItem(supportedType.blocklyTypeName());
+        check.setEditable(true);
+        for (String supportedType : Utils.getAllSupportedVariableTypes().stream().map(VariableType::blocklyTypeName).sorted().toList()) {
+            check.addItem(supportedType);
         }
-        if (jsonObject.has("check")) {
-            check.setSelectedItem(jsonObject.get("check").getAsString());
+        if (newJsonObject.has("check")) {
+            var elemt = newJsonObject.get("check");
+            if (elemt.isJsonArray()){
+                check.setSelectedItem(elemt.getAsJsonArray().get(0).getAsString());
+            } else {
+                check.setSelectedItem(elemt.getAsString());
+            }
         }
         addConfiguration("check", check);
 
         name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
         check.addItemListener(a -> {
+            if (newJsonObject.has("check")) {
+                var elemt = newJsonObject.get("check");
+                if (elemt.isJsonArray()) {
+                    elemt.getAsJsonArray().set(0, new JsonPrimitive(Objects.requireNonNull(check.getSelectedItem())));
+                    return;
+                }
+            }
             newJsonObject.addProperty("check", check.getSelectedItem());
         });
 
@@ -56,7 +71,7 @@ public class InputValueArgType extends AbstractArgType {
             newJsonObject.addProperty("name", "none" + index);
         }
         if (jsonObject.has("check")) {
-            newJsonObject.addProperty("check", jsonObject.get("check").getAsString());
+            newJsonObject.add("check", jsonObject.get("check"));
         } else {
             newJsonObject.addProperty("check", VariableTypeLoader.BuiltInTypes.NUMBER.getBlocklyVariableType());
         }

@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 
 public class DialogUtils {
     public static int showOptionPaneWithTextArea(RSyntaxTextArea jTextArea, Component parent, String title,
-            Collection<?> collections) {
+            Collection<?> lines) {
         RTextScrollPane jScrollPane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(jTextArea, parent);
         jScrollPane.setBorder(BorderFactory.createTitledBorder("Lines"));
-        if (!collections.isEmpty()) {
-            jTextArea.setText(collections.stream().map(Object::toString).collect(Collectors.joining("\n")));
+        if (!lines.isEmpty()) {
+            jTextArea.setText(lines.stream().map(Object::toString).collect(Collectors.joining("\n")));
         }
         return JOptionPane.showConfirmDialog(parent, jScrollPane, title, JOptionPane.YES_NO_OPTION);
     }

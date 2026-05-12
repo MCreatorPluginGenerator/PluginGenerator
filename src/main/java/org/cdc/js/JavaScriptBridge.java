@@ -13,6 +13,6 @@ public class JavaScriptBridge {
     }
 
     @UsedByReflection public static String beautifyXml(String xml) {
-        return xml.replaceAll("xmlns=\"https:(.+?)\" ", "");
+        return xml.replaceAll("xmlns=\"(https|http):(.+?)\" ", "");
     }
 }

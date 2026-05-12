@@ -17,6 +17,7 @@ import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.VariableType;
 import org.cdc.generator.utils.validators.DuplicatedElementValidator;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -50,6 +51,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
     );
 
     public List<TriggerModElement.Dependency> dependencies;
+    private Set<String> names;
 
     // the 0 is the last search index
     protected final ArrayList<Integer> lastSearchResult;
@@ -133,14 +135,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         bar.add(addrow);
         JButton remrow = createRemoveRowButton();
         bar.add(remrow);
-        JButton xyz = new JButton("XYZ");
-        xyz.setContentAreaFilled(false);
-        xyz.setToolTipText("Add xyz parameters");
-        xyz.setOpaque(false);
-        xyz.addActionListener(a -> {
-            Stream.of("x", "y", "z").forEach(b -> dependencies.add(new TriggerModElement.Dependency(b, "number")));
-            refreshTable();
-        });
+        JButton xyz = getXyz();
         bar.add(xyz);
 
         bar.add(Utils.initSearchComponent(lastSearchResult, this));
@@ -155,6 +150,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             Arrays.stream(jTable.getSelectedRows()).forEach(stack::add);
             while (!stack.empty()) {
                 dependencies.remove((int) stack.pop());
+                refreshNames();
             }
             refreshTable();
         });
@@ -164,6 +160,24 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         addPage("Parameters", toolbarAndTable(bar)).lazyValidate(new DuplicatedElementValidator(
                 () -> dependencies.stream().map(TriggerModElement.Dependency::getName).toList(),
                 a -> jTable.changeSelection(a, 0, false, false)));
+    }
+
+    private @NotNull JButton getXyz() {
+        JButton xyz = new JButton("XYZ");
+        xyz.setContentAreaFilled(false);
+        xyz.setToolTipText("Add xyz parameters");
+        xyz.setOpaque(false);
+        xyz.addActionListener(a -> {
+            refreshNames();
+            Stream.of("x", "y", "z").forEach(b -> {
+                if (!names.contains(b)) {
+                    dependencies.add(new TriggerModElement.Dependency(b, "number"));
+                    names.add(b);
+                }
+            });
+            refreshTable();
+        });
+        return xyz;
     }
 
     @Override public void doSearch(Map.Entry<String, String> search) {
@@ -188,6 +202,11 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             }
         }
 
+    }
+
+    private void refreshNames() {
+        names = new HashSet<>();
+        dependencies.forEach(a -> names.add(a.getName()));
     }
 
     @Override public CompletableFuture<Void> refreshTable() {
@@ -271,6 +290,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             var row = dependencies.get(rowIndex);
             if (columns[columnIndex].equals("Name")) {
                 row.setName(aValue.toString());
+                refreshNames();
             } else if (columns[columnIndex].equals("Type")) {
                 row.setType(aValue.toString());
             }

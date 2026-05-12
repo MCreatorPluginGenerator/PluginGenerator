@@ -35,11 +35,11 @@ public class FieldDataListSelectorArgType extends AbstractArgType {
 
         var datalist = new VComboBox<String>();
         datalist.setEditable(true);
+        datalist.setSelectedItem("");
         if (jsonObject.has("datalist")) {
             datalist.setSelectedItem(jsonObject.get("datalist").getAsString());
         }
         ComboBoxUtil.updateComboBoxContents(datalist, Utils.getAllDatalistName(true));
-        datalist.setSelectedItem("");
         addConfiguration("datalist", datalist);
 
         var testValue = new VTextField();

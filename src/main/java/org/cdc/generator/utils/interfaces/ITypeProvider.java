@@ -9,8 +9,7 @@ import java.util.ServiceLoader;
  * To support other plugins.
  */
 public interface ITypeProvider {
-    ServiceLoader<ITypeProvider> serviceLoader = ServiceLoader.load(ITypeProvider.class,
-            ITypeProvider.class.getClassLoader());
+    ServiceLoader<ITypeProvider> serviceLoader = ServiceLoader.load(ITypeProvider.class, ITypeProvider.class.getClassLoader());
 
     List<VariableType> provide();
 }

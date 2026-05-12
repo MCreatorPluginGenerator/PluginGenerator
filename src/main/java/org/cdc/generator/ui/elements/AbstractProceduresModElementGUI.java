@@ -1,5 +1,8 @@
 package org.cdc.generator.ui.elements;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.ui.MCreator;
@@ -20,13 +23,12 @@ import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.services.types.ArgTypeProxy;
-import org.cdc.generator.utils.Constants;
-import org.cdc.generator.utils.Rules;
-import org.cdc.generator.utils.Utils;
-import org.cdc.generator.utils.VariableType;
+import org.cdc.generator.utils.*;
+import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 import javax.annotation.Nonnull;
 import javax.swing.*;
@@ -230,6 +232,8 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
 
         JButton addLine = createAddButton();
         JButton removeLine = createRemoveRowButton();
+        JButton importArg0JsonArrary = L10N.button("import arg0 array");
+
         splitPane = new JSplitPane();
         arg0List.setBorder(BorderFactory.createTitledBorder("List"));
         arg0List.setOpaque(false);
@@ -239,6 +243,17 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
 
         JPopupMenu functions = new JPopupMenu();
         JMenuItem copyValue = new JMenuItem("Copy toolbox init value");
+
+        functions.add(copyValue);
+        JMenuItem copyPlaceHolder = new JMenuItem("Copy localization placeholder");
+        functions.add(copyPlaceHolder);
+
+        arg0List.setComponentPopupMenu(functions);
+        splitPane.setLeftComponent(new JScrollPane(arg0List));
+        JPanel rightComponent = new JPanel(new BorderLayout());
+        rightComponent.setBorder(BorderFactory.createTitledBorder("Config"));
+        splitPane.setRightComponent(rightComponent);
+        args0ToolBar.add(addLine);
         copyValue.addActionListener(e -> {
             if (arg0List.getSelectedValue() != null) {
                 var str = JOptionPane.showInputDialog(mcreator, "wrap your copied procedure xml or null");
@@ -247,31 +262,31 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
                 arg0List.getToolkit().getSystemClipboard().setContents(content, content);
             }
         });
-        functions.add(copyValue);
-        JMenuItem copyPlaceHolder = new JMenuItem("Copy localization placeholder");
         copyPlaceHolder.addActionListener(e -> {
             if (arg0List.getSelectedValue() != null) {
                 var content = new StringSelection("%" + (arg0List.getSelectedIndex() + 1));
                 arg0List.getToolkit().getSystemClipboard().setContents(content, content);
             }
         });
-        functions.add(copyPlaceHolder);
-
-        arg0List.setComponentPopupMenu(functions);
-
-        splitPane.setLeftComponent(new JScrollPane(arg0List));
-        JPanel rightComponent = new JPanel(new BorderLayout());
-        rightComponent.setBorder(BorderFactory.createTitledBorder("Config"));
-        splitPane.setRightComponent(rightComponent);
-        args0ToolBar.add(addLine);
         addLine.addActionListener(a -> {
             var json = new JsonObject();
             json.addProperty("type", "input_dummy");
             model.add(new ArgTypeProxy(json));
         });
         removeLine.addActionListener(a -> model.remove(arg0List.getSelectedValue()));
+        importArg0JsonArrary.addActionListener(a->{
+            RSyntaxTextArea rSyntaxTextArea = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
+            var i = DialogUtils.showOptionPaneWithTextArea(rSyntaxTextArea,mcreator,"Input your json array",Collections.emptyList());
+            if (i == JOptionPane.YES_OPTION){
+                JsonArray jsonElements = new Gson().fromJson(rSyntaxTextArea.getText(), JsonArray.class);
+                for (JsonElement jsonElement : jsonElements) {
+                    model.add(new ArgTypeProxy(jsonElement.getAsJsonObject()));
+                }
+            }
+        });
         args0ToolBar.add(addLine);
         args0ToolBar.add(removeLine);
+        args0ToolBar.add(importArg0JsonArrary);
         arg0List.addListSelectionListener(listSelectionEvent -> {
             reloadComponent(rightComponent);
         });
@@ -313,9 +328,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             typeName.addItemListener(a -> {
                 if (a.getStateChange() == ItemEvent.SELECTED) {
                     var type = typeName.getSelectedItem();
-                    if (!"custom_type".equals(type)) {
-                        jsonObject.addProperty("type", type);
-                    }
+                    jsonObject.addProperty("type", type);
                     reloadComponent(rightComponent);
                 }
             });

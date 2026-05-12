@@ -101,7 +101,7 @@ public class VariableImplementationModElementGUI
                     int column) {
                 var row = scopeList.get(rowIndex);
                 var jTextArea = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
-                AutoCompletionFactory.createDefaultCompletion(jTextArea,
+                AutoCompletionFactory.createDefaultParameterCompletion(jTextArea,
                         VariableImplementationModElementGUI.this::createCompletionProvider);
                 var toolbar = new JToolBar();
                 toolbar.setBorder(BorderFactory.createTitledBorder("Examples"));

@@ -197,7 +197,12 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
         element.datalistElementName = datalistName.getSelectedItem();
         element.generatorName = generator.getSelectedItem();
         element.mappingsContent = new ArrayList<>(mappingEntries.stream().map(MappingsModElement.MappingEntry::clone)
-                .filter(MappingsModElement.MappingEntry::isEdited).toList());
+                .filter(MappingsModElement.MappingEntry::isEdited).sorted(Comparator.comparing(a -> {
+                    if (a.getName().charAt(0) == '_') {
+                        return -1;
+                    }
+                    return 0;
+                })).toList());
         modElement.setRegistryName(element.getDatalistName());
         return element;
     }

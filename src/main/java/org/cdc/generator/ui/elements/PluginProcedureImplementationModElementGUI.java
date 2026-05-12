@@ -67,7 +67,7 @@ public class PluginProcedureImplementationModElementGUI
         if (lastAutoCompletion != null) {
             lastAutoCompletion.uninstall();
         }
-        lastAutoCompletion = AutoCompletionFactory.createDefaultCompletion(content, this::createCompletionProvider);
+        lastAutoCompletion = AutoCompletionFactory.createDefaultParameterCompletion(content, this::createCompletionProvider);
     }
 
     @Override protected void initGUI() {

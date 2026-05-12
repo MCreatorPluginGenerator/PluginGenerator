@@ -29,7 +29,7 @@ callback: function (scope) {
     const serializer = new XMLSerializer();
     let xmlText = serializer.serializeToString(dom);
 
-    devUtils.setClipboard(devUtils.beautifyXml(xmlText));
+    plugingenerator.setClipboard(plugingenerator.beautifyXml(xmlText));
 },
   scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
 });

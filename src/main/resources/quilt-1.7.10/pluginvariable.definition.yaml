@@ -10,4 +10,4 @@ localizationkeys:
   - key: blockly.block.set_var_@registryname
     mapto: getSetterLocalization()
   - key: blockly.block.get_var_@registryname
-    mapto: getGetterLocalization
+    mapto: getGetterLocalization()

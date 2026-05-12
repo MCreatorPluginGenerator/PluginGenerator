@@ -130,7 +130,7 @@ public class PluginMain extends JavaPlugin {
         });
 
         addListener(BlocklyPanelRegisterDOMData.class, a -> {
-            a.addJavaScriptBridge("devUtils", new JavaScriptBridge());
+            a.addJavaScriptBridge("plugingenerator", new JavaScriptBridge());
         });
 
         addListener(ModifyTemplateResultEvent.class, event -> {

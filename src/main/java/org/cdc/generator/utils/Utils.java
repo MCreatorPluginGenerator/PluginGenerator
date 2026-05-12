@@ -36,6 +36,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Stream;
 
 public class Utils {
 
@@ -45,8 +46,8 @@ public class Utils {
 
     public static List<String> getAllSupportedGenerators() {
         // to do more stable.
-        return Generator.GENERATOR_CACHE.entrySet().stream()
-                .sorted(new JavaGeneratorFirstComparator()).map(Map.Entry::getKey).toList();
+        return Generator.GENERATOR_CACHE.entrySet().stream().sorted(new JavaGeneratorFirstComparator())
+                .map(Map.Entry::getKey).toList();
     }
 
     public static Set<org.cdc.generator.utils.VariableType> getAllSupportedVariableTypes() {
@@ -63,7 +64,7 @@ public class Utils {
                 .reversed();
     }
 
-    public static String[] getAllBuiltinColors(){
+    public static String[] getAllBuiltinColors() {
         return new String[] { Constants.NONE, Constants.BuiltInColors.BKY_TEXTS_HUE,
                 Constants.BuiltInColors.BKY_LOGIC_HUE, Constants.BuiltInColors.BKY_MATH_HUE };
     }
@@ -90,7 +91,7 @@ public class Utils {
     }
 
     public static JPanel initSearchComponent(ArrayList<Integer> lastSearchResult, ISearchable searchable) {
-        if (lastSearchResult.size() != 1){
+        if (lastSearchResult.size() != 1) {
             lastSearchResult.add(-1);
         }
 
@@ -219,14 +220,19 @@ public class Utils {
                 }
             }
         });
-        provider.addCompletion(new ShorthandCompletion(provider, "inmcelements", "<#include \"mcelements.ftl\">"));
-        provider.addCompletion(new ShorthandCompletion(provider, "inmcitems", "<#include \"mcitems.ftl\">"));
-        provider.addCompletion(new ShorthandCompletion(provider,"intriggers","<#include \"triggers.ftl\">"));
 
-        provider.addCompletion(new TemplateCompletion(provider,"include","include","<#include \"${include}\">${cursor}"));
-        provider.addCompletion(new TemplateCompletion(provider,"if","if-template","<#if ${condition}>${cursor}</#if>"));
-        provider.addCompletion(new TemplateCompletion(provider,"list","list-template","<#list ${array} as ${element}>${cursor}</#if>"));
-        provider.addCompletion(new TemplateCompletion(provider,"assign","assign-template","<#assign ${name}=${value}>"));
+        Stream.of("aiconditions", "boundingboxes", "mcelements", "mcitems", "procedures", "triggers").forEach(a -> {
+            provider.addCompletion(new ShorthandCompletion(provider, "in" + a, "<#include \"" + a + ".ftl\">"));
+        });
+
+        provider.addCompletion(
+                new TemplateCompletion(provider, "include", "include", "<#include \"${include}\">${cursor}"));
+        provider.addCompletion(
+                new TemplateCompletion(provider, "if", "if-template", "<#if ${condition}>${cursor}</#if>"));
+        provider.addCompletion(new TemplateCompletion(provider, "list", "list-template",
+                "<#list ${array} as ${element}>${cursor}</#if>"));
+        provider.addCompletion(
+                new TemplateCompletion(provider, "assign", "assign-template", "<#assign ${name}=${value}>"));
     }
 
     public static String convertColor(Color color) {
@@ -264,8 +270,9 @@ public class Utils {
         return list;
     }
 
-    public static <E extends IBlocklyCategoryElement> HashSet<String> getAllCategories(MCreator mcreator,BlocklyEditorType blocklyEditorType,Class<E> eClass,boolean appendBuiltin){
-        var getter = CompletableFuture.supplyAsync(()->{
+    public static <E extends IBlocklyCategoryElement> HashSet<String> getAllCategories(MCreator mcreator,
+            BlocklyEditorType blocklyEditorType, Class<E> eClass, boolean appendBuiltin) {
+        var getter = CompletableFuture.supplyAsync(() -> {
             var stringArrayList1 = new HashSet<String>();
             BlocklyLoader.INSTANCE.getBlockLoader(blocklyEditorType).getDefinedBlocks().values().forEach(a -> {
                 if (a.getToolboxCategory() != null) {

@@ -1,5 +1,5 @@
 <#list data.entries as entry>
-<#if !entry.isBuiltIn()>
+<#if !entry.isBuiltIn() && !entry.getName()?starts_with("_")>
 - ${entry.getName()}<#if entry.hasAttributes()>:
 <#if entry.getReadableName()??>  readable_name: "${entry.getReadableName()}"</#if>
 <#if entry.getType()??>  type: ${entry.getType()}</#if>

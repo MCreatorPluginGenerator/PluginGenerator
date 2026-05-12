@@ -101,6 +101,7 @@ public class TriggerImplementationModElementGUI
         addConfigurationWithHelpEntry("event_name", eventName);
 
         methodToolBar = new JToolBar();
+        methodToolBar.add(syncLocalImplFile(methodBody::setText));
 
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(methodBody, mcreator);
         AutoCompletionFactory.createDefaultParameterCompletion(methodBody, this::createCompletionProvider);

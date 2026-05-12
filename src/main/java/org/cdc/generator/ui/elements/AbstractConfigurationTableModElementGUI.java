@@ -1,6 +1,7 @@
 package org.cdc.generator.ui.elements;
 
 import net.mcreator.element.GeneratableElement;
+import net.mcreator.io.FileIO;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.ComponentUtils;
@@ -24,6 +25,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public abstract class AbstractConfigurationTableModElementGUI<E extends GeneratableElement> extends ModElementGUI<E> {
@@ -223,5 +225,18 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
 
     protected String getHelpEntryAndLocalizationPrefix() {
         return modElement.getTypeString();
+    }
+
+    protected JButton syncLocalImplFile(Consumer<String> consumer){
+        var sync = new JButton("S");
+        sync.setToolTipText("Sync from local file");
+        sync.addActionListener(a->{
+            var files = getModElement().getAssociatedFiles();
+            if (!files.isEmpty()){
+                var str = FileIO.readFileToString(files.getFirst());
+                consumer.accept(str);
+            }
+        });
+        return sync;
     }
 }

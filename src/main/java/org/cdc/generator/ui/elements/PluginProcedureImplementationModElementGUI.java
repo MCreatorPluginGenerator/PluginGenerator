@@ -67,7 +67,8 @@ public class PluginProcedureImplementationModElementGUI
         if (lastAutoCompletion != null) {
             lastAutoCompletion.uninstall();
         }
-        lastAutoCompletion = AutoCompletionFactory.createDefaultParameterCompletion(content, this::createCompletionProvider);
+        lastAutoCompletion = AutoCompletionFactory.createDefaultParameterCompletion(content,
+                this::createCompletionProvider);
     }
 
     @Override protected void initGUI() {
@@ -116,9 +117,11 @@ public class PluginProcedureImplementationModElementGUI
             String comment = BuilderUtils.generateInputsComment(inputs) + System.lineSeparator()
                     + BuilderUtils.generateFieldsComment(fields) + System.lineSeparator()
                     + BuilderUtils.generateStatementsComment(statements) + System.lineSeparator();
-            content.setText(comment);
+            content.setText(comment + "\n" + content.getText());
         });
         toolbar.add(generate);
+
+        toolbar.add(syncLocalImplFile(content::setText));
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(content, mcreator);
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));

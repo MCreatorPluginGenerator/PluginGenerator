@@ -35,6 +35,8 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     private JPanel configurationPanel;
     protected JTable jTable;
 
+    protected String tableTitle = "Table";
+
     protected ArrayList<JComponent> componentList;
 
     public AbstractConfigurationTableModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
@@ -174,7 +176,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
 
     protected JComponent toolbarAndTable(JComponent north) {
         JPanel panel = PanelUtils.northAndCenterElement(north, new JScrollPane(jTable));
-        panel.setBorder(BorderFactory.createTitledBorder("Table"));
+        panel.setBorder(BorderFactory.createTitledBorder(tableTitle));
         return panel;
     }
 

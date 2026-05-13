@@ -50,7 +50,7 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
             return null;
         }
         if (outputs.size() == 1) {
-            return outputs.getFirst();
+            return YamlUtils.str(outputs.getFirst());
         }
         return "[" + outputs.stream().map(YamlUtils::str).collect(Collectors.joining(",")) + "]";
     }

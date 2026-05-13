@@ -1,10 +1,11 @@
 package org.cdc.generator.services.types;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.VariableTypeLoader;
+import org.cdc.generator.ui.TypeListField;
 import org.cdc.generator.ui.elements.PluginProceduresModElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Utils;
@@ -12,7 +13,7 @@ import org.cdc.generator.utils.VariableType;
 import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
-import java.util.Objects;
+import java.util.List;
 
 public class InputValueArgType extends AbstractArgType {
     @InjectField PluginProceduresModElementGUI modElementGui;
@@ -33,32 +34,26 @@ public class InputValueArgType extends AbstractArgType {
         if (newJsonObject.has("name")) {
             name.setText(newJsonObject.get("name").getAsString());
         }
+        name.setPreferredSize(Utils.tryToGetTextFieldSize());
         addConfiguration("name", name);
-        var check = new VComboBox<String>();
-        check.setEditable(true);
-        for (String supportedType : Utils.getAllSupportedVariableTypes().stream().map(VariableType::blocklyTypeName).sorted().toList()) {
-            check.addItem(supportedType);
-        }
+        var check = new TypeListField(modElementGui.getMCreator(), VariableType::blocklyTypeName);
         if (newJsonObject.has("check")) {
             var elemt = newJsonObject.get("check");
-            if (elemt.isJsonArray()){
-                check.setSelectedItem(elemt.getAsJsonArray().get(0).getAsString());
+            if (elemt.isJsonArray()) {
+                check.setListElements(elemt.getAsJsonArray().asList().stream().map(JsonElement::getAsString).toList());
             } else {
-                check.setSelectedItem(elemt.getAsString());
+                check.setListElements(List.of(elemt.getAsString()));
             }
         }
         addConfiguration("check", check);
 
         name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
-        check.addItemListener(a -> {
-            if (newJsonObject.has("check")) {
-                var elemt = newJsonObject.get("check");
-                if (elemt.isJsonArray()) {
-                    elemt.getAsJsonArray().set(0, new JsonPrimitive(Objects.requireNonNull(check.getSelectedItem())));
-                    return;
-                }
+        check.addChangeListener(a -> {
+            var array = new JsonArray();
+            for (String listElement : check.getListElements()) {
+                array.add(listElement);
             }
-            newJsonObject.addProperty("check", check.getSelectedItem());
+            newJsonObject.add("check", array);
         });
 
         return wrapConfigurationPanel();

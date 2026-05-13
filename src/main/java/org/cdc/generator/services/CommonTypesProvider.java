@@ -15,6 +15,7 @@ public class CommonTypesProvider implements ITypeProvider {
         }
         list.add(new org.cdc.generator.utils.VariableType("world","World"));
         list.add(new org.cdc.generator.utils.VariableType("diskrule","DiskRule"));
+        list.add(new org.cdc.generator.utils.VariableType("null","Null"));
         //TODO: use prefergenerator to load hidden types.
         return list;
     }

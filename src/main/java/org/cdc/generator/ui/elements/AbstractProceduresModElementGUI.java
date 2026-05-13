@@ -19,11 +19,13 @@ import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.framework.utils.BuilderUtils;
 import org.cdc.generator.elements.PluginProcedureModElement;
-import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
-import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.services.types.ArgTypeProxy;
-import org.cdc.generator.utils.*;
+import org.cdc.generator.ui.TypeListField;
+import org.cdc.generator.utils.DialogUtils;
+import org.cdc.generator.utils.Rules;
+import org.cdc.generator.utils.Utils;
+import org.cdc.generator.utils.VariableType;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 import org.cdc.generator.utils.ioc.Container;
@@ -53,7 +55,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     protected final JColor color;
     protected final VComboBox<String> builtInColor;
     protected final VTextField mutator;
-    protected final VComboBox<String> outputs;
+    protected final TypeListField outputs;
     protected final JStringListField extensions;
     protected final VComboBox<String> toolboxId = new VComboBox<>();
     protected final VTextField group = new VTextField();
@@ -80,7 +82,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.color = new JColor(mcreator, false, false);
         this.builtInColor = new VComboBox<>(Utils.getAllBuiltinColors());
         this.mutator = new VTextField();
-        this.outputs = new VComboBox<>();
+        this.outputs = new TypeListField(mcreator,VariableType::blocklyTypeName);
         this.extensions = new JStringListField(mcreator, null);
         this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);
         this.requiredApis = new JStringListField(mcreator, a -> Rules.getFileNameValidator(a::getText));
@@ -99,6 +101,8 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.tooltip = new VTextField();
 
         this.dependencies = new ArrayList<>();
+
+        tableTitle = "Dependencies";
 
         if (editingMode) {
             name.setEnabled(false);
@@ -137,7 +141,6 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
 
         addConfigurationWithHelpEntry("mutator", mutator);
 
-        outputs.setEditable(true);
         addConfigurationWithHelpEntry("outputs", outputs);
         addConfigurationWithHelpEntry("extensions", extensions);
 
@@ -353,7 +356,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.builtInColor));
         this.extensions.setTextList(generatableElement.extensions);
         if (!generatableElement.outputs.isEmpty()) {
-            this.outputs.setSelectedItem(generatableElement.outputs.getFirst());
+            this.outputs.setListElements(generatableElement.outputs);
         }
         this.toolboxId.setSelectedItem(generatableElement.toolbox_id);
         this.group.setText(generatableElement.group);
@@ -373,19 +376,6 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         var stringArrayList = Utils.getAllCategories(mcreator, getBlocklyEditorType(), getBlocklyCategoryClass(),
                 hasBuiltinCategories());
         ComboBoxUtil.updateComboBoxContents(toolboxId, stringArrayList.stream().sorted().toList());
-
-        ArrayList<String> types = new ArrayList<>();
-        types.add(Constants.NONE);
-        for (ModElement element : mcreator.getWorkspaceInfo()
-                .getElementsOfType(ModElementTypes.VARIABLE.getRegistryName())) {
-            if (element.getGeneratableElement() instanceof VariableModElement variableModElement) {
-                types.add(variableModElement.blocklyVariableType);
-            }
-        }
-        for (VariableType allSupportedVariableType : Utils.getAllSupportedVariableTypes()) {
-            types.add(allSupportedVariableType.blocklyTypeName());
-        }
-        ComboBoxUtil.updateComboBoxContents(outputs, types);
     }
 
     @Override public void doSearch(Map.Entry<String, String> search) {

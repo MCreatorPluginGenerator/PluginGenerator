@@ -7,8 +7,8 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.VariableType;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class TypeListField extends JItemListField<String> {
@@ -22,23 +22,14 @@ public class TypeListField extends JItemListField<String> {
     }
 
     @Override protected List<String> getElementsToAdd() {
-        var check = new VComboBox<VariableType>();
+        var check = new VComboBox<String>();
         check.setEditable(true);
-        check.setRenderer(new DefaultListCellRenderer(){
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-                    boolean cellHasFocus) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-                label.setText(getter.apply((VariableType) value));
-                return label;
-            }
-        });
         for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
-            check.addItem(supportedType);
+            check.addItem(getter.apply(supportedType));
         }
         var id = JOptionPane.showConfirmDialog(mcreator, check, "Select a type", JOptionPane.OK_CANCEL_OPTION);
         if (id == JOptionPane.OK_OPTION) {
-            return List.of(getter.apply(check.getSelectedItem()));
+            return List.of(Objects.requireNonNull(check.getSelectedItem()));
         }
         return List.of();
     }

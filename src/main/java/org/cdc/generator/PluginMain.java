@@ -24,6 +24,8 @@ import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ZipUtils;
 import org.cdc.generator.utils.ioc.Container;
+import org.cdc.generator.utils.writers.JSONWriter;
+import org.cdc.generator.utils.writers.YamlWriter;
 import org.cdc.js.JavaScriptBridge;
 
 import javax.swing.*;
@@ -31,7 +33,10 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -135,9 +140,9 @@ public class PluginMain extends JavaPlugin {
 
         addListener(ModifyTemplateResultEvent.class, event -> {
             if (event.getTemplateName().endsWith("yaml.ftl")) {
-                var sp = event.getTemplateOutputOriginal().split("(\n|\r\n)");
-                event.setTemplateOutput(Arrays.stream(sp).filter(a -> !a.isBlank())
-                        .collect(Collectors.joining(System.lineSeparator())));
+                event.setTemplateOutput(YamlWriter.INSTANCE.formatString(event.getTemplateOutputOriginal()));
+            } else if (event.getTemplateName().equals("pluginproecedure.json.ftl")){
+                event.setTemplateOutput(JSONWriter.INSTANCE.formatString(event.getTemplateOutputOriginal()));
             }
         });
 

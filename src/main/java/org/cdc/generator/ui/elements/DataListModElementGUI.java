@@ -51,7 +51,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     // the 0 is the last search index
     private final ArrayList<Integer> lastSearchResult;
     private ResourcePanelIcons resourcePanelIcons;
-    private HashSet<String> types;
+    private ArrayList<String> types;
 
     private List<String> cachedIcon;
 
@@ -115,16 +115,17 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                 return label;
             }
         });
-        var comboBox = new VComboBox<>();
+        var module = new TableComboBoxModule();
+        var comboBox = new JComboBox<>(module);
         comboBox.setEditable(true);
-        types = new HashSet<>();
+        types = new ArrayList<>();
         jTable.setDefaultEditor(String.class, new DefaultCellEditor(comboBox) {
 
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value1, boolean isSelected, int rowIndex,
                     int column) {
-                comboBox.removeAllItems();
                 var row = entries.get(rowIndex);
+                module.setType(columns[column]);
                 if (columns[column].equals("Others")) {
                     RSyntaxTextArea jTextArea = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
                     JToolBar toolBar = new JToolBar();
@@ -150,17 +151,6 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                         }
                     }
                     return null;
-                } else if ("Texture".equals(columns[column])) {
-                    for (File element : resourcePanelIcons.getAllElements()) {
-                        comboBox.addItem(Files.getNameWithoutExtension(element.getName()));
-                    }
-                    for (String s : cachedIcon) {
-                        comboBox.addItem(s);
-                    }
-                } else if ("Type".equals(columns[column])) {
-                    for (String type : types) {
-                        comboBox.addItem(type);
-                    }
                 }
                 return super.getTableCellEditorComponent(jTable, value1, isSelected, rowIndex, column);
             }
@@ -217,7 +207,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
 
         resourcePanelIcons = new ResourcePanelIcons((WorkspacePanel) mcreator.getWorkspacePanel(), this);
         resourcePanelIcons.reloadElements();
-        addPage("Icons", resourcePanelIcons);
+        addPage("Textures", resourcePanelIcons);
     }
 
     @Override public void doSearch(Map.Entry<String, String> search) {
@@ -277,7 +267,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                 for (DataListEntry dataListEntry : DataListLoader.loadDataList(datalistName.getSelectedItem())) {
                     types.add(dataListEntry.getType());
                 }
-                return types;
+                return types.stream().toList();
             });
             Set<String> keys = new HashSet<>();
             for (DataListModElement.DataListEntry myEntry : entries) {
@@ -290,14 +280,15 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                     entries.add(dataListEntry1);
             }
             try {
-                types = compl.get();
+                types.clear();
+                types.addAll(compl.get());
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    public HashSet<String> getTypes() {
+    public ArrayList<String> getTypes() {
         return types;
     }
 
@@ -361,6 +352,37 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
             case "Texture" -> row.setTexture(aValue.toString());
             case "Description" -> row.setDescription(aValue.toString());
             }
+        }
+    }
+
+    private class TableComboBoxModule extends DefaultComboBoxModel<String>{
+
+        private String type;
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        @Override public int getSize() {
+            if ("Type".equals(type)){
+                return types.size();
+            } else if ("Texture".equals(type)){
+                return cachedIcon.size() + resourcePanelIcons.getAllElements().size();
+            }
+            return super.getSize();
+        }
+
+        @Override public String getElementAt(int index) {
+            if ("Type".equals(type)){
+                return types.get(index);
+            } else if ("Texture".equals(type)){
+                if (index < cachedIcon.size()){
+                    return cachedIcon.get(index);
+                } else {
+                    return Files.getNameWithoutExtension(resourcePanelIcons.getAllElements().get(index - cachedIcon.size()).getPath());
+                }
+            }
+            return super.getElementAt(index);
         }
     }
 }

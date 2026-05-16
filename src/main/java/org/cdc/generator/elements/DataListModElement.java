@@ -106,6 +106,9 @@ public class DataListModElement extends GeneratableElement {
         }
 
         public String getDescription() {
+            if (this.description != null && this.description.isBlank()){
+                return null;
+            }
             return description;
         }
 
@@ -164,7 +167,7 @@ public class DataListModElement extends GeneratableElement {
         }
 
         @UsedByReflection public boolean hasAttributes() {
-            return Stream.of(readableName, type, texture, description).anyMatch(Objects::nonNull)
+            return Stream.of(getReadableName(), getType(), getTexture(), getDescription()).anyMatch(Objects::nonNull)
                     || !getOther().isEmpty();
         }
 

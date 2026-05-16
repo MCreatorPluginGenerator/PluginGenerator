@@ -50,6 +50,9 @@ public class Utils {
                 .map(Map.Entry::getKey).toList();
     }
 
+    /**
+     * @return all variable types in your mcreator
+     */
     public static Set<org.cdc.generator.utils.VariableType> getAllSupportedVariableTypes() {
         // remove duplicated strs.
         var set = new HashSet<org.cdc.generator.utils.VariableType>();

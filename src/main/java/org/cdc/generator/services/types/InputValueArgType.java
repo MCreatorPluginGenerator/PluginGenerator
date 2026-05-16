@@ -36,6 +36,7 @@ public class InputValueArgType extends AbstractArgType {
         }
         name.setPreferredSize(Utils.tryToGetTextFieldSize());
         addConfiguration("name", name);
+
         var check = new TypeListField(modElementGui.getMCreator(), VariableType::blocklyTypeName);
         if (newJsonObject.has("check")) {
             var elemt = newJsonObject.get("check");

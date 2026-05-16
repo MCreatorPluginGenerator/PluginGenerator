@@ -1,6 +1,6 @@
 templates:
   - template: pluginproecedure.json.ftl
-    writer: json
+    writer: file
     name: "@RESROOT/@[getBlocklyFolder()]/@registryname.json"
 
 localizationkeys:

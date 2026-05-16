@@ -22,6 +22,8 @@ import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -38,6 +40,8 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     protected String tableTitle = "Table";
 
     protected ArrayList<JComponent> componentList;
+
+    private JButton removeRow;
 
     public AbstractConfigurationTableModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
             boolean editingMode, String[] columns) {
@@ -175,15 +179,27 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     }
 
     protected JComponent toolbarAndTable(JComponent north) {
-        JPanel panel = PanelUtils.northAndCenterElement(north, new JScrollPane(jTable));
+        JPanel panel = PanelUtils.northAndCenterElement(north, wrapTable());
         panel.setBorder(BorderFactory.createTitledBorder(tableTitle));
         return panel;
     }
 
     protected JComponent wrapTable() {
+        jTable.addKeyListener(new KeyAdapter() {
+            @Override public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_DELETE){
+                    if (removeRow != null) {
+                        removeRow.doClick();
+                    }
+                }
+            }
+        });
         return new JScrollPane(jTable);
     }
 
+    /**
+     * This will also register the key listener to remove line.
+     */
     protected JButton createRemoveRowButton() {
         JButton remrow = new JButton(UIRES.get("16px.delete"));
         remrow.setContentAreaFilled(false);
@@ -191,6 +207,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         ComponentUtils.deriveFont(remrow, 11);
         remrow.setBorder(BorderFactory.createEmptyBorder(1, 1, 0, 1));
         remrow.setToolTipText("Remove");
+        removeRow = remrow;
         return remrow;
     }
 

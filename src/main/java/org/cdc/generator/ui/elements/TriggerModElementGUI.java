@@ -289,7 +289,14 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         @Override public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             var row = dependencies.get(rowIndex);
             if (columns[columnIndex].equals("Name")) {
-                row.setName(aValue.toString());
+                var str = aValue.toString();
+                String name = str;
+                if (str.contains(":")){
+                    var sp = str.split(":",2);
+                    name = sp[0];
+                    row.setType(sp[1]);
+                }
+                row.setName(name);
                 refreshNames();
             } else if (columns[columnIndex].equals("Type")) {
                 row.setType(aValue.toString());

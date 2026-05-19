@@ -131,9 +131,9 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         bar.setFloatable(false);
         bar.setOpaque(false);
 
-        JButton addrow = createAddButton();
+        JButton addrow = createJTableAddButton();
         bar.add(addrow);
-        JButton remrow = createRemoveRowButton();
+        JButton remrow = createJTableRemoveRowButton();
         bar.add(remrow);
         JButton xyz = getXyz();
         bar.add(xyz);
@@ -152,6 +152,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
                 dependencies.remove((int) stack.pop());
                 refreshNames();
             }
+            jTable.setEditingColumn(-1);
             refreshTable();
         });
 

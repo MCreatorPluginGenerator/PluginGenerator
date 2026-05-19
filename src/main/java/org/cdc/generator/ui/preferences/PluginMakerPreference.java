@@ -11,6 +11,7 @@ public class PluginMakerPreference extends PreferencesSection {
     public StringEntry preferGenerator;
     public BooleanEntry searchIgnoreCase;
     public StringEntry defaultProcedureTooltip;
+    public BooleanEntry generateFtlComment;
 
     public PluginMakerPreference(String preferencesIdentifier) {
         super(preferencesIdentifier);
@@ -20,6 +21,7 @@ public class PluginMakerPreference extends PreferencesSection {
         this.defaultProcedureTooltip = addPluginEntry(identifier,
                 new StringEntry("default_procedure_tooltip", "Practice makes perfect", true));
         this.searchIgnoreCase = addPluginEntry(identifier, new BooleanEntry("search_ignore_case", true));
+        this.generateFtlComment = addPluginEntry(identifier,new BooleanEntry("generate_ftl_comment",false));
     }
 
     @Override public String getSectionKey() {

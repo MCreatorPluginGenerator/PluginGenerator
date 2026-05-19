@@ -160,9 +160,9 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         bar.setFloatable(false);
         bar.setOpaque(false);
 
-        JButton addrow = createAddButton();
+        JButton addrow = createJTableAddButton();
         bar.add(addrow);
-        JButton remrow = createRemoveRowButton();
+        JButton remrow = createJTableRemoveRowButton();
         bar.add(remrow);
         bar.add(Utils.initSearchComponent(lastSearchResult, this));
 

@@ -211,16 +211,15 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         dependenciesToolBar.setFloatable(false);
         dependenciesToolBar.setOpaque(false);
 
-        JButton addrow = createAddButton();
+        JButton addrow = createJTableAddButton();
         dependenciesToolBar.add(addrow);
-        JButton remrow = createRemoveRowButton();
+        JButton remrow = createJTableRemoveRowButton();
         dependenciesToolBar.add(remrow);
 
         addrow.addActionListener(a -> {
             dependencies.add(new PluginProcedureModElement.Dependency("name" + dependencies.size(), "type"));
             refreshTable();
         });
-
         remrow.addActionListener(a -> {
             jTable.editCellAt(-1, 0);
             var stack = new Stack<Integer>();

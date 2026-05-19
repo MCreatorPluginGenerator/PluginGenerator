@@ -42,6 +42,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     protected ArrayList<JComponent> componentList;
 
     private JButton removeRow;
+    private JButton addRow;
 
     public AbstractConfigurationTableModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
             boolean editingMode, String[] columns) {
@@ -76,6 +77,20 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
                 if (e.getButton() == MouseEvent.BUTTON3 && jTable.rowAtPoint(e.getPoint()) != jTable.getSelectedRow()) {
                     jTable.clearSelection();
                     jTable.editCellAt(-1, 0);
+                }
+                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2){
+                    if (addRow != null){
+                        addRow.doClick();
+                    }
+                }
+            }
+        });
+        jTable.addKeyListener(new KeyAdapter() {
+            @Override public void keyReleased(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_DELETE){
+                    if (removeRow != null) {
+                        removeRow.doClick();
+                    }
                 }
             }
         });
@@ -185,21 +200,17 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     }
 
     protected JComponent wrapTable() {
-        jTable.addKeyListener(new KeyAdapter() {
-            @Override public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_DELETE){
-                    if (removeRow != null) {
-                        removeRow.doClick();
-                    }
-                }
-            }
-        });
         return new JScrollPane(jTable);
     }
 
     /**
      * This will also register the key listener to remove line.
      */
+    protected JButton createJTableRemoveRowButton() {
+        removeRow = createRemoveRowButton();
+        return removeRow;
+    }
+
     protected JButton createRemoveRowButton() {
         JButton remrow = new JButton(UIRES.get("16px.delete"));
         remrow.setContentAreaFilled(false);
@@ -207,8 +218,15 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         ComponentUtils.deriveFont(remrow, 11);
         remrow.setBorder(BorderFactory.createEmptyBorder(1, 1, 0, 1));
         remrow.setToolTipText("Remove");
-        removeRow = remrow;
         return remrow;
+    }
+
+    /**
+     * This will also register the key listener to remove line.
+     */
+    protected JButton createJTableAddButton() {
+        addRow = createAddButton();
+        return addRow;
     }
 
     protected JButton createAddButton() {

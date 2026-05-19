@@ -1,5 +1,6 @@
 package org.cdc.generator;
 
+import com.google.gson.JsonObject;
 import net.mcreator.Launcher;
 import net.mcreator.io.FileIO;
 import net.mcreator.plugin.JavaPlugin;
@@ -13,14 +14,17 @@ import net.mcreator.plugin.events.workspace.WorkspaceBuildStartedEvent;
 import net.mcreator.plugin.events.workspace.WorkspaceTaskFinishedEvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.MCreatorApplication;
+import net.mcreator.ui.init.L10N;
 import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cdc.framework.utils.L10NHelper;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.init.Menus;
 import org.cdc.generator.init.ResourcePanels;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.DialogUtils;
+import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ZipUtils;
 import org.cdc.generator.utils.ioc.Container;
@@ -143,6 +147,33 @@ public class PluginMain extends JavaPlugin {
                 event.setTemplateOutput(YamlWriter.INSTANCE.formatString(event.getTemplateOutputOriginal()));
             } else if (event.getTemplateName().equals("pluginproecedure.json.ftl")){
                 event.setTemplateOutput(JSONWriter.INSTANCE.formatString(event.getTemplateOutputOriginal()));
+            } else if (event.getTemplateName().endsWith("java.ftl") && PluginMakerPreference.INSTANCE.generateFtlComment.get()){
+                String comment = event.getTemplateName();
+                LOG.info("{}:{}", event.getTemplateName(), event.getDataModel());
+                StringBuilder builder = new StringBuilder();
+                if (FTLUtils.isCombineCode(event.getDataModel())){
+                    var jsonO = new JsonObject();
+                    jsonO.addProperty("fileName",comment);
+                    jsonO.addProperty("localization",L10N.t(L10NHelper.getProcedureKey(FTLUtils.getFileNameWithoutExtensions(event.getTemplateName()))));
+                    comment = jsonO.toString();
+                } else if (FTLUtils.isClass(event.getTemplateOutputOriginal())){
+                    builder.append("""
+                            /*
+                            Expected answer format:
+                            - FTL template: xxx.java.ftl
+                            - Localization: “xxxxxx”
+                            - Brief reason: xxx
+                            */
+                            """);
+                }
+                if (FTLUtils.isInputProcedure(event.getTemplateOutputOriginal())) {
+                    builder.append(FTLUtils.generateCodeHead(event.getTemplateOutput(), "/* Head " + comment + " */"))
+                            .append("/* Tail ").append(event.getTemplateName()).append(" */");
+                } else {
+                    builder.append("/* Head ").append(comment).append(" */").append(event.getTemplateOutput())
+                            .append("/* Tail ").append(event.getTemplateName()).append(" */");
+                }
+                event.setTemplateOutput(builder.toString());
             }
         });
 
@@ -229,3 +260,4 @@ public class PluginMain extends JavaPlugin {
         return application;
     }
 }
+// H

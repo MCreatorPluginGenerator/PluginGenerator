@@ -1,4 +1,4 @@
-defaultvalue: ${data.getDefaultValue()}
+defaultvalue: '${data.getDefaultValue()}'
 <#if !data.scopes.isEmpty()>
 scopes:
 <#list data.scopes as scope>
@@ -6,51 +6,51 @@ scopes:
   ${scope.getName()}:
   <#if scope.getInit()??>
   <#if scope.getInitLines().size() == 1>
-    init: ${scope.getInit()}
+    init: '${scope.getInit()}'
   <#else>
     init: |
   <#list scope.getInitLines() as line>
-        ${line}
+        '${line}'
   </#list>
   </#if>
   </#if>
   <#if scope.getGet()??>
   <#if scope.getGetLines().size() == 1>
-    get: ${scope.getGet()}
+    get: '${scope.getGet()}'
   <#else>
     get: |
   <#list scope.getGetLines() as line>
-        ${line}
+        '${line}'
   </#list>
   </#if>
   </#if>
   <#if scope.getSet()??>
   <#if scope.getSetLines().size() == 1>
-    set: ${scope.getSet()}
+    set: '${scope.getSet()}'
   <#else>
     set: |
   <#list scope.getSetLines() as line>
-        ${line}
+        '${line}'
   </#list>
   </#if>
   </#if>
   <#if scope.getRead()??>
   <#if scope.getReadLines().size() == 1>
-    read: ${scope.getRead()}
+    read: '${scope.getRead()}'
   <#else>
     read: |
   <#list scope.getReadLines() as line>
-        ${line}
+        '${line}'
   </#list>
   </#if>
   </#if>
   <#if scope.getWrite()??>
   <#if scope.getWriteLines().size() == 1>
-    read: ${scope.getRead()}
+    read: '${scope.getRead()}'
   <#else>
     read: |
   <#list scope.getWriteLines() as line>
-          ${line}
+         '${line}'
   </#list>
   </#if>
   </#if>

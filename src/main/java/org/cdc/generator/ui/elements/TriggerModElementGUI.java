@@ -13,6 +13,7 @@ import net.mcreator.util.StringUtils;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.elements.TriggerModElement;
+import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.VariableType;
@@ -34,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class TriggerModElementGUI extends AbstractConfigurationTableModElementGUI<TriggerModElement>
-        implements ISearchable {
+        implements ISearchable, IHasImplModElement {
 
     protected final VTextField name = new VTextField();
     protected final VTextField readableName = new VTextField();
@@ -156,6 +157,8 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             refreshTable();
         });
 
+        registerShortCut(this);
+
         addPage("Attributes", PanelUtils.totalCenterInPanel(buildConfiguration(2))).validate(name);
 
         addPage("Parameters", toolbarAndTable(bar)).lazyValidate(new DuplicatedElementValidator(
@@ -259,6 +262,16 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         return String.join(" ", strs);
     }
 
+    @Override public void createImpl(String generator, String generatorName) {
+        ModElement modElement1 = new ModElement(mcreator.getWorkspace(),
+                modElement.getName() + "TriggerImpl" + generatorName, ModElementTypes.TRIGGER_IMPL);
+        TriggerImplementationModElementGUI element = (TriggerImplementationModElementGUI) ModElementTypes.TRIGGER_IMPL.getModElementGUI(
+                mcreator, modElement1, false);
+        element.triggerFileName.setSelectedItem(this.name.getText());
+        element.generator.setSelectedItem(generator);
+        element.showView();
+    }
+
     protected class TriggerModElementGUITableModel extends AbstractTableModel {
 
         @Override public int getRowCount() {
@@ -292,8 +305,8 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             if (columns[columnIndex].equals("Name")) {
                 var str = aValue.toString();
                 String name = str;
-                if (str.contains(":")){
-                    var sp = str.split(":",2);
+                if (str.contains(":")) {
+                    var sp = str.split(":", 2);
                     name = sp[0];
                     row.setType(sp[1]);
                 }

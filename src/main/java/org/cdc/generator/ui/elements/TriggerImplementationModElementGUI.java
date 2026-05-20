@@ -37,8 +37,8 @@ import java.util.*;
 public class TriggerImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<TriggerImplementationModElement> {
 
-    private final VComboBox<String> generator = new VComboBox<>();
-    private final VComboBox<String> triggerFileName = new VComboBox<>();
+    final VComboBox<String> generator = new VComboBox<>();
+    final VComboBox<String> triggerFileName = new VComboBox<>();
     private final JCheckBox enableCustom = createDefaultCheckBox();
 
     private final VTextField eventName = new VTextField();
@@ -180,9 +180,6 @@ public class TriggerImplementationModElementGUI
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(triggerFileName, stringArrayList);
-        if (!isEditingMode()) {
-            triggerFileName.setSelectedIndex(stringArrayList.size() - 1);
-        }
 
         var map = getMappingEntries();
         for (TriggerModElement.Dependency dependency : getTriggerModElement().dependencies_provided) {

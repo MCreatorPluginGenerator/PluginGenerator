@@ -110,7 +110,6 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     }
 
     @Override protected void initGUI() {
-
         name.setText(modElement.getRegistryName());
         name.setValidator(Rules.getFileNameValidator(name::getText));
         addNameConfiguration(name);

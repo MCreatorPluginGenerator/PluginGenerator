@@ -35,8 +35,8 @@ import java.util.stream.Stream;
 public class MappingsModElementGUI extends AbstractConfigurationTableModElementGUI<MappingsModElement>
         implements ISearchable {
 
-    private final VComboBox<String> generator = new VComboBox<>();
-    private final VComboBox<String> datalistName = new VComboBox<>();
+    final VComboBox<String> generator = new VComboBox<>();
+    final VComboBox<String> datalistName = new VComboBox<>();
 
     public List<MappingsModElement.MappingEntry> mappingEntries;
 
@@ -218,9 +218,6 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(datalistName, stringArrayList);
-        if (!isEditingMode()) {
-            datalistName.setSelectedIndex(stringArrayList.size() - 1);
-        }
     }
 
     public void doSearch(Map.Entry<String, String> search) {

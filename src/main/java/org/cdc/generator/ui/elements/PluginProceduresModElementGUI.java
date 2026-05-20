@@ -7,6 +7,7 @@ import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.ProcedureCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
+import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.ioc.InjectField;
@@ -19,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class PluginProceduresModElementGUI extends AbstractProceduresModElementGUI<PluginProcedureModElement> {
+public class PluginProceduresModElementGUI extends AbstractProceduresModElementGUI<PluginProcedureModElement>
+        implements IHasImplModElement {
     @InjectField private Container container;
 
     public PluginProceduresModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
@@ -31,9 +33,11 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
 
     @Override protected void initGUI() {
         super.initGUI();
+        var config = buildConfiguration(2);
+        registerShortCut(this);
         addPage("Configuration",
-                PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(dependenciesToolBar))).validate(
-                name).validate(localizationValue);
+                PanelUtils.northAndCenterElement(config, toolbarAndTable(dependenciesToolBar))).validate(name)
+                .validate(localizationValue);
         addPage("Args0", PanelUtils.northAndCenterElement(args0ToolBar, splitPane));
     }
 
@@ -92,5 +96,15 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
 
     @Override public boolean hasBuiltinCategories() {
         return true;
+    }
+
+    @Override public void createImpl(String generator, String generatorName) {
+        ModElement modElement1 = new ModElement(mcreator.getWorkspace(),
+                modElement.getName() + "PluginProcedureImpl" + generatorName, ModElementTypes.PROCEDURE_IMPLEMENTATION);
+        PluginProcedureImplementationModElementGUI element = (PluginProcedureImplementationModElementGUI) ModElementTypes.PROCEDURE_IMPLEMENTATION.getModElementGUI(
+                mcreator, modElement1, false);
+        element.procedureFileName.setSelectedItem(this.name.getText());
+        element.generator.setSelectedItem(generator);
+        element.showView();
     }
 }

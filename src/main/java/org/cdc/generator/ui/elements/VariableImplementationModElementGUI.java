@@ -41,8 +41,8 @@ import java.util.List;
 
 public class VariableImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<VariableImplementationModElement> {
-    private final VComboBox<String> generator = new VComboBox<>();
-    private final VComboBox<String> variableElementName = new VComboBox<>();
+    final VComboBox<String> generator = new VComboBox<>();
+    final VComboBox<String> variableElementName = new VComboBox<>();
     private final VTextField defaultValue = new VTextField();
 
     private List<VariableImplementationModElement.VariableScope> scopeList = new ArrayList<>();
@@ -184,9 +184,6 @@ public class VariableImplementationModElementGUI
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(variableElementName, stringArrayList);
-        if (!isEditingMode()) {
-            variableElementName.setSelectedIndex(stringArrayList.size() - 1);
-        }
     }
 
     private CompletionProvider createCompletionProvider() {

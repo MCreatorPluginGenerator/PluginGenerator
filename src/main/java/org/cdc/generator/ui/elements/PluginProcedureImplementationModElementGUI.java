@@ -33,10 +33,10 @@ import java.util.ArrayList;
 
 public class PluginProcedureImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<PluginProcedureImplementationModElement> {
-    private final VComboBox<String> generator = new VComboBox<>();
-    private final VTextField parentFolder = new VTextField();
-    private final VComboBox<String> procedureFileName = new VComboBox<>();
-    private final JCheckBox isTemplate = createDefaultCheckBox();
+    final VComboBox<String> generator = new VComboBox<>();
+    final VTextField parentFolder = new VTextField();
+    final VComboBox<String> procedureFileName = new VComboBox<>();
+    final JCheckBox isTemplate = createDefaultCheckBox();
 
     private final RSyntaxTextArea content = new RSyntaxTextArea();
     private AutoCompletion lastAutoCompletion;
@@ -193,9 +193,6 @@ public class PluginProcedureImplementationModElementGUI
             stringArrayList.add(element.getName());
         }
         ComboBoxUtil.updateComboBoxContents(procedureFileName, stringArrayList);
-        if (!isEditingMode()) {
-            procedureFileName.setSelectedIndex(stringArrayList.size() - 1);
-        }
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {

@@ -12,6 +12,7 @@ import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableType;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.elements.VariableModElement;
+import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
@@ -23,7 +24,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
-public class VariableModElementGUI extends AbstractConfigurationTableModElementGUI<VariableModElement> {
+public class VariableModElementGUI extends AbstractConfigurationTableModElementGUI<VariableModElement>
+        implements IHasImplModElement {
 
     private final JCheckBox generate = L10N.checkbox("elementgui.common.enable");
     private final VComboBox<String> name = new VComboBox<>();
@@ -96,6 +98,8 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         getterLocalization.setValidator(new NotEmptyValidator(getterLocalization::getText));
         addConfigurationWithHelpEntry("getter_localization", getterLocalization);
 
+        registerShortCut(this);
+
         addPage(PanelUtils.totalCenterInPanel(buildConfiguration(2))).validate(name)
                 .validate(customVariableDependencyLocalization);
     }
@@ -140,5 +144,15 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
             variables.add(allVariableType.getName());
         }
         ComboBoxUtil.updateComboBoxContents(name, variables);
+    }
+
+    @Override public void createImpl(String generator, String generatorName) {
+        ModElement modElement1 = new ModElement(mcreator.getWorkspace(),
+                modElement.getName() + "VariableTypeImpl" + generatorName, ModElementTypes.VARIABLE_IMPL);
+        VariableImplementationModElementGUI element = (VariableImplementationModElementGUI) ModElementTypes.VARIABLE_IMPL.getModElementGUI(
+                mcreator, modElement1, false);
+        element.variableElementName.setSelectedItem(this.modElement.getName());
+        element.generator.setSelectedItem(generator);
+        element.showView();
     }
 }

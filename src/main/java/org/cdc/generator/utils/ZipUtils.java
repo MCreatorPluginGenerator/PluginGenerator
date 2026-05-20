@@ -10,6 +10,11 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipUtils {
 
+    /**
+     * This method will convert mcreator exe to library jar.
+     * @param exeFile the file instance of exe
+     * @return the file stands for the jar
+     */
     public static File tryToConvertExeToJar(File exeFile) throws IOException {
         ZipFile zipFile = new ZipFile(exeFile);
         File result = new File(exeFile.getParentFile(), ".cache");

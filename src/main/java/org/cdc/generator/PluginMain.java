@@ -148,6 +148,7 @@ public class PluginMain extends JavaPlugin {
             } else if (event.getTemplateName().equals("pluginproecedure.json.ftl")){
                 event.setTemplateOutput(JSONWriter.INSTANCE.formatString(event.getTemplateOutputOriginal()));
             } else if (event.getTemplateName().endsWith("java.ftl") && PluginMakerPreference.INSTANCE.generateFtlComment.get()){
+                // head
                 String comment = event.getTemplateName();
                 LOG.info("{}:{}", event.getTemplateName(), event.getDataModel());
                 StringBuilder builder = new StringBuilder();
@@ -168,10 +169,10 @@ public class PluginMain extends JavaPlugin {
                 }
                 if (FTLUtils.isInputProcedure(event.getTemplateOutputOriginal())) {
                     builder.append(FTLUtils.generateCodeHead(event.getTemplateOutput(), "/* Head " + comment + " */"))
-                            .append("/* Tail ").append(event.getTemplateName()).append(" */");
+                            .append("/* head ").append(event.getTemplateName()).append(" */");
                 } else {
-                    builder.append("/* Head ").append(comment).append(" */").append(event.getTemplateOutput())
-                            .append("/* Tail ").append(event.getTemplateName()).append(" */");
+                    builder.append("/* head ").append(comment).append(" */").append(event.getTemplateOutput())
+                            .append("/* tail ").append(event.getTemplateName()).append(" */");
                 }
                 event.setTemplateOutput(builder.toString());
             }
@@ -197,7 +198,7 @@ public class PluginMain extends JavaPlugin {
 
                 SwingUtilities.invokeLater(() -> {
                     JOptionPane.showMessageDialog(null,
-                            "But for the help from community, this will be not finished. If you encounter a bug, please report.");
+                            "But for the help from the community, this wouldn't be finished. If you encounter a bug, please report it in my plugin page.","You are using snapshot",JOptionPane.WARNING_MESSAGE);
                 });
             }
 
@@ -260,4 +261,3 @@ public class PluginMain extends JavaPlugin {
         return application;
     }
 }
-// H

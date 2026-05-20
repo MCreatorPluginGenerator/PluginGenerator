@@ -11,6 +11,7 @@ import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.DataListModElement;
+import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.ResourcePanelIcons;
 import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.Rules;
@@ -39,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class DataListModElementGUI extends AbstractConfigurationTableModElementGUI<DataListModElement>
-        implements ISearchable {
+        implements ISearchable, IHasImplModElement {
 
     private final VComboBox<String> datalistName = new VComboBox<>();
     private final JCheckBox generateDataList = createDefaultCheckBox();
@@ -199,6 +200,8 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
             throw new RuntimeException(e);
         }
 
+        registerShortCut(this);
+
         addPage("Configuration",
                 PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(bar))).lazyValidate(
                 new DuplicatedElementValidator(
@@ -303,6 +306,16 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         jTable.changeSelection(index, 0, false, false);
     }
 
+    @Override public void createImpl(String generator, String generatorName) {
+        ModElement modElement1 = new ModElement(mcreator.getWorkspace(),
+                modElement.getName() + "Mapping" + generatorName, ModElementTypes.MAPPINGS);
+        MappingsModElementGUI element = (MappingsModElementGUI) ModElementTypes.MAPPINGS.getModElementGUI(mcreator,
+                modElement1, false);
+        element.datalistName.setSelectedItem(modElement.getName());
+        element.generator.setSelectedItem(generator);
+        element.showView();
+    }
+
     private class DataListTableModel extends AbstractTableModel {
 
         @Override public int getRowCount() {
@@ -355,7 +368,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         }
     }
 
-    private class TableComboBoxModule extends DefaultComboBoxModel<String>{
+    private class TableComboBoxModule extends DefaultComboBoxModel<String> {
 
         private String type;
 
@@ -364,22 +377,23 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         }
 
         @Override public int getSize() {
-            if ("Type".equals(type)){
+            if ("Type".equals(type)) {
                 return types.size();
-            } else if ("Texture".equals(type)){
+            } else if ("Texture".equals(type)) {
                 return cachedIcon.size() + resourcePanelIcons.getAllElements().size();
             }
             return super.getSize();
         }
 
         @Override public String getElementAt(int index) {
-            if ("Type".equals(type)){
+            if ("Type".equals(type)) {
                 return types.get(index);
-            } else if ("Texture".equals(type)){
-                if (index < cachedIcon.size()){
+            } else if ("Texture".equals(type)) {
+                if (index < cachedIcon.size()) {
                     return cachedIcon.get(index);
                 } else {
-                    return Files.getNameWithoutExtension(resourcePanelIcons.getAllElements().get(index - cachedIcon.size()).getPath());
+                    return Files.getNameWithoutExtension(
+                            resourcePanelIcons.getAllElements().get(index - cachedIcon.size()).getPath());
                 }
             }
             return super.getElementAt(index);

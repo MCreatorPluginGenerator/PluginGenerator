@@ -6,8 +6,11 @@ templates:
 
 localizationkeys:
   - key: blockly.block.custom_dependency_@registryname
+    condition: generate
     mapto: customVariableDependencyLocalization
   - key: blockly.block.set_var_@registryname
+    condition: generate
     mapto: getSetterLocalization()
   - key: blockly.block.get_var_@registryname
+    condition: generate
     mapto: getGetterLocalization()

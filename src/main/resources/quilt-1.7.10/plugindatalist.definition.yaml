@@ -6,4 +6,5 @@ templates:
 
 localizationkeys:
   - key: dialog.selector.@registryname.message
+    condition: generateDataList
     mapto: getDialogMessage()

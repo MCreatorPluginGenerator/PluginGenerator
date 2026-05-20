@@ -3,6 +3,7 @@ package org.cdc.generator.elements;
 import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
+import net.mcreator.workspace.references.ModElementReference;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.utils.Constants;
@@ -19,7 +20,7 @@ import java.util.stream.Stream;
 public class VariableImplementationModElement extends GeneratableElement implements IGeneratorElement, IUniqueElement {
 
     public String generator;
-    public String variableElementName;
+    @ModElementReference public String variableElementName;
     public String defaultValue;
 
     public ArrayList<VariableScope> scopes;

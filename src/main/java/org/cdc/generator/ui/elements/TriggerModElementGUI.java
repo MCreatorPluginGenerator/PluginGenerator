@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class TriggerModElementGUI extends AbstractConfigurationTableModElementGUI<TriggerModElement>
-        implements ISearchable, IHasImplModElement {
+        implements ISearchable, IQuickCreateImplModElement {
 
     protected final VTextField name = new VTextField();
     protected final VTextField readableName = new VTextField();
@@ -157,9 +157,9 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             refreshTable();
         });
 
-        registerShortCut(this);
+        registerCreateImplShortCut(this);
 
-        addPage("Attributes", PanelUtils.totalCenterInPanel(buildConfiguration(2))).validate(name);
+        addPage("Attributes", registerCreateImplShortCut(PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(name);
 
         addPage("Parameters", toolbarAndTable(bar)).lazyValidate(new DuplicatedElementValidator(
                 () -> dependencies.stream().map(TriggerModElement.Dependency::getName).toList(),

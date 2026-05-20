@@ -3,6 +3,7 @@ package org.cdc.generator.elements;
 import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
+import net.mcreator.workspace.references.ModElementReference;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.utils.ElementsUtils;
@@ -15,7 +16,7 @@ import java.util.List;
 public class MappingsModElement extends GeneratableElement implements IGeneratorElement, IUniqueElement {
 
     public String generatorName;
-    public String datalistElementName;
+    @ModElementReference public String datalistElementName;
     public ArrayList<MappingEntry> mappingsContent;
 
     public MappingsModElement(ModElement element) {

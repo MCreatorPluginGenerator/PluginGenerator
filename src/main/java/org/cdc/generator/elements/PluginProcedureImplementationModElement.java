@@ -3,6 +3,7 @@ package org.cdc.generator.elements;
 import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
+import net.mcreator.workspace.references.ModElementReference;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
@@ -14,6 +15,9 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
 
     public String generator;
     public String procedureFileName;
+
+    @ModElementReference public String searchable;
+
     public boolean isTemplate;
 
     public String content;
@@ -28,7 +32,7 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
     }
 
     @Override public String getBlocklyFolder() {
-        if (procedureFolder == null){
+        if (procedureFolder == null) {
             procedureFolder = "procedures";
         }
         if (isTemplate) {

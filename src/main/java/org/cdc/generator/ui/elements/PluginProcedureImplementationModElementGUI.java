@@ -181,6 +181,7 @@ public class PluginProcedureImplementationModElementGUI
         element.generator = generator.getSelectedItem();
         element.procedureFolder = parentFolder.getText();
         element.procedureFileName = procedureFileName.getSelectedItem();
+        element.searchable = getPluginProcedureModElement().getModElement().getName();
         element.content = content.getText();
         element.isTemplate = isTemplate.isSelected();
         return element;

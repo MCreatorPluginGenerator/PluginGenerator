@@ -6,9 +6,9 @@ import org.cdc.generator.utils.Utils;
 
 import javax.swing.*;
 
-public interface IHasImplModElement {
-    default void registerShortCut(JComponent panel) {
-        JPopupMenu popupMenu = new JPopupMenu();
+public interface IQuickCreateImplModElement {
+    default JComponent registerCreateImplShortCut(JComponent panel) {
+        var popupMenu = new JPopupMenu();
         for (String allSupportedGenerator : Utils.getAllSupportedGenerators()) {
             var menu = new JMenuItem(allSupportedGenerator);
             menu.addActionListener(a -> {
@@ -17,6 +17,7 @@ public interface IHasImplModElement {
             popupMenu.add(menu);
         }
         panel.setComponentPopupMenu(popupMenu);
+        return panel;
     }
 
     void createImpl(String generator,String availableElementNameGenerator);

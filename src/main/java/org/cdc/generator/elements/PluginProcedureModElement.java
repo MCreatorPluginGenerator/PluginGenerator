@@ -6,7 +6,6 @@ import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.elements.interfaces.IColorElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
-import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.YamlUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,10 +63,11 @@ public class PluginProcedureModElement extends GeneratableElement implements IBl
     }
 
     @UsedByReflection public String getTooltip() {
-        if (tooltip.isBlank()) {
-            return PluginMakerPreference.INSTANCE.defaultProcedureTooltip.get();
-        }
         return tooltip;
+    }
+
+    @UsedByReflection public boolean hasToolTip(){
+        return !tooltip.isBlank();
     }
 
     @UsedByReflection public String getMutator() {

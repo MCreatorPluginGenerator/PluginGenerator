@@ -25,7 +25,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 public class VariableModElementGUI extends AbstractConfigurationTableModElementGUI<VariableModElement>
-        implements IHasImplModElement {
+        implements IQuickCreateImplModElement {
 
     private final JCheckBox generate = L10N.checkbox("elementgui.common.enable");
     private final VComboBox<String> name = new VComboBox<>();
@@ -98,9 +98,9 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         getterLocalization.setValidator(new NotEmptyValidator(getterLocalization::getText));
         addConfigurationWithHelpEntry("getter_localization", getterLocalization);
 
-        registerShortCut(this);
+        registerCreateImplShortCut(this);
 
-        addPage(PanelUtils.totalCenterInPanel(buildConfiguration(2))).validate(name)
+        addPage(registerCreateImplShortCut(PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(name)
                 .validate(customVariableDependencyLocalization);
     }
 

@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class PluginProceduresModElementGUI extends AbstractProceduresModElementGUI<PluginProcedureModElement>
-        implements IHasImplModElement {
+        implements IQuickCreateImplModElement {
     @InjectField private Container container;
 
     public PluginProceduresModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
@@ -34,9 +34,9 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
     @Override protected void initGUI() {
         super.initGUI();
         var config = buildConfiguration(2);
-        registerShortCut(this);
+        registerCreateImplShortCut(this);
         addPage("Configuration",
-                PanelUtils.northAndCenterElement(config, toolbarAndTable(dependenciesToolBar))).validate(name)
+                registerCreateImplShortCut(PanelUtils.northAndCenterElement(config, toolbarAndTable(dependenciesToolBar)))).validate(name)
                 .validate(localizationValue);
         addPage("Args0", PanelUtils.northAndCenterElement(args0ToolBar, splitPane));
     }

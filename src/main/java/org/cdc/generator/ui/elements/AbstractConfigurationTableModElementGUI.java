@@ -166,6 +166,9 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         for (JComponent component : componentList) {
             configurationPanel.add(component);
         }
+        if (this instanceof IQuickCreateImplModElement iHasImplModElement){
+            iHasImplModElement.registerCreateImplShortCut(configurationPanel);
+        }
 
         return configurationPanel;
     }

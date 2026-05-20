@@ -151,6 +151,7 @@ public class TriggerImplementationModElementGUI
     @Override public TriggerImplementationModElement getElementFromGUI() {
         var element = new TriggerImplementationModElement(modElement);
         element.triggerFileName = triggerFileName.getSelectedItem();
+        element.searchable = getTriggerModElement().getModElement().getName();
         element.generatorName = generator.getSelectedItem();
         element.enableCustom = enableCustom.isSelected();
         element.eventName = eventName.getText();

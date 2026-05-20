@@ -3,6 +3,7 @@ package org.cdc.generator.elements;
 import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
+import net.mcreator.workspace.references.ModElementReference;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.utils.YamlUtils;
@@ -15,12 +16,13 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
 
     public String generatorName;
     public String triggerFileName;
+    @ModElementReference public String searchable;
     public boolean enableCustom;
 
     public String eventName;
     public String methodBody;
 
-    public ArrayList<AbstractMap.SimpleEntry<String,String>> mappingEntries;
+    public ArrayList<AbstractMap.SimpleEntry<String, String>> mappingEntries;
 
     public TriggerImplementationModElement(ModElement element) {
         super(element);
@@ -37,7 +39,7 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
     // a probable bug: if neoforge or forge change their event registration in new version, the solution will be invalid
     // so here needs a new solution.
     @UsedByReflection public String getGeneratorFlavor() {
-        if (enableCustom){
+        if (enableCustom) {
             return "CUSTOM";
         }
         return generatorName.split("-")[0].toUpperCase(Locale.ROOT);

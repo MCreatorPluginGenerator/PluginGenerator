@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 public class DataListModElementGUI extends AbstractConfigurationTableModElementGUI<DataListModElement>
-        implements ISearchable, IHasImplModElement {
+        implements ISearchable, IQuickCreateImplModElement {
 
     private final VComboBox<String> datalistName = new VComboBox<>();
     private final JCheckBox generateDataList = createDefaultCheckBox();
@@ -200,7 +200,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
             throw new RuntimeException(e);
         }
 
-        registerShortCut(this);
+        registerCreateImplShortCut(this);
 
         addPage("Configuration",
                 PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(bar))).lazyValidate(

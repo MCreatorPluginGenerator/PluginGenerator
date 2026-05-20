@@ -1,6 +1,6 @@
 <#list data.entries as entry>
 <#if !entry.isBuiltIn() && !entry.getName()?starts_with("_")>
-- ${entry.getName()}<#if entry.hasAttributes()>:
+- ${entry.getName()}<#if entry.hasAttributes()>: null
 <#if entry.getReadableName()??>  readable_name: '${entry.getReadableName()}'</#if>
 <#if entry.getType()??>  type: '${entry.getType()}'</#if>
 <#if entry.getTexture()??>  texture: '${entry.getTexture()}'</#if>
@@ -9,5 +9,4 @@
     ${oth.getKey()}: '${oth.getValue()}'</#list></#if>
 </#if>
 </#if><#sep>
-
 </#list>

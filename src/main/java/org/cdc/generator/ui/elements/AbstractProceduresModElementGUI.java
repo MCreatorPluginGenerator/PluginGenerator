@@ -244,9 +244,9 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         arg0List.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         JPopupMenu functions = new JPopupMenu();
-        JMenuItem copyValue = new JMenuItem("Copy toolbox init value");
-
-        functions.add(copyValue);
+        JMenuItem convertCopiedInitValue = new JMenuItem("Copy toolbox init value");
+        convertCopiedInitValue.setToolTipText("In procedure's popupmenu, there has a new item named Copy As XML.");
+        functions.add(convertCopiedInitValue);
         JMenuItem copyPlaceHolder = new JMenuItem("Copy localization placeholder");
         functions.add(copyPlaceHolder);
 
@@ -256,7 +256,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         rightComponent.setBorder(BorderFactory.createTitledBorder("Config"));
         splitPane.setRightComponent(rightComponent);
         args0ToolBar.add(addLine);
-        copyValue.addActionListener(e -> {
+        convertCopiedInitValue.addActionListener(e -> {
             if (arg0List.getSelectedValue() != null) {
                 var str = JOptionPane.showInputDialog(mcreator, "wrap your copied procedure xml or null");
                 var content = new StringSelection(

@@ -46,9 +46,9 @@ scopes:
   </#if>
   <#if scope.getWrite()??>
   <#if scope.getWriteLines().size() == 1>
-    read: '${scope.getRead()}'
+    write: '${scope.getWrite()}'
   <#else>
-    read: |
+    write: |
   <#list scope.getWriteLines() as line>
          '${line}'
   </#list>

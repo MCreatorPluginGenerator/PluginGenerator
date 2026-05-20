@@ -17,6 +17,9 @@ public enum YamlWriter implements IWriter {
     INSTANCE;
 
     @Override public String formatString(String str) {
+        if (str.trim().isBlank()){
+            return str;
+        }
         LoadSettings loadSettings = YamlUtil.getSimpleLoadSettings();
         Load load = new Load(loadSettings);
 

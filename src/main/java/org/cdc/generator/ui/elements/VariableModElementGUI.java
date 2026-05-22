@@ -2,7 +2,6 @@ package org.cdc.generator.ui.elements;
 
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JColor;
-import net.mcreator.ui.component.JStringListField;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
@@ -13,6 +12,7 @@ import net.mcreator.workspace.elements.VariableType;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.init.ModElementTypes;
+import org.cdc.generator.ui.APIListField;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
@@ -33,7 +33,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
     private final VTextField blocklyVariableType = new VTextField();
     private final JCheckBox ignoredByCoverage = L10N.checkbox("elementgui.common.enable");
     private final JCheckBox nullable = L10N.checkbox("elementgui.common.enable");
-    private final JStringListField requiredApis;
+    private final APIListField requiredApis;
     private final JColor color;
     private final VComboBox<String> builtInColor;
     private final VTextField customVariableDependencyLocalization;
@@ -43,7 +43,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
     public VariableModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
-        this.requiredApis = new JStringListField(mcreator, vTextField -> Rules.getModidValidator(vTextField::getText));
+        this.requiredApis = new APIListField(mcreator);
         this.color = new JColor(mcreator, false, false);
         this.builtInColor = new VComboBox<>(Utils.getAllBuiltinColors());
         if (editingMode) {
@@ -110,7 +110,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         this.blocklyVariableType.setText(generatableElement.blocklyVariableType);
         this.nullable.setSelected(generatableElement.nullable);
         this.ignoredByCoverage.setSelected(generatableElement.ignoredByCoverage);
-        this.requiredApis.setTextList(generatableElement.required_apis);
+        this.requiredApis.setListElements(generatableElement.required_apis);
         this.color.setColor(generatableElement.color);
         this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.builtinColor));
         this.customVariableDependencyLocalization.setText(generatableElement.customVariableDependencyLocalization);
@@ -125,7 +125,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         variableModElement.blocklyVariableType = blocklyVariableType.getText();
         variableModElement.nullable = nullable.isSelected();
         variableModElement.ignoredByCoverage = ignoredByCoverage.isSelected();
-        variableModElement.required_apis = requiredApis.getTextList();
+        variableModElement.required_apis = requiredApis.getListElements();
         variableModElement.color = color.getColor();
         variableModElement.builtinColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem());
         variableModElement.customVariableDependencyLocalization = customVariableDependencyLocalization.getText();

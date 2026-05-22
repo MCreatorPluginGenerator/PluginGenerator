@@ -39,6 +39,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     protected JTable jTable;
 
     protected String tableTitle = "Table";
+    protected String configurationTitle = "Configuration";
 
     protected ArrayList<JComponent> componentList;
 
@@ -65,7 +66,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     @Deprecated protected void initConfiguration(LayoutManager layoutManager) {
         configurationPanel = new JPanel(layoutManager);
         configurationPanel.setOpaque(false);
-        configurationPanel.setBorder(BorderFactory.createTitledBorder("Configuration"));
+        configurationPanel.setBorder(BorderFactory.createTitledBorder(configurationTitle));
     }
 
     /**
@@ -164,7 +165,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     protected JPanel buildConfiguration(int columns) {
         configurationPanel = new JPanel(new GridLayout(componentList.size() / columns, columns, 5, 5));
         configurationPanel.setOpaque(false);
-        configurationPanel.setBorder(BorderFactory.createTitledBorder("Configuration"));
+        configurationPanel.setBorder(BorderFactory.createTitledBorder(configurationTitle));
         for (JComponent component : componentList) {
             configurationPanel.add(component);
         }

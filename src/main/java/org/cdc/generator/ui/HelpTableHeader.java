@@ -20,17 +20,19 @@ public class HelpTableHeader extends JTableHeader {
         this.helpPrefix = helpPrefix;
     }
 
-//    @Override public TableCellRenderer getDefaultRenderer() {
-//        return (table, value, isSelected, hasFocus, row, column) -> L10N.label(
-//                "elementgui." + helpPrefix + ".table." + value.toString().replace(' ', '_').toLowerCase(Locale.ROOT));
-//    }
+/*    @Override public TableCellRenderer getDefaultRenderer() {
+        return (table, value, isSelected, hasFocus, row, column) -> {
+            var label = L10N.label("elementgui." + helpPrefix + ".table." + value.toString().replace(' ', '_')
+                    .toLowerCase(Locale.ROOT));
+            label.setBorder(BorderFactory.createLineBorder(Theme.current().getForegroundColor()));
+            return label;
+        };
+    }*/
 
     @Override public String getToolTipText(MouseEvent event) {
         java.awt.Point p = event.getPoint();
-        // 根据坐标获取当前所在的列索引（视图索引）
         int viewColumnIndex = columnModel.getColumnIndexAtX(p.x);
         var column = columnModel.getColumn(viewColumnIndex);
-        // 将视图索引转换为模型索引，确保排序等操作后提示依然正确
         String object = column.getHeaderValue().toString();
 
         return HelpLoader.loadHelpFor(

@@ -201,7 +201,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
         this.name.setText(modElement.getRegistryName());
         this.requiredWhenEnable.setSelected(generatableElement.requiredWhenEnable);
         this.displayName.setText(generatableElement.apiName);
-        this.configurations = generatableElement.configurations;
+        this.configurations = generatableElement.configurations.stream().map(APIModElement.Configuration::clone).toList();
     }
 
     @Override public APIModElement getElementFromGUI() {
@@ -209,7 +209,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
         APIModElement apiModElement = new APIModElement(modElement);
         apiModElement.requiredWhenEnable = requiredWhenEnable.isSelected();
         apiModElement.apiName = displayName.getText();
-        apiModElement.configurations = configurations.stream().map(APIModElement.Configuration::clone).toList();
+        apiModElement.configurations = configurations;
         return apiModElement;
     }
 

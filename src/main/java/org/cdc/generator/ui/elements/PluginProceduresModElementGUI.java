@@ -7,6 +7,7 @@ import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.ProcedureCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
+import org.cdc.generator.init.Menus;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ioc.Container;
@@ -34,10 +35,13 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
     @Override protected void initGUI() {
         super.initGUI();
         var config = buildConfiguration(2);
+        config.getComponentPopupMenu().add(Menus.PLUGIN_PROCEDURE_UTILS.get());
         registerCreateImplShortCut(this);
-        addPage("Configuration",
-                registerCreateImplShortCut(PanelUtils.northAndCenterElement(config, toolbarAndTable(dependenciesToolBar)))).validate(name)
-                .validate(localizationValue);
+
+        var component = PanelUtils.northAndCenterElement(config, toolbarAndTable(dependenciesToolBar));
+        registerCreateImplShortCut(component);
+
+        addPage("Configuration", component).validate(name).validate(localizationValue);
         addPage("Args0", PanelUtils.northAndCenterElement(args0ToolBar, splitPane));
     }
 
@@ -83,7 +87,7 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
     }
 
     @Override @Nullable public URI contextURL() throws URISyntaxException {
-        return null;
+        return new URI("https://mcreator.net/wiki/create-new-procedure-blocks");
     }
 
     @Override public BlocklyEditorType getBlocklyEditorType() {

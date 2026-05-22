@@ -232,7 +232,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         this.cancelable.setSelected(generatableElement.cancelable);
         this.side.setSelectedItem(generatableElement.side);
         this.requiredApis.setListElements(generatableElement.required_apis);
-        this.dependencies.addAll(generatableElement.dependencies_provided);
+        this.dependencies.addAll(generatableElement.dependencies_provided.stream().map(TriggerModElement.Dependency::clone).toList());
     }
 
     @Override public TriggerModElement getElementFromGUI() {
@@ -243,12 +243,12 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         trigger.has_result = this.hasResult.isSelected();
         trigger.side = this.side.getSelectedItem();
         trigger.required_apis = this.requiredApis.getListElements();
-        trigger.dependencies_provided = this.dependencies.stream().map(TriggerModElement.Dependency::clone).toList();
+        trigger.dependencies_provided = this.dependencies;
         return trigger;
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
-        return null;
+        return new URI("https://mcreator.net/wiki/create-new-procedure-blocks#Make%20the%20code%20of%20your%20procedure%20block:~:text=name%22%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22fields%22%3A%20%5B%0A%20%20%20%20%20%20%22vars%22%0A%20%20%20%20%5D%0A%20%20%7D%0A%7D-,Create%20your%20procedure%20block%20section,-To%20have%20your");
     }
 
     protected String toEventReadableName(String string) {

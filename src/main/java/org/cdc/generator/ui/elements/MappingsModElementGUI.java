@@ -189,20 +189,21 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
     @Override protected void openInEditingMode(MappingsModElement generatableElement) {
         datalistName.setSelectedItem(generatableElement.datalistElementName);
         generator.setSelectedItem(generatableElement.generatorName);
-        mappingEntries = Objects.requireNonNullElse(generatableElement.mappingsContent, new ArrayList<>());
+        mappingEntries = generatableElement.mappingsContent.stream().map(MappingsModElement.MappingEntry::clone).toList();
     }
 
     @Override public MappingsModElement getElementFromGUI() {
         var element = new MappingsModElement(modElement);
         element.datalistElementName = datalistName.getSelectedItem();
         element.generatorName = generator.getSelectedItem();
-        element.mappingsContent = new ArrayList<>(mappingEntries.stream().map(MappingsModElement.MappingEntry::clone)
-                .filter(MappingsModElement.MappingEntry::isEdited).sorted(Comparator.comparing(a -> {
-                    if (a.getName().charAt(0) == '_') {
-                        return -1;
-                    }
-                    return 0;
-                })).toList());
+        element.mappingsContent = new ArrayList<>(
+                mappingEntries.stream().filter(MappingsModElement.MappingEntry::isEdited)
+                        .sorted(Comparator.comparing(a -> {
+                            if (a.getName().charAt(0) == '_') {
+                                return -1;
+                            }
+                            return 0;
+                        })).toList());
         modElement.setRegistryName(element.getDatalistName());
         return element;
     }

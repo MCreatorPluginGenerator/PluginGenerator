@@ -1,1 +1,3 @@
+Suggested text: Get ${name}
+
 Localization key: blockly.block.get_var_${registryname}

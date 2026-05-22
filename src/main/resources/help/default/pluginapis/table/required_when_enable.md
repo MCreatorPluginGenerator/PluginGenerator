@@ -1,1 +1,1 @@
-If this parameter is set to true, this mod (API) will be needed by all workspaces using this API.
+If this parameter is set to true, this API will be needed when your minecraft run with the workspace result mod.

@@ -19,6 +19,10 @@ public class FTLUtils {
         return objectMap.containsKey("head");
     }
 
+    public static boolean isTriggerCode(Map<String,Object> objectMap){
+        return objectMap.containsKey("dependencies") && !objectMap.containsKey("trigger_code");
+    }
+
     public static boolean isClass(String code) {
         if (code.contains(" class ")) {
             if (code.contains("import ")) {

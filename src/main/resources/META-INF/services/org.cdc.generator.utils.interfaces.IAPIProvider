@@ -1,0 +1,2 @@
+org.cdc.generator.services.apis.CommonAPIProvider
+org.cdc.generator.services.apis.MCreatorWorkspaceAPIProvider

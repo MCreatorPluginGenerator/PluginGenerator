@@ -21,11 +21,9 @@ import org.cdc.framework.utils.BuilderUtils;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
+import org.cdc.generator.ui.APIListField;
 import org.cdc.generator.ui.TypeListField;
-import org.cdc.generator.utils.DialogUtils;
-import org.cdc.generator.utils.Rules;
-import org.cdc.generator.utils.Utils;
-import org.cdc.generator.utils.VariableType;
+import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 import org.cdc.generator.utils.ioc.Container;
@@ -60,7 +58,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     protected final VComboBox<String> toolboxId = new VComboBox<>();
     protected final VTextField group = new VTextField();
     protected final JStringListField warnings;
-    protected final JStringListField requiredApis;
+    protected final APIListField requiredApis;
     protected final JStringListField inputs;
     protected final JStringListField fields;
     protected final JStringListField statements;
@@ -85,7 +83,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.outputs = new TypeListField(mcreator,VariableType::blocklyTypeName);
         this.extensions = new JStringListField(mcreator, null);
         this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);
-        this.requiredApis = new JStringListField(mcreator, a -> Rules.getFileNameValidator(a::getText));
+        this.requiredApis = new APIListField(mcreator);
         this.model = new ArrayListListModel<>();
         this.arg0List = new JList<>(model);
         this.inputs = new JStringListField(mcreator, null);
@@ -197,7 +195,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
                 var columnName = columns[columnIndex];
                 typeComboBox.removeAllItems();
                 if (columnName.equals("Type")) {
-                    for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
+                    for (VariableType supportedType : ElementsUtils.getAllSupportedVariableTypes()) {
                         typeComboBox.addItem(supportedType.name());
                     }
                 }
@@ -359,7 +357,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.toolboxId.setSelectedItem(generatableElement.toolbox_id);
         this.group.setText(generatableElement.group);
         this.warnings.setTextList(generatableElement.warnings);
-        this.requiredApis.setTextList(generatableElement.required_apis);
+        this.requiredApis.setListElements(generatableElement.required_apis);
         model.addAll(generatableElement.arg0);
         this.inputs.setTextList(generatableElement.inputs);
         this.fields.setTextList(generatableElement.fields);

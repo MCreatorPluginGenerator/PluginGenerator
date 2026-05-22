@@ -1,0 +1,1 @@
+If set to true, users will be able to use the "Set result of global trigger event to" block with this block.

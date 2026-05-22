@@ -13,6 +13,7 @@ import net.mcreator.ui.modgui.ModElementGUI;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
+import org.cdc.generator.ui.HelpTableHeader;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
@@ -78,8 +79,8 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
                     jTable.clearSelection();
                     jTable.editCellAt(-1, 0);
                 }
-                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2){
-                    if (addRow != null){
+                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+                    if (addRow != null) {
                         addRow.doClick();
                     }
                 }
@@ -87,13 +88,14 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         });
         jTable.addKeyListener(new KeyAdapter() {
             @Override public void keyReleased(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_DELETE){
+                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
                     if (removeRow != null) {
                         removeRow.doClick();
                     }
                 }
             }
         });
+        jTable.setTableHeader(new HelpTableHeader(jTable.getColumnModel(), this,getHelpEntryAndLocalizationPrefix()));
         jTable.setFillsViewportHeight(true);
         jTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         jTable.setOpaque(false);
@@ -166,7 +168,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         for (JComponent component : componentList) {
             configurationPanel.add(component);
         }
-        if (this instanceof IQuickCreateImplModElement iHasImplModElement){
+        if (this instanceof IQuickCreateImplModElement iHasImplModElement) {
             iHasImplModElement.registerCreateImplShortCut(configurationPanel);
         }
 
@@ -267,12 +269,12 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         return modElement.getTypeString();
     }
 
-    protected JButton syncLocalImplFile(Consumer<String> consumer){
+    protected JButton syncLocalImplFile(Consumer<String> consumer) {
         var sync = new JButton("S");
         sync.setToolTipText("Sync from local file");
-        sync.addActionListener(a->{
+        sync.addActionListener(a -> {
             var files = getModElement().getAssociatedFiles();
-            if (!files.isEmpty()){
+            if (!files.isEmpty()) {
                 var str = FileIO.readFileToString(files.getFirst());
                 consumer.accept(str);
             }

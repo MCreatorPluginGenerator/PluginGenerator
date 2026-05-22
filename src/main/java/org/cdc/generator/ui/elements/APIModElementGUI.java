@@ -39,6 +39,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
 
     private final VTextField name = new VTextField();
     private final VTextField displayName = new VTextField();
+    private final JCheckBox requiredWhenEnable = createDefaultCheckBox();
 
     public List<APIModElement.Configuration> configurations = new ArrayList<>();
     private final ArrayList<Integer> lastSearchResult = new ArrayList<>(List.of(0));
@@ -66,6 +67,9 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
         displayName.setPreferredSize(Utils.tryToGetTextFieldSize());
         displayName.setText(modElement.getName());
         addConfigurationWithHelpEntry("display_name", displayName);
+
+        requiredWhenEnable.setSelected(false);
+        addConfigurationWithHelpEntry("required_when_enable",requiredWhenEnable);
 
         initTable(new APIModElementGUITableRenderer());
 
@@ -177,6 +181,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
         });
         addrow.addActionListener(e -> {
             var config = new APIModElement.Configuration();
+            config.setRequiredWhenEnable(requiredWhenEnable.isSelected());
             config.setGenerator(preferences.preferGenerator.get());
             configurations.add(config);
             refreshTable();
@@ -194,6 +199,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
 
     @Override protected void openInEditingMode(APIModElement generatableElement) {
         this.name.setText(modElement.getRegistryName());
+        this.requiredWhenEnable.setSelected(generatableElement.requiredWhenEnable);
         this.displayName.setText(generatableElement.apiName);
         this.configurations = generatableElement.configurations;
     }
@@ -201,6 +207,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
     @Override public APIModElement getElementFromGUI() {
         modElement.setRegistryName(name.getText());
         APIModElement apiModElement = new APIModElement(modElement);
+        apiModElement.requiredWhenEnable = requiredWhenEnable.isSelected();
         apiModElement.apiName = displayName.getText();
         apiModElement.configurations = configurations.stream().map(APIModElement.Configuration::clone).toList();
         return apiModElement;

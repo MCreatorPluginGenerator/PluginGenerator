@@ -1,7 +1,6 @@
 package org.cdc.generator.ui.elements;
 
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.component.JStringListField;
 import net.mcreator.ui.component.TranslatedComboBox;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.help.HelpUtils;
@@ -14,6 +13,8 @@ import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
+import org.cdc.generator.ui.APIListField;
+import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.VariableType;
@@ -39,8 +40,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
 
     protected final VTextField name = new VTextField();
     protected final VTextField readableName = new VTextField();
-    protected final JStringListField requiredApis = new JStringListField(mcreator,
-            vTextField -> Rules.getModidValidator(vTextField::getText));
+    protected final APIListField requiredApis;
     protected final JCheckBox cancelable = createDefaultCheckBox();
     protected final JCheckBox hasResult = createDefaultCheckBox();
     protected final TranslatedComboBox side = new TranslatedComboBox(
@@ -61,6 +61,8 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
         this.dependencies = new ArrayList<>();
         this.lastSearchResult = new ArrayList<>();
+
+        this.requiredApis = new APIListField(mcreator);
 
         if (editingMode) {
             name.setEnabled(false);
@@ -119,7 +121,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
                 var columnName = columns[columnIndex];
                 typeComboBox.removeAllItems();
                 if (columnName.equals("Type")) {
-                    for (VariableType supportedType : Utils.getAllSupportedVariableTypes()) {
+                    for (VariableType supportedType : ElementsUtils.getAllSupportedVariableTypes()) {
                         typeComboBox.addItem(supportedType.name());
                     }
                 }
@@ -229,7 +231,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         this.hasResult.setSelected(generatableElement.has_result);
         this.cancelable.setSelected(generatableElement.cancelable);
         this.side.setSelectedItem(generatableElement.side);
-        this.requiredApis.setTextList(generatableElement.required_apis);
+        this.requiredApis.setListElements(generatableElement.required_apis);
         this.dependencies.addAll(generatableElement.dependencies_provided);
     }
 
@@ -240,7 +242,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         trigger.cancelable = this.cancelable.isSelected();
         trigger.has_result = this.hasResult.isSelected();
         trigger.side = this.side.getSelectedItem();
-        trigger.required_apis = this.requiredApis.getTextList();
+        trigger.required_apis = this.requiredApis.getListElements();
         trigger.dependencies_provided = this.dependencies.stream().map(TriggerModElement.Dependency::clone).toList();
         return trigger;
     }

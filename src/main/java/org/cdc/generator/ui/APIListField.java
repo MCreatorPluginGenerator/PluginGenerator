@@ -4,30 +4,23 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JItemListField;
 import net.mcreator.ui.validation.component.VComboBox;
 import org.cdc.generator.utils.ElementsUtils;
-import org.cdc.generator.utils.VariableType;
 
 import javax.swing.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
-public class TypeListField extends JItemListField<String> {
-
-    private Function<VariableType, String> getter;
-
-    public TypeListField(MCreator mcreator, Function<VariableType, String> getter) {
+public class APIListField extends JItemListField<String> {
+    public APIListField(MCreator mcreator) {
         super(mcreator);
-
-        this.getter = getter;
     }
 
     @Override protected List<String> getElementsToAdd() {
         var check = new VComboBox<String>();
         check.setEditable(true);
-        for (VariableType supportedType : ElementsUtils.getAllSupportedVariableTypes()) {
-            check.addItem(getter.apply(supportedType));
+        for (String api : ElementsUtils.getAllAPIS()) {
+            check.addItem(api);
         }
-        var id = JOptionPane.showConfirmDialog(mcreator, check, "Select a type", JOptionPane.OK_CANCEL_OPTION);
+        var id = JOptionPane.showConfirmDialog(mcreator, check, "Select a api", JOptionPane.OK_CANCEL_OPTION);
         if (id == JOptionPane.OK_OPTION) {
             return List.of(Objects.requireNonNull(check.getSelectedItem()));
         }

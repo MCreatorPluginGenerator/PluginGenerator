@@ -1,0 +1,1 @@
+If true, those variables can accept null as a valid value

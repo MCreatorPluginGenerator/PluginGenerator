@@ -1,0 +1,1 @@
+If true, this variable type will be ignored the coverage (when selecting a generator) and only the local variable scope will be usable.

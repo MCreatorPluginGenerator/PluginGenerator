@@ -124,7 +124,7 @@ public class PluginMain extends JavaPlugin {
             if (!elements.isEmpty()) {
                 mcreator.getGradleConsole().append("");
                 mcreator.getGradleConsole().appendPlainText(
-                        "If you find this line, you should know the fact that your workspace may not generate some elements or has duplicated elements.",
+                        "some elements didn't generate properly.",
                         Color.BLUE);
                 CompletableFuture.runAsync(() -> {
                     DialogUtils.showErrorElementDialog(mcreator, elements);
@@ -143,6 +143,9 @@ public class PluginMain extends JavaPlugin {
         });
 
         addListener(ModifyTemplateResultEvent.class, event -> {
+            if (event.getTemplateName() == null){
+                return;
+            }
             if (event.getTemplateName().endsWith("yaml.ftl")) {
                 event.setTemplateOutput(YamlWriter.INSTANCE.formatString(event.getTemplateOutputOriginal()));
             } else if (event.getTemplateName().equals("pluginproecedure.json.ftl")){
@@ -152,10 +155,17 @@ public class PluginMain extends JavaPlugin {
                 String comment = event.getTemplateName();
                 LOG.info("{}:{}", event.getTemplateName(), event.getDataModel());
                 StringBuilder builder = new StringBuilder();
-                if (FTLUtils.isCombineCode(event.getDataModel())){
+                if (FTLUtils.isCombineCode(event.getDataModel())) {
                     var jsonO = new JsonObject();
-                    jsonO.addProperty("fileName",comment);
-                    jsonO.addProperty("localization",L10N.t(L10NHelper.getProcedureKey(FTLUtils.getFileNameWithoutExtensions(event.getTemplateName()))));
+                    jsonO.addProperty("fileName", comment);
+                    jsonO.addProperty("localization", L10N.t(L10NHelper.getProcedureKey(
+                            FTLUtils.getFileNameWithoutExtensions(event.getTemplateName()))));
+                    comment = jsonO.toString();
+                } else if (FTLUtils.isTriggerCode(event.getDataModel())){
+                    var jsonO = new JsonObject();
+                    jsonO.addProperty("fileName", comment);
+                    jsonO.addProperty("localization", L10N.t(L10NHelper.getTriggerKey(
+                            FTLUtils.getFileNameWithoutExtensions(event.getTemplateName()))));
                     comment = jsonO.toString();
                 } else if (FTLUtils.isClass(event.getTemplateOutputOriginal())){
                     builder.append("""
@@ -164,12 +174,18 @@ public class PluginMain extends JavaPlugin {
                             - FTL template: xxx.java.ftl
                             - Localization: “xxxxxx”
                             - Brief reason: xxx
+                            If user expect you to fix a logic problem. You can use the template more than one time to exchange template:
+                            - FLT template:
+                            - Localization1:
+                            - Replaced FTL template:
+                            - Localization2:
+                            - Brief reason:
                             */
                             """);
                 }
                 if (FTLUtils.isInputProcedure(event.getTemplateOutputOriginal())) {
-                    builder.append(FTLUtils.generateCodeHead(event.getTemplateOutput(), "/* Head " + comment + " */"))
-                            .append("/* head ").append(event.getTemplateName()).append(" */");
+                    builder.append(FTLUtils.generateCodeHead(event.getTemplateOutput(), "/* head " + comment + " */"))
+                            .append("/* tail ").append(event.getTemplateName()).append(" */");
                 } else {
                     builder.append("/* head ").append(comment).append(" */").append(event.getTemplateOutput())
                             .append("/* tail ").append(event.getTemplateName()).append(" */");
@@ -196,10 +212,7 @@ public class PluginMain extends JavaPlugin {
                 LOG.debug("Try to add weight_0 to dependants");
                 mcreator.getWorkspaceSettings().dependants.add("weight_0");
 
-                SwingUtilities.invokeLater(() -> {
-                    JOptionPane.showMessageDialog(null,
-                            "But for the help from the community, this wouldn't be finished. If you encounter a bug, please report it in my plugin page.","You are using snapshot",JOptionPane.WARNING_MESSAGE);
-                });
+                warnSnapshot();
             }
 
             var libs = new File(mcreator.getWorkspaceFolder(), ".mcreator/libs");
@@ -248,6 +261,13 @@ public class PluginMain extends JavaPlugin {
                     LOG.debug("Plugin maker has copied all mcreator plugins");
                 }
             }
+        });
+    }
+
+    private static void warnSnapshot() {
+        SwingUtilities.invokeLater(() -> {
+            JOptionPane.showMessageDialog(null,
+                    "But for the help from the community, this wouldn't be finished. If you encounter a bug, please report it in my plugin page.","You are using snapshot",JOptionPane.WARNING_MESSAGE);
         });
     }
 

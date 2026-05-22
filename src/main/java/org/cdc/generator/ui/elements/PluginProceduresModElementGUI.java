@@ -64,7 +64,7 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
         element.toolbox_id = this.toolboxId.getSelectedItem();
         element.group = this.group.getText();
         element.warnings = Objects.requireNonNullElse(this.warnings.getTextList(), List.of());
-        element.required_apis = Objects.requireNonNullElse(requiredApis.getTextList(), List.of());
+        element.required_apis = Objects.requireNonNullElse(requiredApis.getListElements(), List.of());
         element.arg0 = new ArrayList<>(model);
         element.inputs = this.inputs.getTextList();
         element.fields = this.fields.getTextList();

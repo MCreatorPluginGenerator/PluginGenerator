@@ -1,0 +1,1 @@
+When this value (as a String) is used inside input_value argument types of procedure blocks, MCreator will tell to Blockly, Blockly needs to accept everything that is related to this variable type.

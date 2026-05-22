@@ -19,7 +19,6 @@ import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.elements.ISearchable;
-import org.cdc.generator.utils.interfaces.ITypeProvider;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.autocomplete.ShorthandCompletion;
@@ -48,18 +47,6 @@ public class Utils {
         // to do more stable.
         return Generator.GENERATOR_CACHE.entrySet().stream().sorted(new JavaGeneratorFirstComparator())
                 .map(Map.Entry::getKey).toList();
-    }
-
-    /**
-     * @return all variable types in your mcreator
-     */
-    public static Set<org.cdc.generator.utils.VariableType> getAllSupportedVariableTypes() {
-        // remove duplicated strs.
-        var set = new HashSet<org.cdc.generator.utils.VariableType>();
-        ITypeProvider.serviceLoader.stream().forEach(a -> {
-            set.addAll(a.get().provide());
-        });
-        return set;
     }
 
     public static List<String> getAllVariableScope() {

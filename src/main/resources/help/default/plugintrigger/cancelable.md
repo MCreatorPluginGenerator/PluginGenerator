@@ -1,0 +1,1 @@
+If set to true, users will be able to use the "Cancel event" block with this trigger.

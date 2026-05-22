@@ -8,7 +8,7 @@
   "javaplugin": "org.cdc.generator.PluginMain",
   "info": {
     "name": "MCreator plugin generator",
-    "version": "1.0",
+    "version": "1.7.10.2",
     "description": "make your mcreator",
     "author": "cdc12345"
   }

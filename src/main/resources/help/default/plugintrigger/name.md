@@ -1,7 +1,3 @@
-The name of variable type.
-
-You can use external plugin variable type name.
-
 The name is important as it will be the block's ID. Your block's ID should:
 
 Not contain capital letters

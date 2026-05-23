@@ -1,0 +1,1 @@
+MCreator has imported some string color to make developing convenient.

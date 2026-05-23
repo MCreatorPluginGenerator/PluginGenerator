@@ -1,0 +1,1 @@
+You can use another plugin's category name.

@@ -1,0 +1,1 @@
+List all field arguments you defined as arguments in this section. If you add extensions, you will also need to add their field name here. These names have to be the same as you put. This way, MCreator will be able to register these fields to add them to the code template.

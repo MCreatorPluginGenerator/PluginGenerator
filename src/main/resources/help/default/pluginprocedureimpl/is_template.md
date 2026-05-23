@@ -1,0 +1,1 @@
+If you hope your implementation can be placed in the templates fold, please set it to true.

@@ -1,0 +1,1 @@
+This field defines the category of the block. You need to write the category's ID. Users will find the block in this category.

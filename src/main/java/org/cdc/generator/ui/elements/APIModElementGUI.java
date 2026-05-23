@@ -214,7 +214,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
-        return null;
+        return new URI("https://mcreator.net/wiki/creating-apis");
     }
 
     @Override public void doSearch(Map.Entry<String, String> search) {

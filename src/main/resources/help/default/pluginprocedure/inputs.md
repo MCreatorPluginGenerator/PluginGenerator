@@ -1,1 +1,1 @@
-This list will tell mcreator which arg0 will be used.
+List all inputs arguments you defined as arguments in this section. These names have to be the same as you put. This way, MCreator will be able to register these inputs to add them to the code template.

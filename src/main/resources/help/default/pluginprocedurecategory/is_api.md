@@ -1,0 +1,1 @@
+If the parameter is set to true, your category will collected in one section.

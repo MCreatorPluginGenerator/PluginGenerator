@@ -1,0 +1,1 @@
+The classification basis. If two blocks has the same group, they will be near.

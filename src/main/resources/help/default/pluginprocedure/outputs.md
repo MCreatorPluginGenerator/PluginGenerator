@@ -1,0 +1,1 @@
+To create an output block, you simply need to add a field named "output" and write the output type of the block. Types can be seen with the default blocks.

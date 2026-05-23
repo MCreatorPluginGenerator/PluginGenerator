@@ -25,6 +25,9 @@ public class Rules {
             if (Rules.FILE_NAME.matcher(Objects.requireNonNull(supplier.get())).matches()) {
                 return ValidationResult.PASSED;
             }
+            if (PluginMain.getINSTANCE().getApplication().getOpenMCreators().stream().anyMatch(a->supplier.get().contains(a.getWorkspaceSettings().getModID()))){
+                return new ValidationResult(ValidationResult.Type.WARNING,"do not use modid");
+            }
             return new ValidationResult(ValidationResult.Type.ERROR,
                     "You must use whole english and whole lower letters");
         };

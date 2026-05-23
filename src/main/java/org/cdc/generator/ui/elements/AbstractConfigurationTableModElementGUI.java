@@ -80,7 +80,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
                     jTable.clearSelection();
                     jTable.editCellAt(-1, 0);
                 }
-                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 3) {
                     if (addRow != null) {
                         addRow.doClick();
                     }

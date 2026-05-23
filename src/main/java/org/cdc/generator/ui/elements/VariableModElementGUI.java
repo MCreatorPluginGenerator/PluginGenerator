@@ -135,7 +135,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
-        return null;
+        return new URI("https://mcreator.net/wiki/creating-new-variable-types");
     }
 
     @Override public void reloadDataLists() {

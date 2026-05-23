@@ -98,9 +98,9 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         getterLocalization.setValidator(new NotEmptyValidator(getterLocalization::getText));
         addConfigurationWithHelpEntry("getter_localization", getterLocalization);
 
-        registerCreateImplShortCut(this);
+        Utils.registerCreateImplShortCut(this, this);
 
-        addPage(registerCreateImplShortCut(PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(name)
+        addPage(Utils.registerCreateImplShortCut(this, PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(name)
                 .validate(customVariableDependencyLocalization);
     }
 

@@ -1,5 +1,7 @@
 package org.cdc.generator.utils.interfaces;
 
+import org.cdc.generator.PluginMain;
+
 import javax.swing.*;
 import java.util.ServiceLoader;
 import java.util.function.Consumer;
@@ -9,7 +11,8 @@ import java.util.function.Consumer;
  */
 public interface IExamplesProvider {
     ServiceLoader<IExamplesProvider> examplesProviders = ServiceLoader.load(IExamplesProvider.class,
-            IExamplesProvider.class.getClassLoader());
+            PluginMain.getINSTANCE()
+                    .getDependsClassLoader());
 
     void provideExamples(Consumer<JComponent> componentConsumer, Consumer<Object> exampleConsumer,String[] args);
 }

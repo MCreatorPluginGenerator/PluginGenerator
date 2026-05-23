@@ -159,9 +159,9 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             refreshTable();
         });
 
-        registerCreateImplShortCut(this);
+        Utils.registerCreateImplShortCut(this, this);
 
-        addPage("Attributes", registerCreateImplShortCut(PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(name);
+        addPage("Attributes", Utils.registerCreateImplShortCut(this, PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(name);
 
         addPage("Parameters", toolbarAndTable(bar)).lazyValidate(new DuplicatedElementValidator(
                 () -> dependencies.stream().map(TriggerModElement.Dependency::getName).toList(),

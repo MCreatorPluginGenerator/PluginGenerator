@@ -9,15 +9,18 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
+import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.ColorUtils;
+import net.mcreator.util.StringUtils;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableType;
 import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
 import org.cdc.generator.init.ModElementTypes;
+import org.cdc.generator.ui.elements.IQuickCreateImplModElement;
 import org.cdc.generator.ui.elements.ISearchable;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
@@ -286,5 +289,26 @@ public class Utils {
             throw new RuntimeException(e);
         }
         return stringArrayList;
+    }
+
+    public static JComponent registerCreateImplShortCut(IQuickCreateImplModElement iQuickCreateImplModElement,
+            JComponent panel) {
+        var menus = L10N.menu("menus.simple_create_impl");
+        for (String allSupportedGenerator : getAllSupportedGenerators()) {
+            var menu = new JMenuItem(allSupportedGenerator);
+            menu.addActionListener(a -> {
+                iQuickCreateImplModElement.createImpl(allSupportedGenerator,
+                        StringUtils.uppercaseFirstLetter(allSupportedGenerator).replaceAll("[.-]", ""));
+            });
+            menus.add(menu);
+        }
+        if (panel.getComponentPopupMenu() == null) {
+            var popupMenu = new JPopupMenu();
+            popupMenu.add(menus);
+            panel.setComponentPopupMenu(popupMenu);
+        } else {
+            panel.getComponentPopupMenu().add(menus);
+        }
+        return panel;
     }
 }

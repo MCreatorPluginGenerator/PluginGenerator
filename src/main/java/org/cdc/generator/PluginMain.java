@@ -3,8 +3,10 @@ package org.cdc.generator;
 import com.google.gson.JsonObject;
 import net.mcreator.Launcher;
 import net.mcreator.io.FileIO;
+import net.mcreator.plugin.DynamicURLClassLoader;
 import net.mcreator.plugin.JavaPlugin;
 import net.mcreator.plugin.Plugin;
+import net.mcreator.plugin.PluginLoader;
 import net.mcreator.plugin.events.ApplicationLoadedEvent;
 import net.mcreator.plugin.events.ModifyTemplateResultEvent;
 import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
@@ -36,11 +38,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -54,6 +55,8 @@ public class PluginMain extends JavaPlugin {
     }
 
     private MCreatorApplication application;
+
+    private ClassLoader dependsClassLoader;
 
     public PluginMain(Plugin plugin) {
         super(plugin);
@@ -136,6 +139,11 @@ public class PluginMain extends JavaPlugin {
             application = event.getMCreatorApplication();
             PluginMakerPreference.INSTANCE = new PluginMakerPreference("plugin_generator");
             Container.getInstance().registerObject("preferences", () -> PluginMakerPreference.INSTANCE);
+            try {
+                dependsClassLoader = loadAllDepends();
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         addListener(BlocklyPanelRegisterDOMData.class, a -> {
@@ -264,14 +272,24 @@ public class PluginMain extends JavaPlugin {
         });
     }
 
-    private static void warnSnapshot() {
+    private void warnSnapshot() {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(null,
                     "But for the help from the community, this wouldn't be finished. If you encounter a bug, please report it in my plugin page.","You are using snapshot",JOptionPane.WARNING_MESSAGE);
         });
     }
 
-    public void registerAll(MCreator mcreator) {
+    private ClassLoader loadAllDepends() throws MalformedURLException {
+        Vector<URL> urls = new Vector<>();
+        for (Plugin instancePlugin : PluginLoader.INSTANCE.getPlugins()) {
+            if (!instancePlugin.equals(this.plugin)) {
+                urls.add(instancePlugin.toURL());
+            }
+        }
+        return new DynamicURLClassLoader(urls.toArray(new URL[0]),PluginMain.class.getClassLoader());
+    }
+
+    private void registerAll(MCreator mcreator) {
         ResourcePanels.register(mcreator);
         Menus.registerAllMenus(mcreator);
         Menus.registerAllSubMenus(mcreator);
@@ -279,5 +297,9 @@ public class PluginMain extends JavaPlugin {
 
     public MCreatorApplication getApplication() {
         return application;
+    }
+
+    public ClassLoader getDependsClassLoader() {
+        return dependsClassLoader;
     }
 }

@@ -36,10 +36,10 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
         super.initGUI();
         var config = buildConfiguration(2);
         config.getComponentPopupMenu().add(Menus.PLUGIN_PROCEDURE_UTILS.get());
-        registerCreateImplShortCut(this);
+        Utils.registerCreateImplShortCut(this, this);
 
         var component = PanelUtils.northAndCenterElement(config, toolbarAndTable(dependenciesToolBar));
-        registerCreateImplShortCut(component);
+        Utils.registerCreateImplShortCut(this, component);
 
         addPage("Configuration", component).validate(name).validate(localizationValue);
         addPage("Args0", PanelUtils.northAndCenterElement(args0ToolBar, splitPane));

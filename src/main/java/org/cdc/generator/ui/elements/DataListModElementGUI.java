@@ -200,7 +200,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
             throw new RuntimeException(e);
         }
 
-        registerCreateImplShortCut(this);
+        Utils.registerCreateImplShortCut(this, this);
 
         addPage("Configuration",
                 PanelUtils.northAndCenterElement(buildConfiguration(2), toolbarAndTable(bar))).lazyValidate(

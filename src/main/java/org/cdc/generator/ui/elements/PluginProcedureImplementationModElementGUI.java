@@ -80,7 +80,7 @@ public class PluginProcedureImplementationModElementGUI
         procedureFileName.setEditable(true);
         procedureFileName.setValidator(Rules.getFileNameValidator(procedureFileName::getSelectedItem));
         procedureFileName.addItemListener(a -> {
-            if (a.getStateChange() == ItemEvent.SELECTED) {
+            if (a.getStateChange() == ItemEvent.SELECTED && procedureFileName.isPopupVisible()) {
                 var selected = a.getItem().toString();
                 var registry = ElementsUtils.getProcedureFileName(getModElement().getWorkspace(), selected);
                 if (registry != null) {
@@ -191,9 +191,10 @@ public class PluginProcedureImplementationModElementGUI
 
     @Override public void reloadDataLists() {
         ArrayList<String> stringArrayList = new ArrayList<>();
-        for (ModElement element : mcreator.getWorkspaceInfo()
-                .getElementsOfType(ModElementTypes.PROCEDURE.getRegistryName())) {
-            stringArrayList.add(element.getName());
+        for (ModElement element : mcreator.getWorkspace().getModElements()) {
+            if (element.getGeneratableElement() instanceof PluginProcedureModElement) {
+                stringArrayList.add(element.getName());
+            }
         }
         ComboBoxUtil.updateComboBoxContents(procedureFileName, stringArrayList);
     }

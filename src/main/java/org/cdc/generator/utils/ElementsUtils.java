@@ -18,11 +18,11 @@ public class ElementsUtils {
     }
 
     public static String getProcedureFileName(Workspace workspace, String name) {
-        var trigger = workspace.getModElementByName(name);
-        if (trigger == null) {
+        var procedure = workspace.getModElementByName(name);
+        if (procedure == null) {
             return null;
         }
-        return trigger.getRegistryName();
+        return procedure.getRegistryName();
     }
 
     public static String getVariableName(Workspace workspace, String name) {

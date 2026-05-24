@@ -12,7 +12,6 @@ import org.cdc.generator.PluginMain;
 import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.ui.elements.AbstractProceduresModElementGUI;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
-import org.cdc.generator.ui.elements.PluginProceduresModElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.MenuProvider;
 import org.cdc.generator.utils.builders.JMenuBuilder;
@@ -46,7 +45,7 @@ public class Menus {
         PLUGIN_PROCEDURE_UTILS.setVisible(false);
         pluginMain.addListener(TabEvent.Shown.class, event -> {
             DATALIST_UTILS.setVisible(event.getTab().getContent() instanceof DataListModElementGUI);
-            PLUGIN_PROCEDURE_UTILS.setVisible(event.getTab().getContent() instanceof PluginProceduresModElementGUI);
+            PLUGIN_PROCEDURE_UTILS.setVisible(event.getTab().getContent() instanceof AbstractProceduresModElementGUI<?>);
         });
     }
 
@@ -118,7 +117,7 @@ public class Menus {
                 new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("generate_warnings")
                         .setActionListener(a -> {
                             if (mcreator.getTabs().getCurrentTab()
-                                    .getContent() instanceof PluginProceduresModElementGUI pluginProceduresElementGUI) {
+                                    .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
                                 for (String s : pluginProceduresElementGUI.getWarnings().getTextList()) {
                                     for (LinkedHashMap<String, String> value : mcreator.getWorkspace().getLanguageMap()
                                             .values()) {
@@ -131,7 +130,7 @@ public class Menus {
                 new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("refresh_inputs_and_fields")
                         .setActionListener(a -> {
                             if (mcreator.getTabs().getCurrentTab()
-                                    .getContent() instanceof PluginProceduresModElementGUI pluginProceduresElementGUI) {
+                                    .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
                                 System.out.println(mcreator.getTabs().getCurrentTab().getContent().getClass().getName());
                                 var inputs = new ArrayList<String>();
                                 var fields = new ArrayList<String>();
@@ -163,16 +162,18 @@ public class Menus {
                                 pluginProceduresElementGUI.getStatements().setTextList(statements1);
                             }
                         }).build());
-        PLUGIN_PROCEDURE_UTILS.add(new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("load_block_color").setActionListener(a->{
-            if (mcreator.getTabs().getCurrentTab()
-                    .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
-                var blocks = BlocklyLoader.INSTANCE.getBlockLoader(pluginProceduresElementGUI.getBlocklyEditorType()).getDefinedBlocks();
-                var blockName = JOptionPane.showInputDialog(mcreator,"Input block name");
-                if (blocks.containsKey(blockName)){
-                    pluginProceduresElementGUI.setBuiltInColor(blocks.get(blockName).getBlocklyJSON().get("colour").getAsString());
-                }
-            }
-        }).build());
+        PLUGIN_PROCEDURE_UTILS.add(new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("load_block_color").setActionListener(a-> getExternalBlockColour(mcreator)).build());
         // TODO: Mapping_utils functions: like temporary plugin to add item and blocks.
+    }
+
+    private static void getExternalBlockColour(MCreator mcreator) {
+        if (mcreator.getTabs().getCurrentTab()
+                .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
+            var blocks = BlocklyLoader.INSTANCE.getBlockLoader(pluginProceduresElementGUI.getBlocklyEditorType()).getDefinedBlocks();
+            var blockName = JOptionPane.showInputDialog(mcreator,"Input block name");
+            if (blocks.containsKey(blockName)){
+                pluginProceduresElementGUI.setBuiltInColor(blocks.get(blockName).getBlocklyJSON().get("colour").getAsString());
+            }
+        }
     }
 }

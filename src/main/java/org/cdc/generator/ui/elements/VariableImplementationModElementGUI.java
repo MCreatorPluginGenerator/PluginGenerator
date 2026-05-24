@@ -61,7 +61,9 @@ public class VariableImplementationModElementGUI
             generator.setEnabled(false);
             variableElementName.setEnabled(false);
         }
+    }
 
+    @Override public void initAfterAll() {
         this.initGUI();
         this.finalizeGUI();
     }
@@ -173,8 +175,7 @@ public class VariableImplementationModElementGUI
         element.generator = generator.getSelectedItem();
         element.variableElementName = variableElementName.getSelectedItem();
         element.defaultValue = defaultValue.getText();
-        element.scopes = new ArrayList<>(
-                scopeList);
+        element.scopes = scopeList;
         return element;
     }
 

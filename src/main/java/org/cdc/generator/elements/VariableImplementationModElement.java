@@ -23,7 +23,7 @@ public class VariableImplementationModElement extends GeneratableElement impleme
     @ModElementReference public String variableElementName;
     public String defaultValue;
 
-    public ArrayList<VariableScope> scopes;
+    public List<VariableScope> scopes;
 
     public VariableImplementationModElement(ModElement element) {
         super(element);
@@ -49,7 +49,7 @@ public class VariableImplementationModElement extends GeneratableElement impleme
         return IGeneratorElement.super.generateModElementPicture0();
     }
 
-    public boolean isEmptyScopes(){
+    @UsedByReflection public boolean isEmptyScopes() {
         return scopes.stream().filter(VariableScope::hasNotNull).toList().isEmpty();
     }
 

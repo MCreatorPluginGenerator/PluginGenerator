@@ -2,9 +2,7 @@ package org.cdc.generator.ui.elements;
 
 import jdk.jfr.Description;
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
-import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
@@ -78,18 +76,10 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
         bar.setFloatable(false);
         bar.setOpaque(false);
 
-        JButton addrow = new JButton(UIRES.get("16px.add"));
-        addrow.setContentAreaFilled(false);
-        addrow.setOpaque(false);
-        ComponentUtils.deriveFont(addrow, 11);
-        addrow.setBorder(BorderFactory.createEmptyBorder(1, 1, 0, 2));
+        JButton addrow = createAddButton();
         bar.add(addrow);
 
-        JButton remrow = new JButton(UIRES.get("16px.delete"));
-        remrow.setContentAreaFilled(false);
-        remrow.setOpaque(false);
-        ComponentUtils.deriveFont(remrow, 11);
-        remrow.setBorder(BorderFactory.createEmptyBorder(1, 1, 0, 1));
+        JButton remrow = createRemoveRowButton();
         bar.add(remrow);
         bar.add(Utils.initSearchComponent(lastSearchResult, this));
 
@@ -201,7 +191,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
         this.name.setText(modElement.getRegistryName());
         this.requiredWhenEnable.setSelected(generatableElement.requiredWhenEnable);
         this.displayName.setText(generatableElement.apiName);
-        this.configurations = generatableElement.configurations.stream().map(APIModElement.Configuration::clone).toList();
+        this.configurations.addAll(generatableElement.configurations.stream().map(APIModElement.Configuration::clone).toList());
     }
 
     @Override public APIModElement getElementFromGUI() {

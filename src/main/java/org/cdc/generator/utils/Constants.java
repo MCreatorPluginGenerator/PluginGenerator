@@ -5,7 +5,7 @@ public class Constants {
     public static final String[] mappingPlaceholders = new String[] { "@NAME", "@UPPERNAME", "@name", "@SnakeCaseName",
             "@registryname", "@REGISTRYNAME" };
     public static final String[] builtEntriesInDataList = new String[] { "_default", "_mcreator_map_template",
-            "_bypass_prefix" };
+            "_bypass_prefix","_suffix_separator" };
 
     public static class VariableScopes {
         public static final String LOCAL = "local";

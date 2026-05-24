@@ -60,9 +60,9 @@ public class Container {
                 if (ann.force() || field.getType().isPrimitive() || field.getType()
                         .isAssignableFrom(value.getClass())) {
                     try {
-                        LOG.debug("Injected field: {} class: {}", field.getName(), object.getClass().getName());
                         field.set(object, value);
                     } catch (IllegalAccessException e) {
+                        LOG.debug("Injected field: {} class: {} state: Failed", field.getName(), object.getClass().getName());
                         throw new RuntimeException(e);
                     }
                 }

@@ -5,6 +5,7 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.AggregatedValidationResult;
+import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.image.ImageUtils;
@@ -93,8 +94,16 @@ public class VariableImplementationModElementGUI
                 () -> mcreator.getWorkspace().getModElementByName(variableElementName.getSelectedItem()));
 
         defaultValue.setText("null");
-        defaultValue.setValidator(new NotEmptyValidator(defaultValue::getText));
+        var notempty = new NotEmptyValidator(defaultValue::getText);
+        defaultValue.setValidator(() -> {
+            VariableModElement element = (VariableModElement) mcreator.getWorkspace().getModElementByName(variableElementName.getSelectedItem()).getGeneratableElement();
+            if (element != null && defaultValue.getText().equals("null") && !element.nullable) {
+                return new ValidationResult(ValidationResult.Type.WARNING,"Your variable is not nullable");
+            }
+            return notempty.validate();
+        });
         defaultValue.setPreferredSize(Utils.tryToGetTextFieldSize());
+        defaultValue.enableRealtimeValidation();
         addConfigurationWithHelpEntry("default_value", defaultValue);
 
         initTable(new ScopesTableModel());

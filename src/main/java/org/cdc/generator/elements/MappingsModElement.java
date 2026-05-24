@@ -17,7 +17,7 @@ public class MappingsModElement extends GeneratableElement implements IGenerator
 
     public String generatorName;
     @ModElementReference public String datalistElementName;
-    public ArrayList<MappingEntry> mappingsContent;
+    public List<MappingEntry> mappingsContent;
 
     public MappingsModElement(ModElement element) {
         super(element);
@@ -38,7 +38,7 @@ public class MappingsModElement extends GeneratableElement implements IGenerator
         return getModElement().getTypeString() + getGeneratorName() + datalistElementName;
     }
 
-    @UsedByReflection public ArrayList<MappingEntry> getMappingsContent() {
+    @UsedByReflection public List<MappingEntry> getMappingsContent() {
         return mappingsContent;
     }
 

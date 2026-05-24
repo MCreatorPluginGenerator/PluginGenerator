@@ -38,9 +38,6 @@ public class Container {
 
     /**
      * object will be cleared after call endTemporaryLift
-     *
-     * @param name
-     * @param objectSupplier
      */
     public void registerTemporaryObject(String name, Supplier<Object> objectSupplier) {
         tempObjectMap.put(name, objectSupplier);
@@ -60,8 +57,10 @@ public class Container {
                 field.setAccessible(true);
                 var value = map.get(field.getName()).get();
                 var ann = field.getAnnotation(InjectField.class);
-                if (ann.force() || field.getType().isPrimitive() ||field.getType().isAssignableFrom(value.getClass())) {
+                if (ann.force() || field.getType().isPrimitive() || field.getType()
+                        .isAssignableFrom(value.getClass())) {
                     try {
+                        LOG.debug("Injected field: {} class: {}", field.getName(), object.getClass().getName());
                         field.set(object, value);
                     } catch (IllegalAccessException e) {
                         throw new RuntimeException(e);

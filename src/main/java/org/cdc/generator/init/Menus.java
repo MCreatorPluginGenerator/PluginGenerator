@@ -8,12 +8,10 @@ import net.mcreator.ui.init.L10N;
 import net.mcreator.util.DesktopUtils;
 import org.cdc.framework.utils.L10NHelper;
 import org.cdc.generator.PluginMain;
-import org.cdc.generator.elements.DataListModElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
 import org.cdc.generator.ui.elements.PluginProceduresModElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
-import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.MenuProvider;
 import org.cdc.generator.utils.builders.JMenuBuilder;
 import org.cdc.generator.utils.builders.JMenuItemBuilder;
@@ -24,7 +22,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 public class Menus {
     public static MenuProvider PLUGIN_MAKER = register(() -> L10N.menu("menus.plugin_maker"));
@@ -96,19 +93,6 @@ public class Menus {
                         mcreator.getStatusBar().setPersistentMessage("Appended");
                     }
                 }).build());
-        DATALIST_UTILS.add(new JMenuBuilder().setParentMenuName("datalist_utils").setName("builtin_entries")
-                .setInit(menu -> Stream.of(Constants.builtEntriesInDataList).forEach(a -> {
-                    JMenuItem menuItem = new JMenuItem(a);
-                    menuItem.addActionListener(event -> {
-                        if (mcreator.getTabs().getCurrentTab()
-                                .getContent() instanceof DataListModElementGUI dataListModElementGUI) {
-                            dataListModElementGUI.entries.add(new DataListModElement.DataListEntry(a));
-                            dataListModElementGUI.refreshTable();
-                            JOptionPane.showMessageDialog(mcreator, "Added");
-                        }
-                    });
-                    menu.add(menuItem);
-                })).build());
         DATALIST_UTILS.add(
                 new JMenuBuilder().setParentMenuName("datalist_utils").setName("calculate_types").setReload(jMenu -> {
                     if (mcreator.getTabs().getCurrentTab()
@@ -144,19 +128,21 @@ public class Menus {
         PLUGIN_PROCEDURE_UTILS.add(
                 new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("refresh_inputs_and_fields")
                         .setActionListener(a -> {
+
                             if (mcreator.getTabs().getCurrentTab()
                                     .getContent() instanceof PluginProceduresModElementGUI pluginProceduresElementGUI) {
+                                System.out.println(mcreator.getTabs().getCurrentTab().getContent().getClass().getName());
                                 var inputs = new ArrayList<String>();
                                 var fields = new ArrayList<String>();
                                 var statements = new ArrayList<String>();
                                 for (ArgTypeProxy argTypeProxy : pluginProceduresElementGUI.getModel()) {
-                                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.INPUT) {
+                                    if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.INPUT)) {
                                         inputs.add(argTypeProxy.getUniqueName());
                                     }
-                                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.FIELD) {
+                                    if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.FIELD)) {
                                         fields.add(argTypeProxy.getUniqueName());
                                     }
-                                    if (argTypeProxy.getArg0Type().getType() == Arg0InputType.STATEMENT) {
+                                    if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.STATEMENT)) {
                                         statements.add(argTypeProxy.getUniqueName());
                                     }
                                 }

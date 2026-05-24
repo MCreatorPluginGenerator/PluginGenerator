@@ -7,11 +7,13 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.workspace.elements.ModElement;
+import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.DataListModElement;
 import org.cdc.generator.elements.MappingsModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
+import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.jspecify.annotations.NonNull;
@@ -42,6 +44,8 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
 
     // the 0 is the last search index
     private final ArrayList<Integer> lastSearchResult;
+
+    @InjectField Logger LOG;
 
     public MappingsModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Name", "Mapping" });
@@ -129,6 +133,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
                         row.setEdited(MappingsModElement.MappingEntry.isEdited(generator.getSelectedItem(),
                                 ElementsUtils.getDataListName(mcreator.getWorkspace(), datalistName.getSelectedItem()),
                                 row));
+                        LOG.info("Mark line: {} editable: {}",rowIndex,row.isEdited());
                     }
                     return null;
                 }
@@ -167,10 +172,21 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
                         if (set.isEmpty() || !set.contains(key)) {
                             mappingEntries.add(new MappingsModElement.MappingEntry(key,
                                     Utils.convertYamlToList(entry.getValue())));
+                            set.add(key);
                         }
                     }
                 }
-
+                for (String s : Constants.builtEntriesInDataList) {
+                    if (set.isEmpty() || !set.contains(s)){
+                        mappingEntries.add(new MappingsModElement.MappingEntry(s,new ArrayList<>()));
+                    }
+                }
+                mappingEntries.sort(Comparator.comparing(a->{
+                    if (a.getName().charAt(0) == '_'){
+                        return 0;
+                    }
+                    return 1;
+                }));
                 JOptionPane.showMessageDialog(mcreator,
                         "Total: " + mappingEntries.size() + ", Edited: " + cacheSet.size());
             }
@@ -189,21 +205,21 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
     @Override protected void openInEditingMode(MappingsModElement generatableElement) {
         datalistName.setSelectedItem(generatableElement.datalistElementName);
         generator.setSelectedItem(generatableElement.generatorName);
-        mappingEntries = generatableElement.mappingsContent.stream().map(MappingsModElement.MappingEntry::clone).toList();
+        mappingEntries.addAll(generatableElement.mappingsContent.stream().map(MappingsModElement.MappingEntry::clone).toList());
     }
 
     @Override public MappingsModElement getElementFromGUI() {
         var element = new MappingsModElement(modElement);
         element.datalistElementName = datalistName.getSelectedItem();
         element.generatorName = generator.getSelectedItem();
-        element.mappingsContent = new ArrayList<>(
+        element.mappingsContent =
                 mappingEntries.stream().filter(MappingsModElement.MappingEntry::isEdited)
                         .sorted(Comparator.comparing(a -> {
                             if (a.getName().charAt(0) == '_') {
                                 return -1;
                             }
                             return 0;
-                        })).toList());
+                        })).toList();
         modElement.setRegistryName(element.getDatalistName());
         return element;
     }

@@ -32,11 +32,6 @@ public class BuilderUtils {
         return "${field$" + name + "}";
     }
 
-    public static boolean isSupportProcedure(String generatorName) {
-        return generatorName.startsWith("forge") || generatorName.startsWith("neoforge") || generatorName.startsWith(
-                "fabric") || generatorName.startsWith("spigot");
-    }
-
     public static String generateInputsComment(JsonArray inputs) {
         return inputs.asList().stream().map(a -> getInputPlaceHolder(a.getAsString()))
                 .collect(Collectors.joining(",", "<#-- ", " -->"));

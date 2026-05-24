@@ -5,15 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 public class YamlUtils {
-    public static String NULL = "null";
     public static String lineSeparator = "\n";
 
-    public static String valuePrefix = "- ";
     public static String keySuffix = ": ";
-    public static String multipleLines = "|";
 
     public static String str(String value) {
-        return "\"" + value + "\"";
+        return "'" + value.replace("'","''") + "'";
     }
 
     public static String keyAndValue(String key, String value) {

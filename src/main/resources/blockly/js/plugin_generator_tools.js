@@ -12,7 +12,6 @@ callback: function (scope) {
     if (!block) return;
 
     const dom = Blockly.Xml.blockToDom(block);
-
     const next = dom.querySelector('next');
     if (next) next.remove();
 

@@ -162,7 +162,7 @@ public class TriggerImplementationModElementGUI
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
-        return null;
+        return new URI("https://mcreator.net/wiki/creating-global-triggers#:~:text=true%22%2C%0A%20%20%22has_result%22%3A%20%22true%22%0A%7D-,Make%20the%20code%20of%20your%20global%20trigger,-The%20folder");
     }
 
     public TriggerModElement getTriggerModElement() {

@@ -38,7 +38,7 @@ public class VariableImplementationModElement extends GeneratableElement impleme
     }
 
     @UsedByReflection public String getDefaultValue() {
-        return defaultValue;
+        return YamlUtils.str(defaultValue);
     }
 
     @Override public String getGeneratorName() {
@@ -47,6 +47,10 @@ public class VariableImplementationModElement extends GeneratableElement impleme
 
     @Override public BufferedImage generateModElementPicture() {
         return IGeneratorElement.super.generateModElementPicture0();
+    }
+
+    public boolean isEmptyScopes(){
+        return scopes.stream().filter(VariableScope::hasNotNull).toList().isEmpty();
     }
 
     @Override public String getUniqueID() {

@@ -10,6 +10,7 @@ import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.ModElement;
+import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.DataListModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.ResourcePanelIcons;
@@ -18,6 +19,7 @@ import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ZipUtils;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
+import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.DuplicatedElementValidator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.jspecify.annotations.NonNull;
@@ -56,6 +58,8 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
 
     private List<String> cachedIcon;
 
+    @InjectField Logger LOG;
+
     public DataListModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode,
                 new String[] { "Name", "Readable name", "Type", "Texture", "Description", "Others" });
@@ -68,7 +72,9 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         if (editingMode) {
             datalistName.setEnabled(false);
         }
+    }
 
+    @Override public void initAfterAll() {
         this.initGUI();
         this.finalizeGUI();
     }
@@ -238,8 +244,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
     }
 
     @Override protected void openInEditingMode(DataListModElement generatableElement) {
-        entries = new ArrayList<>(
-                generatableElement.entries.stream().map(DataListModElement.DataListEntry::clone).toList());
+        entries.addAll(generatableElement.entries.stream().map(DataListModElement.DataListEntry::clone).toList());
         this.generateDataList.setSelected(generatableElement.generateDataList);
         this.dialogMessage.setText(generatableElement.dialogMessage);
     }
@@ -248,13 +253,12 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         modElement.setRegistryName(datalistName.getSelectedItem());
         DataListModElement dataListModElement = new DataListModElement(modElement);
         dataListModElement.generateDataList = generateDataList.isSelected();
-        dataListModElement.entries = new ArrayList<>(
-                entries.stream().filter(a -> !a.isBuiltIn()).sorted(Comparator.comparing(a -> {
-                    if (a.getName().charAt(0) == '_') {
-                        return -1;
-                    }
-                    return 0;
-                })).toList());
+        dataListModElement.entries = entries.stream().filter(a -> !a.isBuiltIn()).sorted(Comparator.comparing(a -> {
+            if (a.getName().charAt(0) == '_') {
+                return -1;
+            }
+            return 0;
+        })).toList();
         dataListModElement.dialogMessage = dialogMessage.getText();
         return dataListModElement;
     }
@@ -265,6 +269,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
 
     @Override public void reloadDataLists() {
         if (DataListLoader.getCache().containsKey(datalistName.getSelectedItem())) {
+            LOG.info("Loading builtin datalist");
             var compl = CompletableFuture.supplyAsync(() -> {
                 var types = new HashSet<String>();
                 for (DataListEntry dataListEntry : DataListLoader.loadDataList(datalistName.getSelectedItem())) {
@@ -314,6 +319,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         element.datalistName.setSelectedItem(modElement.getName());
         element.generator.setSelectedItem(generator);
         element.showView();
+        LOG.info("Created a Mapping for {}", modElement.getName());
     }
 
     private class DataListTableModel extends AbstractTableModel {
@@ -364,6 +370,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
             case "Type" -> row.setType(aValue.toString());
             case "Texture" -> row.setTexture(aValue.toString());
             case "Description" -> row.setDescription(aValue.toString());
+            default -> LOG.warn("Missing row:{}", rowIndex);
             }
         }
     }

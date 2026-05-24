@@ -43,11 +43,12 @@ public class VariableImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<VariableImplementationModElement> {
     final VComboBox<String> generator = new VComboBox<>();
     final VComboBox<String> variableElementName = new VComboBox<>();
-    private final VTextField defaultValue = new VTextField();
+    final VTextField defaultValue = new VTextField();
 
     private List<VariableImplementationModElement.VariableScope> scopeList = new ArrayList<>();
 
     private final Map<String, MethodHandle> cacheHandles = new HashMap<>();
+    // Access the mcreator private field.
     private final MethodHandles.Lookup lookup = MethodHandles.lookup();
 
     @InjectField private Logger LOGGER;
@@ -136,7 +137,11 @@ public class VariableImplementationModElementGUI
                                     "set" + columnName, MethodType.methodType(Void.TYPE, String.class));
                         }
                         cacheHandles.put(columnName, set);
-                        set.invoke(row, jTextArea.getText());
+                        if (jTextArea.getText().isBlank()){
+                            set.invoke(row,null);
+                        } else {
+                            set.invoke(row, jTextArea.getText());
+                        }
                     } catch (Throwable e) {
                         throw new RuntimeException(e);
                     }
@@ -174,7 +179,7 @@ public class VariableImplementationModElementGUI
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
-        return null;
+        return new URI("https://mcreator.net/wiki/creating-new-variable-types#:~:text=false-,Making%20the%20code,-Files%20and%20folders");
     }
 
     @Override public void reloadDataLists() {

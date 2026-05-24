@@ -36,6 +36,6 @@ public class HelpTableHeader extends JTableHeader {
         String object = column.getHeaderValue().toString();
 
         return HelpLoader.loadHelpFor(
-                gui.withEntry(helpPrefix + "/table/" + object.replace(' ', '_').toLowerCase(Locale.ROOT)), false);
+                gui.withEntry(helpPrefix + "/table/" + object.replace(' ', '_').toLowerCase(Locale.ROOT)), true);
     }
 }

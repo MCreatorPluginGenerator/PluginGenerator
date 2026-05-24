@@ -1,5 +1,5 @@
-defaultvalue: '${data.getDefaultValue()}'
-<#if !data.scopes.isEmpty()>
+defaultvalue: ${data.getDefaultValue()}
+<#if !data.isEmptyScopes()>
 scopes:
 <#list data.scopes as scope>
 <#if scope.hasNotNull()>

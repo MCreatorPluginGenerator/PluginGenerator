@@ -68,7 +68,7 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
     }
 
     @Override @Nullable public URI contextURL() throws URISyntaxException {
-        return null;
+        return new URI("https://mcreator.net/wiki/create-new-procedure-blocks#:~:text=name%22%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22fields%22%3A%20%5B%0A%20%20%20%20%20%20%22vars%22%0A%20%20%20%20%5D%0A%20%20%7D%0A%7D-,Create%20your%20procedure%20block%20section,-To%20have%20your");
     }
 
     @Override public void reloadDataLists() {

@@ -1,0 +1,3 @@
+Then, scopes are only defined for the local variables and the global session variables (same behaviour as a local, but it can be used by all procedures). This means that both Player scopes and the Map and World scopes are not supported and so, can not be used for this variable type.
+
+<br>init is the code to generates when creating the variable. get is what to generate when using a getter procedure block with a variable of this type selected. set is the same thing, but it is for the Set procedure block instead.

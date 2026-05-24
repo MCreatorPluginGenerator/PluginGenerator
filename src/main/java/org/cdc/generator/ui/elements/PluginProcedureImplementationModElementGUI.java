@@ -89,6 +89,7 @@ public class PluginProcedureImplementationModElementGUI
                             .getGeneratableElement() instanceof IBlocklyElement blocklyElement) {
                         parentFolder.setText(blocklyElement.getBlocklyFolder());
                     }
+                    LOG.debug("Converted to {}", registry);
                 }
             }
         });
@@ -118,6 +119,7 @@ public class PluginProcedureImplementationModElementGUI
                     + BuilderUtils.generateFieldsComment(fields) + System.lineSeparator()
                     + BuilderUtils.generateStatementsComment(statements) + System.lineSeparator();
             content.setText(comment + "\n" + content.getText());
+            LOG.debug("Generated procedure impl code: {}", content.getText());
         });
         toolbar.add(generate);
 
@@ -197,7 +199,8 @@ public class PluginProcedureImplementationModElementGUI
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
-        return null;
+        return new URI(
+                "https://mcreator.net/wiki/create-new-procedure-blocks#:~:text=0%20and%20360.-,Make%20the%20code%20of%20your%20procedure%20block,-The%20folder");
     }
 
     public PluginProcedureModElement getPluginProcedureModElement() {

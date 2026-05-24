@@ -153,6 +153,9 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
                 mcreator, modElement1, false);
         element.variableElementName.setSelectedItem(this.modElement.getName());
         element.generator.setSelectedItem(generator);
+        if (!nullable.isSelected()){
+            element.defaultValue.setText("");
+        }
         element.showView();
     }
 }

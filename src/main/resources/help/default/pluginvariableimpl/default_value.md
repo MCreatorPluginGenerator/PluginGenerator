@@ -1,0 +1,1 @@
+The default value of the variable type.

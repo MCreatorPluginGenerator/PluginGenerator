@@ -60,7 +60,7 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
         element.previousStatement = this.previousStatement.getText();
         element.nextStatement = this.nextStatement.getText();
         element.colour = this.color.getColor();
-        element.builtInColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem());
+        element.builtInColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem(),false);
         element.mutator = this.mutator.getText();
         // compatible with previous version.
         element.outputs = outputs.getListElements();

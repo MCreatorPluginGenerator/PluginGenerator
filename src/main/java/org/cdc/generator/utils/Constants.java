@@ -1,11 +1,11 @@
 package org.cdc.generator.utils;
 
 public class Constants {
-    public static final String NONE = "None";
+    public static final String NONE = "(None)";
     public static final String[] mappingPlaceholders = new String[] { "@NAME", "@UPPERNAME", "@name", "@SnakeCaseName",
             "@registryname", "@REGISTRYNAME" };
     public static final String[] builtEntriesInDataList = new String[] { "_default", "_mcreator_map_template",
-            "_bypass_prefix","_suffix_separator" };
+            "_bypass_prefix", "_suffix_separator" };
 
     public static class VariableScopes {
         public static final String LOCAL = "local";

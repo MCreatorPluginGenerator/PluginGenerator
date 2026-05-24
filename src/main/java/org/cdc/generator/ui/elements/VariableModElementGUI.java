@@ -100,8 +100,8 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
 
         Utils.registerCreateImplShortCut(this, this);
 
-        addPage(Utils.registerCreateImplShortCut(this, PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(name)
-                .validate(customVariableDependencyLocalization);
+        addPage(Utils.registerCreateImplShortCut(this, PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(
+                name).validate(customVariableDependencyLocalization);
     }
 
     @Override protected void openInEditingMode(VariableModElement generatableElement) {
@@ -112,7 +112,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         this.ignoredByCoverage.setSelected(generatableElement.ignoredByCoverage);
         this.requiredApis.setListElements(generatableElement.required_apis);
         this.color.setColor(generatableElement.color);
-        this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.builtinColor));
+        this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.builtinColor, true));
         this.customVariableDependencyLocalization.setText(generatableElement.customVariableDependencyLocalization);
         this.getterLocalization.setText(generatableElement.getterLocalization);
         this.setterLocalization.setText(generatableElement.setterLocalization);
@@ -127,7 +127,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         variableModElement.ignoredByCoverage = ignoredByCoverage.isSelected();
         variableModElement.required_apis = requiredApis.getListElements();
         variableModElement.color = color.getColor();
-        variableModElement.builtinColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem());
+        variableModElement.builtinColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem(), false);
         variableModElement.customVariableDependencyLocalization = customVariableDependencyLocalization.getText();
         variableModElement.setterLocalization = setterLocalization.getText();
         variableModElement.getterLocalization = getterLocalization.getText();
@@ -153,7 +153,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
                 mcreator, modElement1, false);
         element.variableElementName.setSelectedItem(this.modElement.getName());
         element.generator.setSelectedItem(generator);
-        if (!nullable.isSelected()){
+        if (!nullable.isSelected()) {
             element.defaultValue.setText("");
         }
         element.showView();

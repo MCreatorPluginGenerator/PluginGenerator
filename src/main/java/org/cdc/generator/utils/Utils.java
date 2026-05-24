@@ -4,6 +4,7 @@ import net.mcreator.blockly.data.BlocklyLoader;
 import net.mcreator.generator.Generator;
 import net.mcreator.generator.template.base.BaseDataModelProvider;
 import net.mcreator.minecraft.DataListLoader;
+import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.PluginLoader;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
@@ -134,9 +135,7 @@ public class Utils {
                 searchbar.getValidationStatus();
             }
         });
-        searchbar.registerKeyboardAction(a -> {
-            downSearch.doClick();
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED);
+        searchbar.registerKeyboardAction(a -> downSearch.doClick(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED);
         downSearch.addActionListener(a -> {
             var index = lastSearchResult.getFirst() + 1;
             if (index >= lastSearchResult.size()) {
@@ -171,19 +170,25 @@ public class Utils {
         return new Dimension(dimen.width / 6, dimen.height / 30);
     }
 
-    public static String nullToNoneOrNoneToNull(String none) {
-        if (none == null) {
-            return Constants.NONE;
+    public static String nullToNoneOrNoneToNull(String none,boolean editingMode) {
+        if (editingMode) {
+            if (none == null){
+                return Constants.NONE;
+            }
+            if (none.isBlank()) {
+                return Constants.NONE;
+            }
+        } else {
+            if (Constants.NONE.equals(none)){
+                return null;
+            }
         }
-        if (none.isBlank()) {
-            return Constants.NONE;
-        }
-        return none.equals(Constants.NONE) ? null : none;
+        return none;
     }
 
     public static File tryToFindCorePlugin() {
-        return PluginLoader.INSTANCE.getPlugins().stream().filter(a -> a.getID().equals("core")).findFirst().get()
-                .getFile();
+        var optional = PluginLoader.INSTANCE.getPlugins().stream().filter(a -> a.getID().equals("core")).findFirst();
+        return optional.map(Plugin::getFile).orElse(null);
     }
 
     public static Map.Entry<String, String> splitSearch(String text) {
@@ -214,9 +219,7 @@ public class Utils {
             }
         });
 
-        Stream.of("aiconditions", "boundingboxes", "mcelements", "mcitems", "procedures", "triggers").forEach(a -> {
-            provider.addCompletion(new ShorthandCompletion(provider, "in" + a, "<#include \"" + a + ".ftl\">"));
-        });
+        Stream.of("aiconditions", "boundingboxes", "mcelements", "mcitems", "procedures", "triggers").forEach(a -> provider.addCompletion(new ShorthandCompletion(provider, "in" + a, "<#include \"" + a + ".ftl\">")));
 
         provider.addCompletion(
                 new TemplateCompletion(provider, "include", "include", "<#include \"${include}\">${cursor}"));
@@ -296,10 +299,8 @@ public class Utils {
         var menus = L10N.menu("menus.simple_create_impl");
         for (String allSupportedGenerator : getAllSupportedGenerators()) {
             var menu = new JMenuItem(allSupportedGenerator);
-            menu.addActionListener(a -> {
-                iQuickCreateImplModElement.createImpl(allSupportedGenerator,
-                        StringUtils.uppercaseFirstLetter(allSupportedGenerator).replaceAll("[.-]", ""));
-            });
+            menu.addActionListener(a -> iQuickCreateImplModElement.createImpl(allSupportedGenerator,
+                    StringUtils.uppercaseFirstLetter(allSupportedGenerator).replaceAll("[.-]", "")));
             menus.add(menu);
         }
         if (panel.getComponentPopupMenu() == null) {

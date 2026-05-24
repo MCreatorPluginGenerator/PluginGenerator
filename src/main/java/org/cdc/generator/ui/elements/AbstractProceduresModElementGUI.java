@@ -80,7 +80,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.color = new JColor(mcreator, false, false);
         this.builtInColor = new VComboBox<>(Utils.getAllBuiltinColors());
         this.mutator = new VTextField();
-        this.outputs = new TypeListField(mcreator,VariableType::blocklyTypeName);
+        this.outputs = new TypeListField(mcreator, VariableType::blocklyTypeName);
         this.extensions = new JStringListField(mcreator, null);
         this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);
         this.requiredApis = new APIListField(mcreator);
@@ -273,10 +273,11 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             model.add(new ArgTypeProxy(json));
         });
         removeLine.addActionListener(a -> model.remove(arg0List.getSelectedValue()));
-        importArg0JsonArrary.addActionListener(a->{
+        importArg0JsonArrary.addActionListener(a -> {
             RSyntaxTextArea rSyntaxTextArea = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
-            var i = DialogUtils.showOptionPaneWithTextArea(rSyntaxTextArea,mcreator,"Input your json array",Collections.emptyList());
-            if (i == JOptionPane.YES_OPTION){
+            var i = DialogUtils.showOptionPaneWithTextArea(rSyntaxTextArea, mcreator, "Input your json array",
+                    Collections.emptyList());
+            if (i == JOptionPane.YES_OPTION) {
                 JsonArray jsonElements = new Gson().fromJson(rSyntaxTextArea.getText(), JsonArray.class);
                 for (JsonElement jsonElement : jsonElements) {
                     model.add(new ArgTypeProxy(jsonElement.getAsJsonObject()));
@@ -286,9 +287,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         args0ToolBar.add(addLine);
         args0ToolBar.add(removeLine);
         args0ToolBar.add(importArg0JsonArrary);
-        arg0List.addListSelectionListener(listSelectionEvent -> {
-            reloadComponent(rightComponent);
-        });
+        arg0List.addListSelectionListener(listSelectionEvent -> reloadComponent(rightComponent));
         arg0List.setCellRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -349,7 +348,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.previousStatement.setText(generatableElement.previousStatement);
         this.nextStatement.setText(generatableElement.nextStatement);
         this.color.setColor(generatableElement.colour);
-        this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.builtInColor));
+        this.builtInColor.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.builtInColor, true));
         this.extensions.setTextList(generatableElement.extensions);
         if (!generatableElement.outputs.isEmpty()) {
             this.outputs.setListElements(generatableElement.outputs);
@@ -390,6 +389,10 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
 
     @Override public void showSearch(int index) {
 
+    }
+
+    public void setBuiltInColor(String builtInColor) {
+        this.builtInColor.setSelectedItem(builtInColor);
     }
 
     private class DependenciesTableModule extends AbstractTableModel {

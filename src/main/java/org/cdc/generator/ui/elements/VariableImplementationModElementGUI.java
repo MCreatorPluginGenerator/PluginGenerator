@@ -38,6 +38,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VariableImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<VariableImplementationModElement> {
@@ -151,8 +152,10 @@ public class VariableImplementationModElementGUI
                 return null;
             }
         });
-        for (String s : Utils.getAllVariableScope()) {
-            scopeList.add(new VariableImplementationModElement.VariableScope(s));
+        if (!isEditingMode()) {
+            for (String s : Utils.getAllVariableScope()) {
+                scopeList.add(new VariableImplementationModElement.VariableScope(s));
+            }
         }
 
         addPage("Configuration", PanelUtils.northAndCenterElement(buildConfiguration(2), wrapTable())).validate(
@@ -167,7 +170,17 @@ public class VariableImplementationModElementGUI
         this.generator.setSelectedItem(generatableElement.getGeneratorName());
         this.variableElementName.setSelectedItem(generatableElement.variableElementName);
         this.defaultValue.setText(generatableElement.defaultValue);
-        this.scopeList = generatableElement.scopes.stream().map(VariableImplementationModElement.VariableScope::clone).toList();
+        this.scopeList.addAll(generatableElement.scopes.stream().map(VariableImplementationModElement.VariableScope::clone).toList());
+        var scopes = Utils.getAllVariableScope();
+        if (scopeList.size() != scopes.size()){
+            var set = scopeList.stream().map(VariableImplementationModElement.VariableScope::getName).collect(Collectors.toSet());
+            for (String scope : scopes) {
+                if (set.contains(scope)){
+                    continue;
+                }
+                scopeList.add(new VariableImplementationModElement.VariableScope(scope));
+            }
+        }
     }
 
     @Override public VariableImplementationModElement getElementFromGUI() {

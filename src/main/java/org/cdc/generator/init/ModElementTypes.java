@@ -38,6 +38,9 @@ import javax.annotation.Nullable;
     public static final ModElementType<PluginCmdArgsProcedureModElement> CMD_ARGS_PROCEDURE = register("plugincmdargsprocedure",null,PluginCmdArgsProcedureModElementGUI::new,
             PluginCmdArgsProcedureModElement.class);
 
+    public static final ModElementType<UpdateJsonModElement> UPDATE_JSON_MOD_ELEMENT_MOD_ELEMENT_TYPE = register("updatelogs",null,UpdateLogJsonModElementGUI::new,
+            UpdateJsonModElement.class);
+
     private static <E extends GeneratableElement> ModElementType<E> register(String registryName,
             @Nullable Character shortcut, ModElementType.ModElementGUIProvider<E> modElementGUIProvider,
             Class<E> modElementStorageClass) {

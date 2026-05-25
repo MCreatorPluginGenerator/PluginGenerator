@@ -1,0 +1,4 @@
+templates:
+  - template: pluginbase/update.json.ftl
+    writer: json
+    name: "@WORKSPACEROOT/update.json"

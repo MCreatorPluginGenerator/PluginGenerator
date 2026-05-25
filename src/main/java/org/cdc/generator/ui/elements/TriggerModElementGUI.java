@@ -62,6 +62,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
         this.dependencies = new ArrayList<>();
         this.lastSearchResult = new ArrayList<>();
+        names = new HashSet<>();
 
         this.requiredApis = new APIListField(mcreator);
 

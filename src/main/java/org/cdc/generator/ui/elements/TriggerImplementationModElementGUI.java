@@ -9,6 +9,7 @@ import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
+import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.TriggerImplementationModElement;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
@@ -47,6 +48,7 @@ public class TriggerImplementationModElementGUI
     public List<AbstractMap.SimpleEntry<String, String>> mappingEntries;
 
     @InjectField Container container;
+    @InjectField Logger LOG;
     private JToolBar methodToolBar;
 
     public TriggerImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
@@ -117,7 +119,22 @@ public class TriggerImplementationModElementGUI
 
         initTable(new MappingTableModel());
 
-        addPage("Map", wrapTable());
+        JToolBar toolBar = new JToolBar();
+        toolBar.setOpaque(false);
+        JButton remrow = createRemoveRowButton();
+
+        remrow.addActionListener(a -> {
+            jTable.editCellAt(-1, 0);
+            var stack = new Stack<Integer>();
+            Arrays.stream(jTable.getSelectedRows()).forEach(stack::add);
+            while (!stack.empty()) {
+                mappingEntries.remove((int) stack.pop());
+            }
+            jTable.setEditingColumn(-1);
+        });
+        toolBar.add(remrow);
+
+        addPage("Map", toolbarAndTable(toolBar));
     }
 
     private void reloadToolBar() {
@@ -172,6 +189,7 @@ public class TriggerImplementationModElementGUI
                 return (TriggerModElement) modElement.getGeneratableElement();
             }
         }
+        LOG.error("Can not find trigger {}",triggerFileName.getSelectedItem());
         return null;
     }
 
@@ -179,7 +197,7 @@ public class TriggerImplementationModElementGUI
         ArrayList<String> stringArrayList = new ArrayList<>();
         for (ModElement element : mcreator.getWorkspaceInfo()
                 .getElementsOfType(ModElementTypes.TRIGGER.getRegistryName())) {
-            stringArrayList.add(element.getName());
+            stringArrayList.add(element.getRegistryName());
         }
         ComboBoxUtil.updateComboBoxContents(triggerFileName, stringArrayList);
 

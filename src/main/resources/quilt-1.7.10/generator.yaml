@@ -47,9 +47,6 @@ base_templates:
     writer: file
     name: "@SRCROOT/.placeholder"
     condition: "${!settings.getMCreatorDependenciesRaw().contains(\"javaplugin\")}"
-  - template: pluginbase/update.json.ftl
-    writer: json
-    name: "@WORKSPACEROOT/update.json"
 
 language_file:
   format: keyvalue

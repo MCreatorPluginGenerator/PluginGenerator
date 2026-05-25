@@ -193,7 +193,7 @@ public class PluginProcedureImplementationModElementGUI
         ArrayList<String> stringArrayList = new ArrayList<>();
         for (ModElement element : mcreator.getWorkspace().getModElements()) {
             if (element.getGeneratableElement() instanceof PluginProcedureModElement) {
-                stringArrayList.add(element.getName());
+                stringArrayList.add(element.getRegistryName());
             }
         }
         ComboBoxUtil.updateComboBoxContents(procedureFileName, stringArrayList);
@@ -210,6 +210,7 @@ public class PluginProcedureImplementationModElementGUI
                 return (PluginProcedureModElement) modElement.getGeneratableElement();
             }
         }
+        LOG.error("Can not find {}", procedureFileName.getSelectedItem());
         return null;
     }
 }

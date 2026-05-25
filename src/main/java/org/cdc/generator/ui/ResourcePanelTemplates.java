@@ -27,7 +27,7 @@ public class ResourcePanelTemplates extends AbstractResourcePanel<File> {
 
     public ResourcePanelTemplates(WorkspacePanel workspacePanel) {
         super(workspacePanel, new ResourceFilterModel<>(workspacePanel, File::getName), new Render(),
-                JList.HORIZONTAL_WRAP);
+                JList.VERTICAL);
 
         addToolBarButton("workspace.textures.import", UIRES.get("16px.open"), event -> {
             var files = FileDialogs.getFileChooserDialog(workspacePanel.getMCreator(), FileChooserType.OPEN, false, "",
@@ -85,8 +85,8 @@ public class ResourcePanelTemplates extends AbstractResourcePanel<File> {
             ComponentUtils.deriveFont(this, 11);
             setForeground(Theme.current().getForegroundColor());
             setVerticalTextPosition(BOTTOM);
-            setHorizontalTextPosition(CENTER);
-            setHorizontalAlignment(CENTER);
+            setHorizontalTextPosition(LEFT);
+            setHorizontalAlignment(LEFT);
 
             setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
             return this;

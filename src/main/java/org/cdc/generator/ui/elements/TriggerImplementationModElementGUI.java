@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.TriggerImplementationModElement;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
-import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
@@ -30,7 +29,6 @@ import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.awt.event.ItemEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -76,15 +74,6 @@ public class TriggerImplementationModElementGUI
 
         triggerFileName.setEditable(true);
         triggerFileName.setValidator(new NotEmptyValidator(triggerFileName::getSelectedItem));
-        triggerFileName.addItemListener(a -> {
-            if (a.getStateChange() == ItemEvent.SELECTED && triggerFileName.isPopupVisible()) {
-                var registry = ElementsUtils.getProcedureFileName(getModElement().getWorkspace(),
-                        a.getItem().toString());
-                if (registry != null) {
-                    triggerFileName.setSelectedItem(registry);
-                }
-            }
-        });
         addElementSelectorConfiguration("trigger_element_name", triggerFileName,
                 () -> getTriggerModElement().getModElement());
 
@@ -130,7 +119,13 @@ public class TriggerImplementationModElementGUI
             while (!stack.empty()) {
                 mappingEntries.remove((int) stack.pop());
             }
+            jTable.setEditingRow(-1);
             jTable.setEditingColumn(-1);
+
+            SwingUtilities.invokeLater(()->{
+                jTable.revalidate();
+                jTable.repaint();
+            });
         });
         toolBar.add(remrow);
 

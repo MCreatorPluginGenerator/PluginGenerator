@@ -14,7 +14,6 @@ import org.cdc.generator.elements.PluginProcedureImplementationModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.init.ModElementTypes;
-import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
@@ -81,16 +80,11 @@ public class PluginProcedureImplementationModElementGUI
         procedureFileName.setValidator(Rules.getFileNameValidator(procedureFileName::getSelectedItem));
         procedureFileName.addItemListener(a -> {
             if (a.getStateChange() == ItemEvent.SELECTED && procedureFileName.isPopupVisible()) {
-                var selected = a.getItem().toString();
-                var registry = ElementsUtils.getProcedureFileName(getModElement().getWorkspace(), selected);
-                if (registry != null) {
-                    procedureFileName.setSelectedItem(registry);
-                    if (mcreator.getWorkspace().getModElementByName(selected)
-                            .getGeneratableElement() instanceof IBlocklyElement blocklyElement) {
-                        parentFolder.setText(blocklyElement.getBlocklyFolder());
-                    }
-                    LOG.debug("Converted to {}", registry);
+                if (getPluginProcedureModElement()
+                         instanceof IBlocklyElement blocklyElement) {
+                    parentFolder.setText(blocklyElement.getBlocklyFolder());
                 }
+                LOG.debug("Select folder {}", parentFolder.getText());
             }
         });
         addElementSelectorConfiguration("pluginprocedure_element_name", procedureFileName,

@@ -88,7 +88,7 @@ public abstract class AbstractArgType implements IArg0Type {
     @Override public String getUniqueName(JsonObject jsonObject) {
         var json = jsonObject.get("name");
         if (json == null) {
-            return "none";
+            return "(No Name)";
         }
         return json.getAsString();
     }

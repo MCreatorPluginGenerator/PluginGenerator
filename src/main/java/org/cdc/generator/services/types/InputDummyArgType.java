@@ -39,7 +39,9 @@ public class InputDummyArgType extends AbstractArgType {
     }
 
     @Override protected void initNewJsonObject(JsonObject jsonObject, JsonObject newJsonObject) {
-        ifHasNameThenPut(jsonObject, newJsonObject, index);
+        if (jsonObject.has("name")) {
+            newJsonObject.addProperty("name", jsonObject.get("name").getAsString());
+        }
     }
 
     @Override public Arg0InputType getType() {

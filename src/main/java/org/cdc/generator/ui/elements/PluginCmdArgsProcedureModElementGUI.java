@@ -1,5 +1,8 @@
 package org.cdc.generator.ui.elements;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
@@ -10,6 +13,7 @@ import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
 import org.cdc.generator.init.Menus;
 import org.cdc.generator.init.ModElementTypes;
+import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.ioc.InjectField;
@@ -29,9 +33,16 @@ import java.util.Objects;
 public class PluginCmdArgsProcedureModElementGUI extends AbstractProceduresModElementGUI<PluginCmdArgsProcedureModElement> implements IQuickCreateImplModElement{
     @InjectField Container container;
 
+    private final String defaults = "[{\"type\":\"input_dummy\"},{\"type\":\"input_statement\",\"name\":\"args\"}]";
+
     public PluginCmdArgsProcedureModElementGUI(MCreator mcreator, @NotNull ModElement modElement,
             boolean editingMode) {
         super(mcreator, modElement, editingMode);
+
+        JsonArray array = new Gson().fromJson(defaults,JsonArray.class);
+        for (JsonElement jsonElement : array) {
+            model.add(new ArgTypeProxy(jsonElement.getAsJsonObject()));
+        }
 
         this.initGUI();
         this.finalizeGUI();

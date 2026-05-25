@@ -1,5 +1,6 @@
 package org.cdc.generator.ui.elements;
 
+import jdk.jfr.Description;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.TranslatedComboBox;
 import net.mcreator.ui.component.util.PanelUtils;
@@ -18,8 +19,8 @@ import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.VariableType;
+import org.cdc.generator.utils.interfaces.IExamplesProvider;
 import org.cdc.generator.utils.validators.DuplicatedElementValidator;
-import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -73,7 +74,6 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
     }
 
     @Override protected void initGUI() {
-
         this.name.setText(modElement.getRegistryName());
         this.name.setValidator(Rules.getFileNameValidator(this.name::getText));
         addNameConfiguration(name);
@@ -138,13 +138,23 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         bar.add(addrow);
         JButton remrow = createJTableRemoveRowButton();
         bar.add(remrow);
-        JButton xyz = getXyz();
-        bar.add(xyz);
+        IExamplesProvider.examplesProviders.stream().forEach(a -> {
+            if (a.type().isAnnotationPresent(Description.class)) {
+                var desc = a.type().getAnnotation(Description.class);
+                if ("TriggerDependencies".equals(desc.value())) {
+                    a.get().provideExamples(bar::add, text -> {
+                        if (text instanceof Map.Entry<?, ?> entry) {
+                            addDependency(entry.getKey().toString(), entry.getValue().toString());
+                        }
+                    }, new String[0]);
+                }
+            }
+        });
 
         bar.add(Utils.initSearchComponent(lastSearchResult, this));
 
         addrow.addActionListener(a -> {
-            dependencies.add(new TriggerModElement.Dependency("name" + dependencies.size(), "type"));
+            addDependency("name" + dependencies.size(), "type");
             refreshTable();
         });
         remrow.addActionListener(a -> {
@@ -153,37 +163,29 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             Arrays.stream(jTable.getSelectedRows()).forEach(stack::add);
             while (!stack.empty()) {
                 dependencies.remove((int) stack.pop());
-                refreshNames();
             }
+            refreshNames();
             jTable.setEditingColumn(-1);
             refreshTable();
         });
 
         Utils.registerCreateImplShortCut(this, this);
 
-        addPage("Attributes", Utils.registerCreateImplShortCut(this, PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(name);
+        addPage("Attributes",
+                Utils.registerCreateImplShortCut(this, PanelUtils.totalCenterInPanel(buildConfiguration(2)))).validate(
+                name);
 
         addPage("Parameters", toolbarAndTable(bar)).lazyValidate(new DuplicatedElementValidator(
                 () -> dependencies.stream().map(TriggerModElement.Dependency::getName).toList(),
                 a -> jTable.changeSelection(a, 0, false, false)));
     }
 
-    private @NotNull JButton getXyz() {
-        JButton xyz = new JButton("XYZ");
-        xyz.setContentAreaFilled(false);
-        xyz.setToolTipText("Add xyz parameters");
-        xyz.setOpaque(false);
-        xyz.addActionListener(a -> {
-            refreshNames();
-            Stream.of("x", "y", "z").forEach(b -> {
-                if (!names.contains(b)) {
-                    dependencies.add(new TriggerModElement.Dependency(b, "number"));
-                    names.add(b);
-                }
-            });
-            refreshTable();
-        });
-        return xyz;
+    public void addDependency(String name, String type) {
+        if (!names.contains(name)) {
+            dependencies.add(new TriggerModElement.Dependency(name, type));
+            names.add(name);
+        }
+        refreshTable();
     }
 
     @Override public void doSearch(Map.Entry<String, String> search) {
@@ -232,7 +234,8 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         this.cancelable.setSelected(generatableElement.cancelable);
         this.side.setSelectedItem(generatableElement.side);
         this.requiredApis.setListElements(generatableElement.required_apis);
-        this.dependencies.addAll(generatableElement.dependencies_provided.stream().map(TriggerModElement.Dependency::clone).toList());
+        this.dependencies.addAll(
+                generatableElement.dependencies_provided.stream().map(TriggerModElement.Dependency::clone).toList());
     }
 
     @Override public TriggerModElement getElementFromGUI() {
@@ -248,7 +251,8 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
-        return new URI("https://mcreator.net/wiki/create-new-procedure-blocks#Make%20the%20code%20of%20your%20procedure%20block:~:text=name%22%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22fields%22%3A%20%5B%0A%20%20%20%20%20%20%22vars%22%0A%20%20%20%20%5D%0A%20%20%7D%0A%7D-,Create%20your%20procedure%20block%20section,-To%20have%20your");
+        return new URI(
+                "https://mcreator.net/wiki/create-new-procedure-blocks#Make%20the%20code%20of%20your%20procedure%20block:~:text=name%22%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22fields%22%3A%20%5B%0A%20%20%20%20%20%20%22vars%22%0A%20%20%20%20%5D%0A%20%20%7D%0A%7D-,Create%20your%20procedure%20block%20section,-To%20have%20your");
     }
 
     protected String toEventReadableName(String string) {

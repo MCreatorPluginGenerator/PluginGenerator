@@ -309,7 +309,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         if (proxy != null) {
             //inject
             var container = getContainer();
-            container.registerObject("modElementGui", () -> this);
+            container.registerObject("mcreator", () -> mcreator);
             container.registerTemporaryObject("index", () -> arg0List.getSelectedIndex());
             var argtype = proxy.getArg0Type();
             container.inject(argtype);

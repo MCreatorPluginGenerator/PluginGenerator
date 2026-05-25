@@ -3,10 +3,10 @@ package org.cdc.generator.services.types;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.mcreator.ui.MCreator;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.ui.TypeListField;
-import org.cdc.generator.ui.elements.PluginProceduresModElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.VariableType;
@@ -16,7 +16,7 @@ import javax.swing.*;
 import java.util.List;
 
 public class InputValueArgType extends AbstractArgType {
-    @InjectField PluginProceduresModElementGUI modElementGui;
+    @InjectField MCreator mcreator;
     @InjectField int index;
 
     public InputValueArgType() {
@@ -37,7 +37,7 @@ public class InputValueArgType extends AbstractArgType {
         name.setPreferredSize(Utils.tryToGetTextFieldSize());
         addConfiguration("name", name);
 
-        var check = new TypeListField(modElementGui.getMCreator(), VariableType::blocklyTypeName);
+        var check = new TypeListField(mcreator, VariableType::blocklyTypeName);
         if (newJsonObject.has("check")) {
             var elemt = newJsonObject.get("check");
             if (elemt.isJsonArray()) {

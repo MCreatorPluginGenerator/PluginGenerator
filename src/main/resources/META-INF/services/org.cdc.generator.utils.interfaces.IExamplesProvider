@@ -3,3 +3,4 @@ org.cdc.generator.services.examples.CurseMavenExamplesProvider
 org.cdc.generator.services.examples.VarImplExamplesProvider
 org.cdc.generator.services.examples.TriggerImplForgeForksExamplesProvider
 org.cdc.generator.services.examples.TriggerImplGoldenFabricExamplesProvider
+org.cdc.generator.services.examples.TriggerDependenciesXYZExamplesProvider

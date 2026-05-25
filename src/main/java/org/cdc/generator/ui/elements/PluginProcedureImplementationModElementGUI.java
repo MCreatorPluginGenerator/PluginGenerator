@@ -204,7 +204,7 @@ public class PluginProcedureImplementationModElementGUI
                 return (PluginProcedureModElement) modElement.getGeneratableElement();
             }
         }
-        LOG.error("Can not find {}", procedureFileName.getSelectedItem());
+        LOG.error("Can not find procedure element {}", procedureFileName.getSelectedItem());
         return null;
     }
 }

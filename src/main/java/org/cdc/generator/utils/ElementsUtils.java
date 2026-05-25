@@ -17,14 +17,6 @@ public class ElementsUtils {
         return datalist.getRegistryName();
     }
 
-    public static String getProcedureFileName(Workspace workspace, String name) {
-        var procedure = workspace.getModElementByName(name);
-        if (procedure == null) {
-            return null;
-        }
-        return procedure.getRegistryName();
-    }
-
     public static String getVariableName(Workspace workspace, String name) {
         var variable = workspace.getModElementByName(name);
         if (variable == null) {

@@ -199,6 +199,9 @@ public class PluginProcedureImplementationModElementGUI
     }
 
     public PluginProcedureModElement getPluginProcedureModElement() {
+        if (procedureFileName.getSelectedItem() == null){
+            return null;
+        }
         for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
             if (modElement.getRegistryName().equals(procedureFileName.getSelectedItem())) {
                 return (PluginProcedureModElement) modElement.getGeneratableElement();

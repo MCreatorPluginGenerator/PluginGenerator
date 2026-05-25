@@ -179,6 +179,9 @@ public class TriggerImplementationModElementGUI
     }
 
     public TriggerModElement getTriggerModElement() {
+        if (triggerFileName.getSelectedItem() == null){
+            return null;
+        }
         for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
             if (modElement.getRegistryName().equals(triggerFileName.getSelectedItem())) {
                 return (TriggerModElement) modElement.getGeneratableElement();

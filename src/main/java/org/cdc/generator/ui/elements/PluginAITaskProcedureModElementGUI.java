@@ -7,8 +7,8 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.workspace.elements.ModElement;
-import org.cdc.generator.elements.PluginCmdArgsCategoryModElement;
-import org.cdc.generator.elements.PluginCmdArgsProcedureModElement;
+import org.cdc.generator.elements.PluginAITasksCategoryModElement;
+import org.cdc.generator.elements.PluginAITasksProcedureModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
 import org.cdc.generator.init.Menus;
@@ -28,17 +28,18 @@ import java.util.Objects;
 
 /**
  * &#064;Developer  user
- * &#064;CreatedIn  2026/5/25
+ * &#064;CreatedIn  2026/5/30
  */
-public class PluginCmdArgsProcedureModElementGUI extends AbstractProceduresModElementGUI<PluginCmdArgsProcedureModElement> implements IQuickCreateImplModElement{
+public class PluginAITaskProcedureModElementGUI
+        extends AbstractProceduresModElementGUI<PluginAITasksProcedureModElement>
+        implements IQuickCreateImplModElement {
     @InjectField Container container;
 
-    public PluginCmdArgsProcedureModElementGUI(MCreator mcreator, @NotNull ModElement modElement,
-            boolean editingMode) {
+    public PluginAITaskProcedureModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode);
 
-        String defaults = "[{\"type\":\"input_dummy\"},{\"type\":\"input_statement\",\"name\":\"args\"}]";
-        JsonArray array = new Gson().fromJson(defaults,JsonArray.class);
+        String defaults = "[{\"type\":\"field_ai_condition_selector\",\"name\":\"condition\"}]";
+        JsonArray array = new Gson().fromJson(defaults, JsonArray.class);
         for (JsonElement jsonElement : array) {
             model.add(new ArgTypeProxy(jsonElement.getAsJsonObject()));
         }
@@ -60,18 +61,18 @@ public class PluginCmdArgsProcedureModElementGUI extends AbstractProceduresModEl
         addPage("Args0", PanelUtils.northAndCenterElement(args0ToolBar, splitPane));
     }
 
-    @Override protected void openInEditingMode(PluginCmdArgsProcedureModElement generatableElement) {
+    @Override protected void openInEditingMode(PluginAITasksProcedureModElement generatableElement) {
         super.openInEditingMode0(generatableElement);
     }
 
-    @Override public PluginCmdArgsProcedureModElement getElementFromGUI() {
+    @Override public PluginAITasksProcedureModElement getElementFromGUI() {
         this.modElement.setRegistryName(name.getText());
-        var element = new PluginCmdArgsProcedureModElement(modElement);
+        var element = new PluginAITasksProcedureModElement(modElement);
         element.inputsInline = this.inputsInline.isSelected();
         element.previousStatement = this.previousStatement.getText();
         element.nextStatement = this.nextStatement.getText();
         element.colour = this.color.getColor();
-        element.builtInColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem(),false);
+        element.builtInColor = Utils.nullToNoneOrNoneToNull(builtInColor.getSelectedItem(), false);
         element.mutator = this.mutator.getText();
         // compatible with previous version.
         element.outputs = outputs.getListElements();
@@ -106,11 +107,11 @@ public class PluginCmdArgsProcedureModElementGUI extends AbstractProceduresModEl
     }
 
     @Override public BlocklyEditorType getBlocklyEditorType() {
-        return BlocklyEditorType.COMMAND_ARG;
+        return BlocklyEditorType.AI_TASK;
     }
 
     @Override public Class<? extends IBlocklyCategoryElement> getBlocklyCategoryClass() {
-        return PluginCmdArgsCategoryModElement.class;
+        return PluginAITasksCategoryModElement.class;
     }
 
     @Override public boolean hasBuiltinCategories() {
@@ -119,12 +120,13 @@ public class PluginCmdArgsProcedureModElementGUI extends AbstractProceduresModEl
 
     @Override public void createImpl(String generator, String availableElementNameGenerator) {
         ModElement modElement1 = new ModElement(mcreator.getWorkspace(),
-                modElement.getName() + "PluginCmdArgsProcedureImpl" + availableElementNameGenerator, ModElementTypes.PROCEDURE_IMPLEMENTATION);
+                modElement.getName() + "PluginCmdArgsProcedureImpl" + availableElementNameGenerator,
+                ModElementTypes.PROCEDURE_IMPLEMENTATION);
         PluginProcedureImplementationModElementGUI element = (PluginProcedureImplementationModElementGUI) ModElementTypes.PROCEDURE_IMPLEMENTATION.getModElementGUI(
                 mcreator, modElement1, false);
         element.procedureFileName.setSelectedItem(this.name.getText());
         element.generator.setSelectedItem(generator);
-        element.parentFolder.setText("cmdargs");
+        element.parentFolder.setText("aitasks");
         element.showView();
     }
 

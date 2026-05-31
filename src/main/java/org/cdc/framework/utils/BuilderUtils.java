@@ -11,7 +11,7 @@ import static org.cdc.generator.utils.YamlUtils.*;
 public class BuilderUtils {
 
     public static int countLanguageParameterCount(String text) {
-        Pattern var = Pattern.compile("%\\d");
+        Pattern var = Pattern.compile("%\\d+");
         var ma = var.matcher(text);
         int count = 0;
         while (ma.find()) {

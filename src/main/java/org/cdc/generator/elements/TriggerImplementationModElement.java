@@ -23,6 +23,7 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
     public String methodBody;
 
     public ArrayList<AbstractMap.SimpleEntry<String, String>> mappingEntries;
+    public String relatedClassSource;
 
     public TriggerImplementationModElement(ModElement element) {
         super(element);

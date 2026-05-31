@@ -31,15 +31,22 @@ import javax.annotation.Nullable;
     public static final ModElementType<PluginProcedureImplementationModElement> PROCEDURE_IMPLEMENTATION = register(
             "pluginprocedureimpl", null, PluginProcedureImplementationModElementGUI::new,
             PluginProcedureImplementationModElement.class);
-    public static final ModElementType<PluginCmdArgsCategoryModElement> CMD_ARGS_CATEGORY = register("plugincmdargscategory",null,PluginCmdArgsCategoryModElementGUI::new,
+    public static final ModElementType<PluginCmdArgsCategoryModElement> CMD_ARGS_CATEGORY = register(
+            "plugincmdargscategory", null, PluginCmdArgsCategoryModElementGUI::new,
             PluginCmdArgsCategoryModElement.class);
-    public static final ModElementType<PluginAITasksCategoryModElement> AI_TASKS_CATEGORY = register("pluginaitaskcategory",null,PluginAITasksCategoryModElementGUI::new,
+    public static final ModElementType<PluginAITasksCategoryModElement> AI_TASKS_CATEGORY = register(
+            "pluginaitaskcategory", null, PluginAITasksCategoryModElementGUI::new,
             PluginAITasksCategoryModElement.class);
-    public static final ModElementType<PluginCmdArgsProcedureModElement> CMD_ARGS_PROCEDURE = register("plugincmdargsprocedure",null,PluginCmdArgsProcedureModElementGUI::new,
+    public static final ModElementType<PluginCmdArgsProcedureModElement> CMD_ARGS_PROCEDURE = register(
+            "plugincmdargsprocedure", null, PluginCmdArgsProcedureModElementGUI::new,
             PluginCmdArgsProcedureModElement.class);
 
-    public static final ModElementType<UpdateJsonModElement> UPDATE_JSON_MOD_ELEMENT_MOD_ELEMENT_TYPE = register("updatelogs",null,UpdateLogJsonModElementGUI::new,
-            UpdateJsonModElement.class);
+    public static final ModElementType<UpdateJsonModElement> UPDATE_JSON_MOD_ELEMENT_MOD_ELEMENT_TYPE = register(
+            "updatelogs", null, UpdateLogJsonModElementGUI::new, UpdateJsonModElement.class);
+
+    public static final ModElementType<PluginAITasksProcedureModElement> AI_TASK_PROCEDURE_MOD_ELEMENT_GUI_MOD_ELEMENT_TYPE = register(
+            "pluginaitasksprocedure", null, PluginAITaskProcedureModElementGUI::new,
+            PluginAITasksProcedureModElement.class);
 
     private static <E extends GeneratableElement> ModElementType<E> register(String registryName,
             @Nullable Character shortcut, ModElementType.ModElementGUIProvider<E> modElementGUIProvider,

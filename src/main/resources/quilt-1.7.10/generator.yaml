@@ -1,6 +1,6 @@
 name: Plugin maker @buildfileversion
 status: experimental
-buildfileversion: 1.7.10.2
+buildfileversion: 1.7.10.3
 is_plugin_maker: true
 
 # gradle task definitions

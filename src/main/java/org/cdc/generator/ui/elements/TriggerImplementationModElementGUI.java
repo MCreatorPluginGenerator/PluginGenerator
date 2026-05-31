@@ -45,6 +45,8 @@ public class TriggerImplementationModElementGUI
 
     public List<AbstractMap.SimpleEntry<String, String>> mappingEntries;
 
+    private RSyntaxTextArea relatedSource;
+
     @InjectField Container container;
     @InjectField Logger LOG;
     private JToolBar methodToolBar;
@@ -63,10 +65,9 @@ public class TriggerImplementationModElementGUI
     @Override public void initAfterAll() {
         initGUI();
         finalizeGUI();
-        if (methodToolBar.getComponents().length == 0) {
+        if (methodToolBar.getComponents().length == 1) {
             reloadToolBar();
         }
-
     }
 
     @Override protected void initGUI() {
@@ -122,7 +123,7 @@ public class TriggerImplementationModElementGUI
             jTable.setEditingRow(-1);
             jTable.setEditingColumn(-1);
 
-            SwingUtilities.invokeLater(()->{
+            SwingUtilities.invokeLater(() -> {
                 jTable.revalidate();
                 jTable.repaint();
             });
@@ -130,10 +131,18 @@ public class TriggerImplementationModElementGUI
         toolBar.add(remrow);
 
         addPage("Map", toolbarAndTable(toolBar));
+
+        relatedSource = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
+        var scrollPanelForSource = RSyntaxTextAreaFactory.createDefaultTextScrollPane(relatedSource, mcreator);
+
+        scrollPanelForSource.setBorder(BorderFactory.createTitledBorder("You can give the source of the event or fabric's listener."));
+
+        addPage("Related source", scrollPanelForSource);
     }
 
     private void reloadToolBar() {
         methodToolBar.removeAll();
+        methodToolBar.add(syncLocalImplFile(methodBody::setText));
         container.registerObject("modElementGui", () -> this);
         IExamplesProvider.examplesProviders.stream().forEach(a -> {
             if (a.type().isAnnotationPresent(Description.class)) {
@@ -158,6 +167,7 @@ public class TriggerImplementationModElementGUI
         this.eventName.setText(generatableElement.eventName);
         this.methodBody.setText(generatableElement.methodBody);
         this.mappingEntries = Objects.requireNonNullElse(generatableElement.mappingEntries, new ArrayList<>());
+        this.relatedSource.setText(generatableElement.relatedClassSource);
     }
 
     @Override public TriggerImplementationModElement getElementFromGUI() {
@@ -170,6 +180,7 @@ public class TriggerImplementationModElementGUI
         element.methodBody = methodBody.getText();
         element.mappingEntries = new ArrayList<>(
                 mappingEntries.stream().map(a -> new AbstractMap.SimpleEntry<>(a.getKey(), a.getValue())).toList());
+        element.relatedClassSource = relatedSource.getText();
         return element;
     }
 
@@ -179,7 +190,7 @@ public class TriggerImplementationModElementGUI
     }
 
     public TriggerModElement getTriggerModElement() {
-        if (triggerFileName.getSelectedItem() == null){
+        if (triggerFileName.getSelectedItem() == null) {
             return null;
         }
         for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
@@ -187,7 +198,7 @@ public class TriggerImplementationModElementGUI
                 return (TriggerModElement) modElement.getGeneratableElement();
             }
         }
-        LOG.error("Can not find trigger {}",triggerFileName.getSelectedItem());
+        LOG.error("Can not find trigger {}", triggerFileName.getSelectedItem());
         return null;
     }
 
@@ -225,6 +236,14 @@ public class TriggerImplementationModElementGUI
             map.put(mappingEntry.getKey(), mappingEntry.getValue());
         }
         return map;
+    }
+
+    public String getRelatedSourceText() {
+        return relatedSource.getText();
+    }
+
+    public String getEventName() {
+        return eventName.getText();
     }
 
     private class MappingTableModel extends AbstractTableModel {

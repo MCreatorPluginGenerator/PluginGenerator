@@ -5,10 +5,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.mcreator.element.GeneratableElement;
+import net.mcreator.element.ModElementType;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JColor;
 import net.mcreator.ui.component.JStringListField;
 import net.mcreator.ui.component.util.ComboBoxUtil;
+import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.validation.ValidationResult;
@@ -153,11 +155,22 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         addConfigurationWithHelpEntry("inputs", inputs);
         addConfigurationWithHelpEntry("fields", fields);
         addConfigurationWithHelpEntry("statements", statements);
-        addConfigurationWithHelpEntry("toolbox_init", toolboxInit);
+
+        JButton openProcedure = new JButton("P");
+        openProcedure.setToolTipText("Open a procedure");
+        openProcedure.addActionListener(a -> {
+            ModElement modElement1 = new ModElement(mcreator.getWorkspace(), "Null", ModElementType.PROCEDURE);
+            ModElementType.PROCEDURE.getModElementGUI(mcreator, modElement1, false).showView();
+        });
+        addConfigurationWithHelpEntry("toolbox_init", PanelUtils.centerAndEastElement(toolboxInit, openProcedure));
         localizationValue.setValidator(() -> {
-            if (BuilderUtils.countLanguageParameterCount(localizationValue.getText()) != model.size()) {
+            var count = BuilderUtils.countLanguageParameterCount(localizationValue.getText());
+            if (count < model.size()) {
                 return new ValidationResult(ValidationResult.Type.ERROR, "\" " + localizationValue.getText()
                         + " \"is a irregular content because we need parameter count: " + model.size());
+            } else if (count > model.size()) {
+                return new ValidationResult(ValidationResult.Type.WARNING,
+                        "We expect " + model.size() + "but " + count);
             }
             return ValidationResult.PASSED;
         });

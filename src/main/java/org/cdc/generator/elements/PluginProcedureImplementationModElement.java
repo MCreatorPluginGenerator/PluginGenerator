@@ -37,16 +37,20 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
             procedureFolder = "procedures";
         }
         if (isTemplate) {
-            if (templateFolder != null && !templateFolder.isEmpty()) {
-                return procedureFolder + "/utils/" + templateFolder;
-            }
-            return procedureFolder + "/utils";
+            return getCombinedProcedureFolder();
         }
         return procedureFolder;
     }
 
     @Override public String getGeneratorName() {
         return generator;
+    }
+
+    public String getCombinedProcedureFolder(){
+        if (templateFolder != null && !templateFolder.isEmpty()) {
+            return procedureFolder + "/utils/" + templateFolder;
+        }
+        return procedureFolder + "/utils";
     }
 
     @Override public BufferedImage generateModElementPicture() {

@@ -29,6 +29,7 @@ import java.awt.event.ItemEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class PluginProcedureImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<PluginProcedureImplementationModElement> {
@@ -82,8 +83,7 @@ public class PluginProcedureImplementationModElementGUI
         procedureFileName.setValidator(Rules.getFileNameValidator(procedureFileName::getSelectedItem));
         procedureFileName.addItemListener(a -> {
             if (a.getStateChange() == ItemEvent.SELECTED && procedureFileName.isPopupVisible()) {
-                if (getPluginProcedureModElement()
-                         instanceof IBlocklyElement blocklyElement) {
+                if (getPluginProcedureModElement() instanceof IBlocklyElement blocklyElement) {
                     parentFolder.setText(blocklyElement.getBlocklyFolder());
                 }
                 LOG.debug("Select folder {}", parentFolder.getText());
@@ -93,11 +93,11 @@ public class PluginProcedureImplementationModElementGUI
                 () -> getPluginProcedureModElement().getModElement());
 
         addConfigurationWithHelpEntry("is_template", isTemplate);
-        isTemplate.addActionListener(a->{
+        isTemplate.addActionListener(a -> {
             templateFolder.setEnabled(isTemplate.isSelected());
         });
         templateFolder.setEnabled(false);
-        addConfigurationWithHelpEntry("template_folder",templateFolder);
+        addConfigurationWithHelpEntry("template_folder", templateFolder);
 
         var toolbar = new JToolBar();
         JButton generate = new JButton(UIRES.get("18px.import"));
@@ -157,9 +157,10 @@ public class PluginProcedureImplementationModElementGUI
         for (GeneratableElement generatableElement : mcreator.getWorkspaceInfo()
                 .getGElementsOfType(ModElementTypes.PROCEDURE_IMPLEMENTATION.getRegistryName())) {
             if (generatableElement instanceof PluginProcedureImplementationModElement _modelement)
-                if (_modelement.isTemplate) {
+                if (_modelement.isTemplate && Objects.equals(_modelement.generator, generator.getSelectedItem())) {
                     complete.addCompletion(new BasicCompletion(complete,
-                            "<@addTemplate file=\"utils/" + _modelement.getProcedureFileName() + ".java.ftl\"/>"));
+                            "<@addTemplate file=\"" + _modelement.getCombinedProcedureFolder() + "/"
+                                    + _modelement.getProcedureFileName() + ".java.ftl\"/>"));
                 }
         }
         complete.addCompletion(new TemplateCompletion(complete, "head", "head", "<@head>${cursor}</@head>"));
@@ -175,7 +176,7 @@ public class PluginProcedureImplementationModElementGUI
         this.procedureFileName.setSelectedItem(generatableElement.procedureFileName);
         this.isTemplate.setSelected(generatableElement.isTemplate);
         this.parentFolder.setText(generatableElement.procedureFolder);
-
+        this.templateFolder.setText(generatableElement.templateFolder);
         this.content.setText(generatableElement.content);
     }
 
@@ -187,6 +188,7 @@ public class PluginProcedureImplementationModElementGUI
         element.searchable = getPluginProcedureModElement().getModElement().getName();
         element.content = content.getText();
         element.isTemplate = isTemplate.isSelected();
+        element.templateFolder = templateFolder.getText();
         return element;
     }
 
@@ -206,7 +208,7 @@ public class PluginProcedureImplementationModElementGUI
     }
 
     public PluginProcedureModElement getPluginProcedureModElement() {
-        if (procedureFileName.getSelectedItem() == null){
+        if (procedureFileName.getSelectedItem() == null) {
             return null;
         }
         for (ModElement modElement : mcreator.getWorkspace().getModElements()) {

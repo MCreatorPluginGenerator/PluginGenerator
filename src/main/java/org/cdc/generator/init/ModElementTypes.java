@@ -10,13 +10,13 @@ import org.cdc.generator.utils.ioc.Container;
 import javax.annotation.Nullable;
 
 @SuppressWarnings("unused") public class ModElementTypes {
-    public static final ModElementType<DataListModElement> DATA_LIST = register("plugindatalist", null,
+    public static final ModElementType<DataListModElement> DATA_LIST = register("plugindatalist", 'd',
             DataListModElementGUI::new, DataListModElement.class);
     public static final ModElementType<MappingsModElement> MAPPINGS = register("pluginmappings", null,
             MappingsModElementGUI::new, MappingsModElement.class);
-    public static final ModElementType<TriggerModElement> TRIGGER = register("plugintrigger", null,
+    public static final ModElementType<TriggerModElement> TRIGGER = register("plugintrigger", 't',
             TriggerModElementGUI::new, TriggerModElement.class);
-    public static final ModElementType<VariableModElement> VARIABLE = register("pluginvariable", null,
+    public static final ModElementType<VariableModElement> VARIABLE = register("pluginvariable", 'v',
             VariableModElementGUI::new, VariableModElement.class);
     public static final ModElementType<APIModElement> APIS = register("pluginapis", null, APIModElementGUI::new,
             APIModElement.class);
@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
             null, VariableImplementationModElementGUI::new, VariableImplementationModElement.class);
     public static final ModElementType<ProcedureCategoryModElement> PROCEDURE_CATEGORY = register(
             "pluginprocedurecategory", null, ProcedureCategoryModElementGUI::new, ProcedureCategoryModElement.class);
-    public static final ModElementType<PluginProcedureModElement> PROCEDURE = register("pluginprocedure", null,
+    public static final ModElementType<PluginProcedureModElement> PROCEDURE = register("pluginprocedure", 'p',
             PluginProceduresModElementGUI::new, PluginProcedureModElement.class);
     public static final ModElementType<PluginProcedureImplementationModElement> PROCEDURE_IMPLEMENTATION = register(
             "pluginprocedureimpl", null, PluginProcedureImplementationModElementGUI::new,

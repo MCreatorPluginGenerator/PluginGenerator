@@ -36,6 +36,7 @@ public class PluginProcedureImplementationModElementGUI
     final VTextField parentFolder = new VTextField();
     final VComboBox<String> procedureFileName = new VComboBox<>();
     final JCheckBox isTemplate = createDefaultCheckBox();
+    final JTextField templateFolder = new JTextField();
 
     private final RSyntaxTextArea content = new RSyntaxTextArea();
     private AutoCompletion lastAutoCompletion;
@@ -51,6 +52,7 @@ public class PluginProcedureImplementationModElementGUI
             procedureFileName.setEnabled(false);
             isTemplate.setEnabled(false);
             parentFolder.setEnabled(false);
+            templateFolder.setEnabled(false);
         }
     }
 
@@ -91,6 +93,11 @@ public class PluginProcedureImplementationModElementGUI
                 () -> getPluginProcedureModElement().getModElement());
 
         addConfigurationWithHelpEntry("is_template", isTemplate);
+        isTemplate.addActionListener(a->{
+            templateFolder.setEnabled(isTemplate.isSelected());
+        });
+        templateFolder.setEnabled(false);
+        addConfigurationWithHelpEntry("template_folder",templateFolder);
 
         var toolbar = new JToolBar();
         JButton generate = new JButton(UIRES.get("18px.import"));

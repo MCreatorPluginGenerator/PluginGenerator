@@ -19,6 +19,7 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
     @ModElementReference public String searchable;
 
     public boolean isTemplate;
+    public String templateFolder;
 
     public String content;
     public String procedureFolder;
@@ -36,6 +37,9 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
             procedureFolder = "procedures";
         }
         if (isTemplate) {
+            if (templateFolder != null && !templateFolder.isEmpty()) {
+                return procedureFolder + "/utils/" + templateFolder;
+            }
             return procedureFolder + "/utils";
         }
         return procedureFolder;

@@ -170,7 +170,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
                         + " \"is a irregular content because we need parameter count: " + model.size());
             } else if (count > model.size()) {
                 return new ValidationResult(ValidationResult.Type.WARNING,
-                        "We expect " + model.size() + "but " + count);
+                        "We expect " + model.size() + " but have " + count);
             }
             return ValidationResult.PASSED;
         });

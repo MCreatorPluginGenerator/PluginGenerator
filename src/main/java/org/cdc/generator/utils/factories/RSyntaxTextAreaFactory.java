@@ -2,10 +2,13 @@ package org.cdc.generator.utils.factories;
 
 import net.mcreator.preferences.PreferencesManager;
 import net.mcreator.ui.ide.RSyntaxTextAreaStyler;
+import net.mcreator.util.DesktopUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
+import java.net.URISyntaxException;
 
 public class RSyntaxTextAreaFactory {
     public static RSyntaxTextArea createDefaultRSyntaxTextArea() {
@@ -13,6 +16,15 @@ public class RSyntaxTextAreaFactory {
         jTextArea.setOpaque(false);
         jTextArea.setRows(15);
         jTextArea.setColumns(60);
+        jTextArea.addHyperlinkListener(e -> {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                try {
+                    DesktopUtils.browse(e.getURL().toURI());
+                } catch (URISyntaxException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
         return jTextArea;
     }
 

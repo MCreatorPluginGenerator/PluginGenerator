@@ -89,7 +89,6 @@ public class TriggerImplementationModElementGUI
             }
             return ValidationResult.PASSED;
         });
-
         addConfigurationWithHelpEntry("event_name", eventName);
 
         methodToolBar = new JToolBar();
@@ -102,7 +101,7 @@ public class TriggerImplementationModElementGUI
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
         generator.addItemListener(eventName -> reloadToolBar());
-        addPage("Configuration", PanelUtils.northAndCenterElement(buildConfiguration(2), panel)).validate(generator)
+        addPage(PanelUtils.northAndCenterElement(buildConfiguration(2), panel)).validate(generator)
                 .validate(triggerFileName).validate(eventName).lazyValidate(
                         () -> methodBody.getText().contains("@Placeholder") ?
                                 new AggregatedValidationResult.FAIL("You should replace the placeholder") :

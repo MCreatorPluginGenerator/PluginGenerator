@@ -5,12 +5,12 @@ import net.mcreator.plugin.events.ui.TabEvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.dialogs.file.FileDialogs;
 import net.mcreator.ui.init.L10N;
-import net.mcreator.util.DesktopUtils;
 import org.cdc.framework.utils.L10NHelper;
 import org.cdc.generator.PluginMain;
 import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.ui.elements.AbstractProceduresModElementGUI;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
+import org.cdc.generator.ui.elements.PluginProceduresModElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.MenuProvider;
@@ -80,13 +80,9 @@ public class Menus {
                     }
                 }).build());
         PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_repository")
-                .setActionListener(a -> {
-                    DesktopUtils.browseSafe("https://mcreator.net/repository");
-                    // TODO: change to use updateinfo to select supported mcreator version.
-                    // MCreatorApplication.WEB_API.getUpdateInfo();
-                }).build());
+                .setOpenURL("https://mcreator.net/repository").build());
         PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")
-                .setActionListener(a -> DesktopUtils.browseSafe("https://mcreator.net/changelog")).build());
+                .setOpenURL("https://mcreator.net/changelog").build());
         PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("append_current")
                 .setActionListener(a -> {
                     var selfDependants = "mcreator" + Launcher.version.versionlong;
@@ -95,6 +91,9 @@ public class Menus {
                         mcreator.getStatusBar().setPersistentMessage("Appended");
                     }
                 }).build());
+        PLUGIN_MAKER.add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("tool_websites").setInit(a -> {
+
+        }).build());
         DATALIST_UTILS.add(
                 new JMenuBuilder().setParentMenuName("datalist_utils").setName("calculate_types").setReload(jMenu -> {
                     if (mcreator.getTabs().getCurrentTab()
@@ -129,51 +128,46 @@ public class Menus {
                         }).build());
         PLUGIN_PROCEDURE_UTILS.add(
                 new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("refresh_inputs_and_fields")
-                        .setActionListener(a -> {
-                            if (mcreator.getTabs().getCurrentTab()
-                                    .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
-                                System.out.println(
-                                        mcreator.getTabs().getCurrentTab().getContent().getClass().getName());
-                                var inputs = new ArrayList<String>();
-                                var fields = new ArrayList<String>();
-                                var statements = new ArrayList<String>();
-                                for (ArgTypeProxy argTypeProxy : pluginProceduresElementGUI.getModel()) {
-                                    if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.INPUT)) {
-                                        inputs.add(argTypeProxy.getUniqueName());
+                        .setCurrentModElementGUIConsumer(mcreator, PluginProceduresModElementGUI.class,
+                                pluginProceduresElementGUI -> {
+                                    var inputs = new ArrayList<String>();
+                                    var fields = new ArrayList<String>();
+                                    var statements = new ArrayList<String>();
+                                    for (ArgTypeProxy argTypeProxy : pluginProceduresElementGUI.getModel()) {
+                                        if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.INPUT)) {
+                                            inputs.add(argTypeProxy.getUniqueName());
+                                        }
+                                        if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.FIELD)) {
+                                            fields.add(argTypeProxy.getUniqueName());
+                                        }
+                                        if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.STATEMENT)) {
+                                            statements.add(argTypeProxy.getUniqueName());
+                                        }
                                     }
-                                    if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.FIELD)) {
-                                        fields.add(argTypeProxy.getUniqueName());
-                                    }
-                                    if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.STATEMENT)) {
-                                        statements.add(argTypeProxy.getUniqueName());
-                                    }
-                                }
-                                var inputs1 = new HashSet<String>();
-                                inputs1.addAll(pluginProceduresElementGUI.getInputs().getTextList());
-                                inputs1.addAll(inputs);
-                                pluginProceduresElementGUI.getInputs().setTextList(inputs1);
+                                    var inputs1 = new HashSet<String>();
+                                    inputs1.addAll(pluginProceduresElementGUI.getInputs().getTextList());
+                                    inputs1.addAll(inputs);
+                                    pluginProceduresElementGUI.getInputs().setTextList(inputs1);
 
-                                var fields1 = new HashSet<String>();
-                                fields1.addAll(pluginProceduresElementGUI.getFields().getTextList());
-                                fields1.addAll(fields);
-                                pluginProceduresElementGUI.getFields().setTextList(fields1);
+                                    var fields1 = new HashSet<String>();
+                                    fields1.addAll(pluginProceduresElementGUI.getFields().getTextList());
+                                    fields1.addAll(fields);
+                                    pluginProceduresElementGUI.getFields().setTextList(fields1);
 
-                                var statements1 = new HashSet<String>();
-                                statements1.addAll(pluginProceduresElementGUI.getStatements().getTextList());
-                                statements1.addAll(statements);
-                                pluginProceduresElementGUI.getStatements().setTextList(statements1);
-                            }
-                        }).build());
+                                    var statements1 = new HashSet<String>();
+                                    statements1.addAll(pluginProceduresElementGUI.getStatements().getTextList());
+                                    statements1.addAll(statements);
+                                    pluginProceduresElementGUI.getStatements().setTextList(statements1);
+
+                                }).build());
         PLUGIN_PROCEDURE_UTILS.add(
                 new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("load_block_color")
-                        .setActionListener(a -> {
-                            if (mcreator.getTabs().getCurrentTab()
-                                    .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
-                                var blockName = JOptionPane.showInputDialog(mcreator, "Input block name");
-                                ElementsUtils.getExternalBlockColour(blockName,
-                                        pluginProceduresElementGUI.getBlocklyEditorType());
-                            }
-                        }).build());
+                        .setCurrentModElementGUIConsumer(mcreator, AbstractProceduresModElementGUI.class,
+                                pluginProceduresElementGUI -> {
+                                    var blockName = JOptionPane.showInputDialog(mcreator, "Input block name");
+                                    ElementsUtils.getExternalBlockColour(blockName,
+                                            pluginProceduresElementGUI.getBlocklyEditorType());
+                                }).build());
         // TODO: Mapping_utils functions: like temporary plugin to add item and blocks.
     }
 

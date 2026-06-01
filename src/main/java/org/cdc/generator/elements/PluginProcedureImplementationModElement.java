@@ -24,6 +24,8 @@ public class PluginProcedureImplementationModElement extends GeneratableElement
     public String content;
     public String procedureFolder;
 
+    public String relatedSource;
+
     public PluginProcedureImplementationModElement(ModElement element) {
         super(element);
     }

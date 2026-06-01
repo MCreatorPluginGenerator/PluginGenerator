@@ -40,6 +40,7 @@ public class PluginProcedureImplementationModElementGUI
     final JTextField templateFolder = new JTextField();
 
     private final RSyntaxTextArea content = new RSyntaxTextArea();
+    private RSyntaxTextArea relatedSource;
     private AutoCompletion lastAutoCompletion;
 
     @InjectField org.apache.logging.log4j.Logger LOG;
@@ -132,6 +133,14 @@ public class PluginProcedureImplementationModElementGUI
 
         addPage(PanelUtils.northAndCenterElement(buildConfiguration(2), panel)).validate(generator)
                 .validate(procedureFileName);
+
+        relatedSource = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
+        relatedSource.setSyntaxEditingStyle("text/java");
+        var scrollPanelForSource = RSyntaxTextAreaFactory.createDefaultTextScrollPane(relatedSource, mcreator);
+
+        scrollPanelForSource.setBorder(BorderFactory.createTitledBorder("You can give the source"));
+
+        addPage("Related source", scrollPanelForSource);
     }
 
     private CompletionProvider createCompletionProvider() {
@@ -179,6 +188,7 @@ public class PluginProcedureImplementationModElementGUI
         this.parentFolder.setText(generatableElement.procedureFolder);
         this.templateFolder.setText(generatableElement.templateFolder);
         this.content.setText(generatableElement.content);
+        this.relatedSource.setText(generatableElement.relatedSource);
     }
 
     @Override public PluginProcedureImplementationModElement getElementFromGUI() {
@@ -190,6 +200,7 @@ public class PluginProcedureImplementationModElementGUI
         element.content = content.getText();
         element.isTemplate = isTemplate.isSelected();
         element.templateFolder = templateFolder.getText();
+        element.relatedSource = relatedSource.getText();
         return element;
     }
 

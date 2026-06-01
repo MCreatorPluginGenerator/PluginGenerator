@@ -120,7 +120,11 @@ public class PluginProcedureImplementationModElementGUI
             String comment = BuilderUtils.generateInputsComment(inputs) + System.lineSeparator()
                     + BuilderUtils.generateFieldsComment(fields) + System.lineSeparator()
                     + BuilderUtils.generateStatementsComment(statements) + System.lineSeparator();
-            content.setText(comment + "\n" + content.getText());
+            var text = content.getText();
+            if (!text.endsWith(";") && !text.endsWith(")") && !text.startsWith("(")){
+                text = "(" + text + ")";
+            }
+            content.setText(comment + "\n" + text);
             LOG.debug("Generated procedure impl code: {}", content.getText());
         });
         toolbar.add(generate);

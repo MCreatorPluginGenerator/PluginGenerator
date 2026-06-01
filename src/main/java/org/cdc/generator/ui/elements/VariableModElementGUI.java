@@ -59,7 +59,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
 
     @Override protected void initGUI() {
         name.setEditable(true);
-        name.setSelectedItem(modElement.getRegistryName());
+        name.setSelectedItem(modElement.getRegistryName().replace('_','\0'));
         name.setValidator(Rules.getFileNameValidator(name::getSelectedItem));
         addNameConfiguration(name);
 

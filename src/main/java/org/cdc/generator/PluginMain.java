@@ -21,6 +21,7 @@ import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.framework.utils.L10NHelper;
+import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.init.Menus;
 import org.cdc.generator.init.ResourcePanels;
@@ -95,6 +96,18 @@ public class PluginMain extends JavaPlugin {
                         b.add(modElement.getName());
                         return b;
                     });
+                }
+
+                if (modElement.getGeneratableElement() instanceof PluginProcedureModElement pluginProcedureModElement){
+                    if (pluginProcedureModElement.toolbox_init.isEmpty()){
+                        hashMap.compute("empty toolbox init", (a, b) -> {
+                            if (b == null) {
+                                b = new ArrayList<>();
+                            }
+                            b.add(modElement.getName());
+                            return b;
+                        });
+                    }
                 }
 
                 if (modElement.getAssociatedFiles().stream().anyMatch(a -> !a.exists())) {

@@ -91,9 +91,6 @@ public class Menus {
                         mcreator.getStatusBar().setPersistentMessage("Appended");
                     }
                 }).build());
-        PLUGIN_MAKER.add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("tool_websites").setInit(a -> {
-
-        }).build());
         DATALIST_UTILS.add(
                 new JMenuBuilder().setParentMenuName("datalist_utils").setName("calculate_types").setReload(jMenu -> {
                     if (mcreator.getTabs().getCurrentTab()

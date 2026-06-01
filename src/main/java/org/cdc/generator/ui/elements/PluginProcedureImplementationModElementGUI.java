@@ -124,6 +124,7 @@ public class PluginProcedureImplementationModElementGUI
         });
         toolbar.add(generate);
 
+        content.setSyntaxEditingStyle("text/java");
         toolbar.add(syncLocalImplFile(content::setText));
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(content, mcreator);
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);

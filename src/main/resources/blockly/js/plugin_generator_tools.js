@@ -30,3 +30,21 @@ callback: function (scope) {
 },
   scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
 });
+
+Blockly.ContextMenuRegistry.registry.register({
+  id: 'upload_block_name_and_copy_color',
+  weight: 250,
+  displayText: function (scope) {
+    return 'Copy Color';
+  },
+  preconditionFn: function (scope) {
+    return scope.block && !scope.block.isShadow() ? 'enabled' : 'hidden';
+  },
+  callback: function (scope) {
+    const block = scope.block;
+    if (!block) return;
+    const blockType = block.type;
+    plugingenerator.uploadBlockNameAndCopyColor(blockType);
+  },
+  scopeType: Blockly.ContextMenuRegistry.ScopeType.BLOCK,
+});

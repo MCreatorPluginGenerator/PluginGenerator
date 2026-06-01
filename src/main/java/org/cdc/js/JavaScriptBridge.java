@@ -1,6 +1,7 @@
 package org.cdc.js;
 
 import com.google.j2objc.annotations.UsedByReflection;
+import org.cdc.generator.utils.ElementsUtils;
 
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
@@ -12,7 +13,13 @@ public class JavaScriptBridge {
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(stringSelection, stringSelection);
     }
 
-    @UsedByReflection public static String beautifyXml(String xml) {
+    @UsedByReflection public String beautifyXml(String xml) {
         return xml.replaceAll("xmlns=\"(https|http):(.+?)\" ", "");
     }
+
+    @UsedByReflection
+    public void uploadBlockNameAndCopyColor(String type){
+        setClipboard(ElementsUtils.getExternalBlockColour(type, null));
+    }
+
 }

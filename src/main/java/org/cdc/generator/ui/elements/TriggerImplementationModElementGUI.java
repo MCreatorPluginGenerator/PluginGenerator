@@ -95,6 +95,7 @@ public class TriggerImplementationModElementGUI
         methodToolBar = new JToolBar();
         methodToolBar.add(syncLocalImplFile(methodBody::setText));
 
+        methodBody.setSyntaxEditingStyle("text/xml");
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(methodBody, mcreator);
         AutoCompletionFactory.createDefaultParameterCompletion(methodBody, this::createCompletionProvider);
         var panel = PanelUtils.northAndCenterElement(methodToolBar, scrollpane);
@@ -133,6 +134,7 @@ public class TriggerImplementationModElementGUI
         addPage("Map", toolbarAndTable(toolBar));
 
         relatedSource = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
+        relatedSource.setSyntaxEditingStyle("text/java");
         var scrollPanelForSource = RSyntaxTextAreaFactory.createDefaultTextScrollPane(relatedSource, mcreator);
 
         scrollPanelForSource.setBorder(BorderFactory.createTitledBorder("You can give the source of the event or fabric's listener."));

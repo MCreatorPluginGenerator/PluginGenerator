@@ -1,7 +1,6 @@
 package org.cdc.generator.init;
 
 import net.mcreator.Launcher;
-import net.mcreator.blockly.data.BlocklyLoader;
 import net.mcreator.plugin.events.ui.TabEvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.dialogs.file.FileDialogs;
@@ -13,6 +12,7 @@ import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.ui.elements.AbstractProceduresModElementGUI;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
 import org.cdc.generator.utils.Arg0InputType;
+import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.MenuProvider;
 import org.cdc.generator.utils.builders.JMenuBuilder;
 import org.cdc.generator.utils.builders.JMenuItemBuilder;
@@ -45,7 +45,8 @@ public class Menus {
         PLUGIN_PROCEDURE_UTILS.setVisible(false);
         pluginMain.addListener(TabEvent.Shown.class, event -> {
             DATALIST_UTILS.setVisible(event.getTab().getContent() instanceof DataListModElementGUI);
-            PLUGIN_PROCEDURE_UTILS.setVisible(event.getTab().getContent() instanceof AbstractProceduresModElementGUI<?>);
+            PLUGIN_PROCEDURE_UTILS.setVisible(
+                    event.getTab().getContent() instanceof AbstractProceduresModElementGUI<?>);
         });
     }
 
@@ -131,7 +132,8 @@ public class Menus {
                         .setActionListener(a -> {
                             if (mcreator.getTabs().getCurrentTab()
                                     .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
-                                System.out.println(mcreator.getTabs().getCurrentTab().getContent().getClass().getName());
+                                System.out.println(
+                                        mcreator.getTabs().getCurrentTab().getContent().getClass().getName());
                                 var inputs = new ArrayList<String>();
                                 var fields = new ArrayList<String>();
                                 var statements = new ArrayList<String>();
@@ -162,18 +164,17 @@ public class Menus {
                                 pluginProceduresElementGUI.getStatements().setTextList(statements1);
                             }
                         }).build());
-        PLUGIN_PROCEDURE_UTILS.add(new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("load_block_color").setActionListener(a-> getExternalBlockColour(mcreator)).build());
+        PLUGIN_PROCEDURE_UTILS.add(
+                new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("load_block_color")
+                        .setActionListener(a -> {
+                            if (mcreator.getTabs().getCurrentTab()
+                                    .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
+                                var blockName = JOptionPane.showInputDialog(mcreator, "Input block name");
+                                ElementsUtils.getExternalBlockColour(blockName,
+                                        pluginProceduresElementGUI.getBlocklyEditorType());
+                            }
+                        }).build());
         // TODO: Mapping_utils functions: like temporary plugin to add item and blocks.
     }
 
-    private static void getExternalBlockColour(MCreator mcreator) {
-        if (mcreator.getTabs().getCurrentTab()
-                .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
-            var blocks = BlocklyLoader.INSTANCE.getBlockLoader(pluginProceduresElementGUI.getBlocklyEditorType()).getDefinedBlocks();
-            var blockName = JOptionPane.showInputDialog(mcreator,"Input block name");
-            if (blocks.containsKey(blockName)){
-                pluginProceduresElementGUI.setBuiltInColor(blocks.get(blockName).getBlocklyJSON().get("colour").getAsString());
-            }
-        }
-    }
 }

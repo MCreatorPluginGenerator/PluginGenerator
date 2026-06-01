@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
             null, VariableImplementationModElementGUI::new, VariableImplementationModElement.class);
     public static final ModElementType<ProcedureCategoryModElement> PROCEDURE_CATEGORY = register(
             "pluginprocedurecategory", null, ProcedureCategoryModElementGUI::new, ProcedureCategoryModElement.class);
-    public static final ModElementType<PluginProcedureModElement> PROCEDURE = register("pluginprocedure", 'p',
+    public static final ModElementType<PluginProcedureModElement> PROCEDURE = register("pluginprocedure", 'P',
             PluginProceduresModElementGUI::new, PluginProcedureModElement.class);
     public static final ModElementType<PluginProcedureImplementationModElement> PROCEDURE_IMPLEMENTATION = register(
             "pluginprocedureimpl", null, PluginProcedureImplementationModElementGUI::new,
@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
             PluginCmdArgsProcedureModElement.class);
 
     public static final ModElementType<UpdateJsonModElement> UPDATE_JSON_MOD_ELEMENT_MOD_ELEMENT_TYPE = register(
-            "updatelogs", null, UpdateLogJsonModElementGUI::new, UpdateJsonModElement.class);
+            "updatelogs", 'U', UpdateLogJsonModElementGUI::new, UpdateJsonModElement.class);
 
     public static final ModElementType<PluginAITasksProcedureModElement> AI_TASK_PROCEDURE_MOD_ELEMENT_GUI_MOD_ELEMENT_TYPE = register(
             "pluginaitasksprocedure", null, PluginAITaskProcedureModElementGUI::new,

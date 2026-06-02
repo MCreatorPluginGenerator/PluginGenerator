@@ -85,11 +85,12 @@ public class PluginMain extends JavaPlugin {
 
         addListener(WorkspaceTaskFinishedEvent.TaskCompleted.class, event -> {
             var mcreator = event.getMCreator();
-            var hashMap = new HashMap<String, ArrayList<String>>();
-            var elements = new ArrayList<ModElement>();
+            var duplicatedElements = new HashMap<String, ArrayList<String>>();
+            var emptyToolbox = new ArrayList<>();
+            var notGenerate = new ArrayList<ModElement>();
             for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
                 if (modElement.getGeneratableElement() instanceof IUniqueElement uniqueElement) {
-                    hashMap.compute("duplicated " + uniqueElement.getUniqueID(), (a, b) -> {
+                    duplicatedElements.compute("duplicated " + uniqueElement.getUniqueID(), (a, b) -> {
                         if (b == null) {
                             b = new ArrayList<>();
                         }
@@ -98,52 +99,49 @@ public class PluginMain extends JavaPlugin {
                     });
                 }
 
-                if (modElement.getGeneratableElement() instanceof PluginProcedureModElement pluginProcedureModElement){
-                    if (pluginProcedureModElement.toolbox_init.isEmpty()){
-                        hashMap.compute("empty toolbox init", (a, b) -> {
-                            if (b == null) {
-                                b = new ArrayList<>();
-                            }
-                            b.add(modElement.getName());
-                            return b;
-                        });
+                if (modElement.getGeneratableElement() instanceof PluginProcedureModElement pluginProcedureModElement) {
+                    if (pluginProcedureModElement.toolbox_init.isEmpty()) {
+                        emptyToolbox.add(pluginProcedureModElement.getModElement().getName());
                     }
                 }
 
                 if (modElement.getAssociatedFiles().stream().anyMatch(a -> !a.exists())) {
                     modElement.setCompiles(false);
-                    elements.add(modElement);
+                    notGenerate.add(modElement);
                 }
             }
-            for (Map.Entry<String, ArrayList<String>> stringArrayListEntry : new HashSet<>(hashMap.entrySet())) {
+            for (Map.Entry<String, ArrayList<String>> stringArrayListEntry : new HashSet<>(
+                    duplicatedElements.entrySet())) {
                 if (stringArrayListEntry.getValue().size() == 1) {
-                    hashMap.remove(stringArrayListEntry.getKey());
+                    duplicatedElements.remove(stringArrayListEntry.getKey());
                 }
             }
             if (Utils.isNotPluginGenerator(mcreator.getGenerator())) {
                 return;
             }
-            if (!hashMap.isEmpty()) {
-                mcreator.getGradleConsole().appendPlainText("Duplicated elements: ", Color.RED);
+            if (!emptyToolbox.isEmpty()) {
+                mcreator.getGradleConsole()
+                        .appendPlainText("Warning: empty toolbox init " + emptyToolbox, Color.YELLOW);
+            }
+            if (!duplicatedElements.isEmpty()) {
                 mcreator.getGradleConsole().appendPlainText(
-                        hashMap.entrySet().stream().map(Object::toString).collect(Collectors.joining("\n")), Color.RED);
+                        duplicatedElements.entrySet().stream().map(Object::toString).collect(Collectors.joining("\n")),
+                        Color.RED);
 
-                for (Map.Entry<String, ArrayList<String>> stringArrayListEntry : hashMap.entrySet()) {
+                for (Map.Entry<String, ArrayList<String>> stringArrayListEntry : duplicatedElements.entrySet()) {
                     for (String s : stringArrayListEntry.getValue()) {
                         var element = mcreator.getWorkspace().getModElementByName(s);
                         element.setCompiles(false);
-                        elements.add(element);
+                        notGenerate.add(element);
                     }
                 }
             }
 
-            if (!elements.isEmpty()) {
+            if (!notGenerate.isEmpty()) {
                 mcreator.getGradleConsole().append("");
-                mcreator.getGradleConsole().appendPlainText(
-                        "some elements didn't generate properly.",
-                        Color.BLUE);
+                mcreator.getGradleConsole().appendPlainText("some elements didn't generate properly.", Color.BLUE);
                 CompletableFuture.runAsync(() -> {
-                    DialogUtils.showErrorElementDialog(mcreator, elements);
+                    DialogUtils.showErrorElementDialog(mcreator, notGenerate);
                 });
             }
         });
@@ -164,14 +162,15 @@ public class PluginMain extends JavaPlugin {
         });
 
         addListener(ModifyTemplateResultEvent.class, event -> {
-            if (event.getTemplateName() == null){
+            if (event.getTemplateName() == null) {
                 return;
             }
             if (event.getTemplateName().endsWith("yaml.ftl")) {
                 event.setTemplateOutput(YamlWriter.INSTANCE.formatString(event.getTemplateOutputOriginal()));
-            } else if (event.getTemplateName().equals("pluginproecedure.json.ftl")){
+            } else if (event.getTemplateName().equals("pluginproecedure.json.ftl")) {
                 event.setTemplateOutput(JSONWriter.INSTANCE.formatString(event.getTemplateOutputOriginal()));
-            } else if (event.getTemplateName().endsWith("java.ftl") && PluginMakerPreference.INSTANCE.generateFtlComment.get()){
+            } else if (event.getTemplateName().endsWith("java.ftl")
+                    && PluginMakerPreference.INSTANCE.generateFtlComment.get()) {
                 // head
                 String comment = event.getTemplateName();
                 LOG.info("{}:{}", event.getTemplateName(), event.getDataModel());
@@ -182,13 +181,13 @@ public class PluginMain extends JavaPlugin {
                     jsonO.addProperty("localization", L10N.t(L10NHelper.getProcedureKey(
                             FTLUtils.getFileNameWithoutExtensions(event.getTemplateName()))));
                     comment = jsonO.toString();
-                } else if (FTLUtils.isTriggerCode(event.getDataModel())){
+                } else if (FTLUtils.isTriggerCode(event.getDataModel())) {
                     var jsonO = new JsonObject();
                     jsonO.addProperty("fileName", comment);
                     jsonO.addProperty("localization", L10N.t(L10NHelper.getTriggerKey(
                             FTLUtils.getFileNameWithoutExtensions(event.getTemplateName()))));
                     comment = jsonO.toString();
-                } else if (FTLUtils.isClass(event.getTemplateOutputOriginal())){
+                } else if (FTLUtils.isClass(event.getTemplateOutputOriginal())) {
                     builder.append("""
                             /*
                             Expected answer format:
@@ -288,7 +287,8 @@ public class PluginMain extends JavaPlugin {
     private void warnSnapshot() {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(null,
-                    "But for the help from the community, this wouldn't be finished. If you encounter a bug, please report it in my plugin page.","You are using snapshot",JOptionPane.WARNING_MESSAGE);
+                    "But for the help from the community, this wouldn't be finished. If you encounter a bug, please report it in my plugin page.",
+                    "You are using snapshot", JOptionPane.WARNING_MESSAGE);
         });
     }
 
@@ -299,7 +299,7 @@ public class PluginMain extends JavaPlugin {
                 urls.add(instancePlugin.toURL());
             }
         }
-        return new DynamicURLClassLoader(urls.toArray(new URL[0]),PluginMain.class.getClassLoader());
+        return new DynamicURLClassLoader(urls.toArray(new URL[0]), PluginMain.class.getClassLoader());
     }
 
     private void registerAll(MCreator mcreator) {

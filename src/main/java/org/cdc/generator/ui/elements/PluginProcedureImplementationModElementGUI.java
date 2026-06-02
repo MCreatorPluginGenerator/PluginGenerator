@@ -121,7 +121,7 @@ public class PluginProcedureImplementationModElementGUI
                     + BuilderUtils.generateFieldsComment(fields) + System.lineSeparator()
                     + BuilderUtils.generateStatementsComment(statements) + System.lineSeparator();
             var text = content.getText();
-            if (!text.endsWith(";") && !text.endsWith(")") && !text.startsWith("(")){
+            if (!text.endsWith(";") && !text.startsWith("(")){
                 text = "(" + text + ")";
             }
             content.setText(comment + "\n" + text);

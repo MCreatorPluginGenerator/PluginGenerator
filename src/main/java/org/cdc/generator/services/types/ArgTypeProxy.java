@@ -3,7 +3,7 @@ package org.cdc.generator.services.types;
 import com.google.gson.JsonObject;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 
-public class ArgTypeProxy {
+public class ArgTypeProxy implements Cloneable{
 
 
     public static IArg0Type getArg0Type(JsonObject jsonObject) {
@@ -51,5 +51,14 @@ public class ArgTypeProxy {
 
     @Override public String toString() {
         return getUniqueName();
+    }
+
+    @Override public ArgTypeProxy clone() {
+        try {
+            ArgTypeProxy clone = (ArgTypeProxy) super.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

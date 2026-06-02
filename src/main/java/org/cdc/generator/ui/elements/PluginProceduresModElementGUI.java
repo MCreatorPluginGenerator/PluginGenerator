@@ -74,13 +74,7 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
         element.fields = this.fields.getTextList();
         element.statements = this.statements.getTextList();
         element.toolbox_init = this.toolboxInit.getTextList();
-        element.dependencies = dependencies.stream().map(a -> {
-            try {
-                return (PluginProcedureModElement.Dependency) a.clone();
-            } catch (CloneNotSupportedException e) {
-                throw new RuntimeException(e);
-            }
-        }).toList();
+        element.dependencies = dependencies;
         element.localization = localizationValue.getText();
         element.tooltip = tooltip.getText();
         return element;

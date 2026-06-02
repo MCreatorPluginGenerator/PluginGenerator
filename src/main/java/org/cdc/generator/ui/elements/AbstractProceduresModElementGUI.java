@@ -370,12 +370,18 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.group.setText(generatableElement.group);
         this.warnings.setTextList(generatableElement.warnings);
         this.requiredApis.setListElements(generatableElement.required_apis);
-        model.addAll(generatableElement.arg0);
+        model.addAll(generatableElement.arg0.stream().map(ArgTypeProxy::clone).toList());
         this.inputs.setTextList(generatableElement.inputs);
         this.fields.setTextList(generatableElement.fields);
         this.statements.setTextList(generatableElement.statements);
         this.toolboxInit.setTextList(generatableElement.toolbox_init);
-        this.dependencies.addAll(generatableElement.dependencies);
+        for (PluginProcedureModElement.Dependency dependency : generatableElement.dependencies) {
+            try {
+                this.dependencies.add((PluginProcedureModElement.Dependency) dependency.clone());
+            } catch (CloneNotSupportedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         this.localizationValue.setText(generatableElement.localization);
         this.tooltip.setText(generatableElement.tooltip);
     }

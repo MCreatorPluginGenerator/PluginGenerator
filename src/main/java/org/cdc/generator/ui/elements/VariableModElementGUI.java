@@ -39,6 +39,8 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
     private final VTextField customVariableDependencyLocalization;
     private final VTextField setterLocalization;
     private final VTextField getterLocalization;
+    private final VTextField callAndGetLocalization;
+    private final VTextField returnLocalization;
 
     public VariableModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
@@ -52,6 +54,8 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         this.customVariableDependencyLocalization = new VTextField();
         this.setterLocalization = new VTextField();
         this.getterLocalization = new VTextField();
+        this.callAndGetLocalization = new VTextField();
+        this.returnLocalization = new VTextField();
 
         this.initGUI();
         this.finalizeGUI();
@@ -59,7 +63,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
 
     @Override protected void initGUI() {
         name.setEditable(true);
-        name.setSelectedItem(modElement.getRegistryName().replace('_','\0'));
+        name.setSelectedItem(getSuggestedFileName());
         name.setValidator(Rules.getFileNameValidator(name::getSelectedItem));
         addNameConfiguration(name);
 
@@ -85,18 +89,26 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
         builtInColor.setEditable(true);
         addConfigurationWithHelpEntry("builtincolor", builtInColor);
 
-        customVariableDependencyLocalization.setText("dependency " + modElement.getName());
+        customVariableDependencyLocalization.setText("dependency " + getSuggestedFileName());
         customVariableDependencyLocalization.setValidator(
                 new NotEmptyValidator(customVariableDependencyLocalization::getText));
         addConfigurationWithHelpEntry("dependency_localization", customVariableDependencyLocalization);
 
-        setterLocalization.setText("set " + modElement.getName());
+        setterLocalization.setText("set " + getSuggestedFileName());
         setterLocalization.setValidator(new NotEmptyValidator(setterLocalization::getText));
         addConfigurationWithHelpEntry("setter_localization", setterLocalization);
 
-        getterLocalization.setText("get " + modElement.getName());
+        getterLocalization.setText("get " + getSuggestedFileName());
         getterLocalization.setValidator(new NotEmptyValidator(getterLocalization::getText));
         addConfigurationWithHelpEntry("getter_localization", getterLocalization);
+
+        callAndGetLocalization.setText("call procedure and get " + getSuggestedFileName() + " return value");
+        callAndGetLocalization.setValidator(new NotEmptyValidator(callAndGetLocalization::getText));
+        addConfigurationWithHelpEntry("call_and_get_localization", callAndGetLocalization);
+
+        returnLocalization.setText("return " + getSuggestedFileName());
+        returnLocalization.setValidator(new NotEmptyValidator(returnLocalization::getText));
+        addConfigurationWithHelpEntry("return_localization", returnLocalization);
 
         Utils.registerCreateImplShortCut(this, this);
 
@@ -157,5 +169,9 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
             element.defaultValue.setText("");
         }
         element.showView();
+    }
+
+    private String getSuggestedFileName() {
+        return modElement.getRegistryName().replace('_', '\0');
     }
 }

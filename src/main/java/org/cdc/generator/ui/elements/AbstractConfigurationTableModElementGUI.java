@@ -149,6 +149,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     protected void addConfigurationWithHelpEntry(String name, JComponent component) {
         component.setOpaque(false);
         var label = L10N.label("elementgui." + getHelpEntryAndLocalizationPrefix() + "." + name);
+        label.setText(label.getText() + ": ");
         label.addMouseListener(new MouseAdapter() {
             @Override public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON3) {

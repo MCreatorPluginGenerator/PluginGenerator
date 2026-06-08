@@ -14,3 +14,9 @@ localizationkeys:
   - key: blockly.block.get_var_@registryname
     condition: generate
     mapto: getGetterLocalization()
+  - key: blockly.block.return_@registryname
+    condition: generate
+    mapto: getReturnLocalization()
+  - key: blockly.block.procedure_retval_@registryname
+    condition: generate
+    mapto: getCallAndGetLocalization()

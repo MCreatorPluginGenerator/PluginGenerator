@@ -5,23 +5,21 @@ import net.mcreator.plugin.events.ui.TabEvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.dialogs.file.FileDialogs;
 import net.mcreator.ui.init.L10N;
-import org.cdc.framework.utils.L10NHelper;
 import org.cdc.generator.PluginMain;
-import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.ui.elements.AbstractProceduresModElementGUI;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
-import org.cdc.generator.ui.elements.PluginProceduresModElementGUI;
-import org.cdc.generator.utils.Arg0InputType;
-import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.MenuProvider;
 import org.cdc.generator.utils.builders.JMenuBuilder;
 import org.cdc.generator.utils.builders.JMenuItemBuilder;
+import org.cdc.generator.utils.interfaces.IMenusProvider;
 
 import javax.swing.*;
 import java.awt.datatransfer.StringSelection;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Properties;
 import java.util.function.Supplier;
 
 public class Menus {
@@ -54,6 +52,14 @@ public class Menus {
         for (Supplier<JMenu> menu : menus) {
             mcreator.getMainMenuBar().add(menu.get());
         }
+
+        // extension point for other plugins
+        IMenusProvider.serviceLoader.stream().forEach(a -> {
+            var menu = a.get().provide(mcreator);
+            if (menu != null) {
+                mcreator.getMainMenuBar().add(menu);
+            }
+        });
     }
 
     public static void registerAllSubMenus(MCreator mcreator) {
@@ -110,61 +116,6 @@ public class Menus {
                         });
                     }
                 }).build());
-        PLUGIN_PROCEDURE_UTILS.add(
-                new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("generate_warnings")
-                        .setActionListener(a -> {
-                            if (mcreator.getTabs().getCurrentTab()
-                                    .getContent() instanceof AbstractProceduresModElementGUI<?> pluginProceduresElementGUI) {
-                                for (String s : pluginProceduresElementGUI.getWarnings().getTextList()) {
-                                    for (LinkedHashMap<String, String> value : mcreator.getWorkspace().getLanguageMap()
-                                            .values()) {
-                                        value.put(L10NHelper.getWarningKey(s), s);
-                                    }
-                                }
-                            }
-                        }).build());
-        PLUGIN_PROCEDURE_UTILS.add(
-                new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("refresh_inputs_and_fields")
-                        .setCurrentModElementGUIConsumer(mcreator, PluginProceduresModElementGUI.class,
-                                pluginProceduresElementGUI -> {
-                                    var inputs = new ArrayList<String>();
-                                    var fields = new ArrayList<String>();
-                                    var statements = new ArrayList<String>();
-                                    for (ArgTypeProxy argTypeProxy : pluginProceduresElementGUI.getModel()) {
-                                        if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.INPUT)) {
-                                            inputs.add(argTypeProxy.getUniqueName());
-                                        }
-                                        if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.FIELD)) {
-                                            fields.add(argTypeProxy.getUniqueName());
-                                        }
-                                        if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.STATEMENT)) {
-                                            statements.add(argTypeProxy.getUniqueName());
-                                        }
-                                    }
-                                    var inputs1 = new HashSet<String>();
-                                    inputs1.addAll(pluginProceduresElementGUI.getInputs().getTextList());
-                                    inputs1.addAll(inputs);
-                                    pluginProceduresElementGUI.getInputs().setTextList(inputs1);
-
-                                    var fields1 = new HashSet<String>();
-                                    fields1.addAll(pluginProceduresElementGUI.getFields().getTextList());
-                                    fields1.addAll(fields);
-                                    pluginProceduresElementGUI.getFields().setTextList(fields1);
-
-                                    var statements1 = new HashSet<String>();
-                                    statements1.addAll(pluginProceduresElementGUI.getStatements().getTextList());
-                                    statements1.addAll(statements);
-                                    pluginProceduresElementGUI.getStatements().setTextList(statements1);
-
-                                }).build());
-        PLUGIN_PROCEDURE_UTILS.add(
-                new JMenuItemBuilder().setParentMenuName("plugin_procedure_utils").setName("load_block_color")
-                        .setCurrentModElementGUIConsumer(mcreator, AbstractProceduresModElementGUI.class,
-                                pluginProceduresElementGUI -> {
-                                    var blockName = JOptionPane.showInputDialog(mcreator, "Input block name");
-                                    ElementsUtils.getExternalBlockColour(blockName,
-                                            pluginProceduresElementGUI.getBlocklyEditorType());
-                                }).build());
         // TODO: Mapping_utils functions: like temporary plugin to add item and blocks.
     }
 

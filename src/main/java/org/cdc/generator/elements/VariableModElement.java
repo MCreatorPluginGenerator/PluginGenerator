@@ -23,6 +23,8 @@ public class VariableModElement extends GeneratableElement implements IColorElem
     public String customVariableDependencyLocalization;
     public String getterLocalization;
     public String setterLocalization;
+    public String callAndGetLocalization;
+    public String returnLocalization;
 
     @Nullable public List<String> required_apis;
 
@@ -46,6 +48,20 @@ public class VariableModElement extends GeneratableElement implements IColorElem
             return "set " + blocklyVariableType;
         }
         return setterLocalization;
+    }
+
+    @UsedByReflection public String getCallAndGetLocalization() {
+        if (callAndGetLocalization == null) {
+            return "call procedure and get " + blocklyVariableType + " return value";
+        }
+        return callAndGetLocalization;
+    }
+
+    @UsedByReflection public String getReturnLocalization() {
+        if (returnLocalization == null) {
+            return "return " + blocklyVariableType;
+        }
+        return returnLocalization;
     }
 
     @UsedByReflection public boolean isGenerate() {

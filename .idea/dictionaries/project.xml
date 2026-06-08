@@ -1,10 +1,29 @@
 <component name="ProjectDictionaryState">
   <dictionary name="project">
     <words>
+      <w>builtincolor</w>
       <w>datalist</w>
+      <w>datalisticons</w>
       <w>datalists</w>
+      <w>elementgui</w>
       <w>modelement</w>
+      <w>pluginaitaskcategory</w>
+      <w>pluginaitaskprocedure</w>
+      <w>pluginaitasksprocedure</w>
+      <w>pluginapis</w>
+      <w>plugincmdargscategory</w>
+      <w>plugincmdargsprocedure</w>
       <w>plugindatalist</w>
+      <w>pluginmappings</w>
+      <w>pluginprocedure</w>
+      <w>pluginprocedurecategory</w>
+      <w>pluginprocedureimpl</w>
+      <w>plugintrigger</w>
+      <w>plugintriggerimpl</w>
+      <w>pluginvariable</w>
+      <w>pluginvariableimpl</w>
+      <w>testvalue</w>
+      <w>updatelogs</w>
     </words>
   </dictionary>
 </component>

@@ -11,6 +11,7 @@ import net.mcreator.plugin.events.ApplicationLoadedEvent;
 import net.mcreator.plugin.events.ModifyTemplateResultEvent;
 import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
 import net.mcreator.plugin.events.ui.BlocklyPanelRegisterDOMData;
+import net.mcreator.plugin.events.ui.TabEvent;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.plugin.events.workspace.WorkspaceBuildStartedEvent;
 import net.mcreator.plugin.events.workspace.WorkspaceTaskFinishedEvent;
@@ -216,14 +217,26 @@ public class PluginMain extends JavaPlugin {
             }
         });
 
+        this.addListener(TabEvent.Shown.class, event -> {
+            if (referenceDock != null) {
+                SwingUtilities.invokeLater(() -> {
+                    referenceDock.reloadTree();
+                });
+            }
+        });
+
         Menus.registerMenuVisibleControls(this);
     }
+
+    private ReferenceDock referenceDock = null;
 
     private void initPluginMakerWorkspace(MCreatorLoadedEvent event) {
         var mcreator = event.getMCreator();
 
-        mcreator.getLeftDockRegion().addDock("references_shower", 380, "References", UIRES.get("16px.search"),
-                new ReferenceDock(mcreator));
+        referenceDock = new ReferenceDock(mcreator);
+
+        mcreator.getLeftDockRegion()
+                .addDock("references_shower", 380, "References", UIRES.get("16px.search"), referenceDock);
 
         if (Utils.isNotPluginGenerator(mcreator.getGenerator())) {
             LOG.debug("{} is not plugin maker", mcreator.getGenerator().getGeneratorName());
@@ -319,5 +332,9 @@ public class PluginMain extends JavaPlugin {
 
     public ClassLoader getDependsClassLoader() {
         return dependsClassLoader;
+    }
+
+    public ReferenceDock getReferenceDock() {
+        return referenceDock;
     }
 }

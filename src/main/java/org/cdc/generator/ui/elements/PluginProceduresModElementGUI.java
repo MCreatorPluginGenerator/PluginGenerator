@@ -41,7 +41,7 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
         var component = PanelUtils.northAndCenterElement(config, toolbarAndTable(dependenciesToolBar));
         Utils.registerCreateImplShortCut(this, component);
 
-        addPage("Configuration", component).validate(name).validate(localizationValue);
+        addPage("Configuration", component).validate(name).validate(localizationValue).validate(this);
         addPage("Args0", PanelUtils.northAndCenterElement(args0ToolBar, splitPane));
     }
 

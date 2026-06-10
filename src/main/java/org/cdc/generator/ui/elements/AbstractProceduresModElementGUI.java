@@ -13,13 +13,16 @@ import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.laf.themes.Theme;
+import net.mcreator.ui.validation.IValidable;
 import net.mcreator.ui.validation.ValidationResult;
+import net.mcreator.ui.validation.Validator;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.ArrayListListModel;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.framework.utils.BuilderUtils;
+import org.cdc.framework.utils.L10NHelper;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
@@ -46,7 +49,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractProceduresModElementGUI<E extends GeneratableElement & IBlocklyElement>
-        extends AbstractConfigurationTableModElementGUI<E> implements ISearchable, IListBlocklyCategoriesModElementGUI {
+        extends AbstractConfigurationTableModElementGUI<E>
+        implements ISearchable, IListBlocklyCategoriesModElementGUI, IValidable {
 
     protected final VTextField name = new VTextField();
     protected final JCheckBox inputsInline;
@@ -145,6 +149,19 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
 
         toolboxId.setEditable(true);
         toolboxId.setSelectedItem("other");
+        toolboxId.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                    boolean cellHasFocus) {
+                JLabel jLabel = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
+                        cellHasFocus);
+                var text = L10N.t(L10NHelper.getBlocklyCategoryKey(jLabel.getText()));
+                if (text != null && !text.isEmpty()) {
+                    jLabel.setText(text);
+                }
+                return jLabel;
+            }
+        });
         addConfigurationWithHelpEntry("toolbox_id", toolboxId);
 
         group.setValidator(new NotEmptyValidator(group::getText));
@@ -412,6 +429,25 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
 
     public void setBuiltInColor(String builtInColor) {
         this.builtInColor.setSelectedItem(builtInColor);
+    }
+
+    @Override public ValidationResult getValidationStatus() {
+        return getValidator().validate();
+    }
+
+    @Override public void setValidator(Validator validator) {
+
+    }
+
+    @Override public Validator getValidator() {
+        return () -> {
+            if (builtInColor.getSelectedIndex() != 0) {
+                return ValidationResult.PASSED;
+            }
+            return color.getColor().equals(Color.WHITE) ?
+                    new ValidationResult(ValidationResult.Type.ERROR, "White is too bright") :
+                    ValidationResult.PASSED;
+        };
     }
 
     private class DependenciesTableModule extends AbstractTableModel {

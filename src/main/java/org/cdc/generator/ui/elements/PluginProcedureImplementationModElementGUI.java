@@ -133,7 +133,7 @@ public class PluginProcedureImplementationModElementGUI
         toolbar.add(syncLocalImplFile(content::setText));
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(content, mcreator);
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
-        panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
+        panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete) You must complete the inputs and fields"));
 
         addPage(PanelUtils.northAndCenterElement(buildConfiguration(2), panel)).validate(generator)
                 .validate(procedureFileName);

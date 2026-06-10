@@ -12,5 +12,9 @@ public class L10NHelper {
 	public static String getWarningKey(String warningKey){
 		return "blockly.warning." + warningKey;
 	}
+
+	public static String getBlocklyCategoryKey(String warningKey){
+		return "blockly.category." + warningKey;
+	}
 }
 

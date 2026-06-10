@@ -17,6 +17,7 @@ import net.mcreator.plugin.events.workspace.WorkspaceTaskFinishedEvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.MCreatorApplication;
 import net.mcreator.ui.init.L10N;
+import net.mcreator.ui.init.UIRES;
 import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,6 +26,7 @@ import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.init.Menus;
 import org.cdc.generator.init.ResourcePanels;
+import org.cdc.generator.ui.ReferenceDock;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.FTLUtils;
@@ -219,6 +221,9 @@ public class PluginMain extends JavaPlugin {
 
     private void initPluginMakerWorkspace(MCreatorLoadedEvent event) {
         var mcreator = event.getMCreator();
+
+        mcreator.getLeftDockRegion().addDock("references_shower", 380, "References", UIRES.get("16px.search"),
+                new ReferenceDock(mcreator));
 
         if (Utils.isNotPluginGenerator(mcreator.getGenerator())) {
             LOG.debug("{} is not plugin maker", mcreator.getGenerator().getGeneratorName());

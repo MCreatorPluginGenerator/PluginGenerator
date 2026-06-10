@@ -6,11 +6,11 @@ import net.mcreator.ui.component.tree.FilteredTreeModel;
 import net.mcreator.ui.component.tree.JFileTree;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.component.util.TreeUtils;
+import net.mcreator.ui.modgui.ModElementGUI;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.references.ReferencesFinder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cdc.generator.ui.elements.AbstractConfigurationTableModElementGUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,7 +69,7 @@ public class ReferenceDock extends JPanel {
         references = new FilterTreeNode(mcreator.getTabs().getCurrentTab().getText());
 
         if (mcreator.getTabs().getCurrentTab()
-                .getContent() instanceof AbstractConfigurationTableModElementGUI<?> abstractConfigurationTableModElementGUI) {
+                .getContent() instanceof ModElementGUI<?> abstractConfigurationTableModElementGUI) {
             for (ModElement modElement : ReferencesFinder.searchModElementUsages(mcreator.getWorkspace(),
                     abstractConfigurationTableModElementGUI.getModElement())) {
                 references.add(new FilterTreeNode(modElement.getName()));

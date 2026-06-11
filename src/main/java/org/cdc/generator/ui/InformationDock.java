@@ -99,6 +99,7 @@ public class InformationDock extends JPanel {
                 references.add(new ModElementReferenceNode(modElement.getName()));
             }
             node.add(references);
+            node.add(new FilterTreeNode("!Right click your configuration area to show the helper menu."));
         }
 
         if (!duplicatedElements.isEmpty()) {

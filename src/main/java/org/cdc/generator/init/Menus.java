@@ -85,6 +85,8 @@ public class Menus {
                         a.add(menuItem);
                     }
                 }).build());
+        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("open_plugin_page")
+                .setOpenURL("https://mcreator.net/plugin/122734/pluginmaker").build());
         PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_repository")
                 .setOpenURL("https://mcreator.net/repository").build());
         PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")

@@ -11,6 +11,7 @@ import net.mcreator.plugin.events.ApplicationLoadedEvent;
 import net.mcreator.plugin.events.ModifyTemplateResultEvent;
 import net.mcreator.plugin.events.PreGeneratorsLoadingEvent;
 import net.mcreator.plugin.events.ui.BlocklyPanelRegisterDOMData;
+import net.mcreator.plugin.events.ui.ModElementGUIEvent;
 import net.mcreator.plugin.events.ui.TabEvent;
 import net.mcreator.plugin.events.workspace.MCreatorLoadedEvent;
 import net.mcreator.plugin.events.workspace.WorkspaceBuildStartedEvent;
@@ -19,6 +20,8 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.MCreatorApplication;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
+import net.mcreator.ui.modgui.ModElementGUI;
+import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,9 +30,8 @@ import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.init.Menus;
 import org.cdc.generator.init.ResourcePanels;
-import org.cdc.generator.ui.ReferenceDock;
+import org.cdc.generator.ui.InformationDock;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
-import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ZipUtils;
@@ -88,9 +90,9 @@ public class PluginMain extends JavaPlugin {
 
         addListener(WorkspaceTaskFinishedEvent.TaskCompleted.class, event -> {
             var mcreator = event.getMCreator();
-            var duplicatedElements = new HashMap<String, ArrayList<String>>();
             var emptyToolbox = new ArrayList<>();
-            var notGenerate = new ArrayList<ModElement>();
+            ArrayList<ModElement> notGenerate = new ArrayList<>();
+            HashMap<String, ArrayList<String>> duplicatedElements = new HashMap<>();
             for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
                 if (modElement.getGeneratableElement() instanceof IUniqueElement uniqueElement) {
                     duplicatedElements.compute("duplicated " + uniqueElement.getUniqueID(), (a, b) -> {
@@ -143,10 +145,12 @@ public class PluginMain extends JavaPlugin {
             if (!notGenerate.isEmpty()) {
                 mcreator.getGradleConsole().append("");
                 mcreator.getGradleConsole().appendPlainText("some elements didn't generate properly.", Color.BLUE);
-                CompletableFuture.runAsync(() -> {
-                    DialogUtils.showErrorElementDialog(mcreator, notGenerate);
-                });
+                dockHashMap.get(mcreator).getDuplicatedElements().putAll(duplicatedElements);
+                dockHashMap.get(mcreator).getNotGenerate().addAll(notGenerate);
+                mcreator.getLeftDockRegion().setDockVisibility("information_dock", true);
             }
+
+            dockHashMap.get(mcreator).reloadTree();
         });
 
         addListener(ApplicationLoadedEvent.class, event -> {
@@ -218,30 +222,45 @@ public class PluginMain extends JavaPlugin {
         });
 
         this.addListener(TabEvent.Shown.class, event -> {
-            if (referenceDock != null) {
-                SwingUtilities.invokeLater(() -> {
-                    referenceDock.reloadTree();
-                });
+            MCreator mcreator = null;
+            if (event.getTab().getContent() instanceof ModElementGUI<?> modElementGUI) {
+                mcreator = modElementGUI.getMCreator();
             }
+            if (event.getTab().getContent() instanceof WorkspacePanel workspacePanel) {
+                mcreator = workspacePanel.getMCreator();
+            }
+            if (dockHashMap.containsKey(mcreator)) {
+                dockHashMap.get(mcreator).reloadTree();
+            }
+
+        });
+
+        this.addListener(ModElementGUIEvent.WhenSaving.class,event -> {
+            dockHashMap.get(event.getMCreator()).getNotGenerate();
+            dockHashMap.get(event.getMCreator()).getDuplicatedElements();
         });
 
         Menus.registerMenuVisibleControls(this);
     }
 
-    private ReferenceDock referenceDock = null;
+    private final HashMap<MCreator, InformationDock> dockHashMap = new HashMap<>();
 
     private void initPluginMakerWorkspace(MCreatorLoadedEvent event) {
         var mcreator = event.getMCreator();
 
-        referenceDock = new ReferenceDock(mcreator);
+        var informationDock = new InformationDock(mcreator);
+        dockHashMap.put(mcreator, informationDock);
 
         mcreator.getLeftDockRegion()
-                .addDock("references_shower", 380, "References", UIRES.get("16px.search"), referenceDock);
+                .addDock("information_dock", 380, "Information", UIRES.get("16px.search"), informationDock);
 
         if (Utils.isNotPluginGenerator(mcreator.getGenerator())) {
             LOG.debug("{} is not plugin maker", mcreator.getGenerator().getGeneratorName());
             return;
         }
+
+        informationDock.setMcreatorPluginsWorkspace(true);
+        informationDock.reloadTree();
 
         registerAll(mcreator);
 
@@ -332,9 +351,5 @@ public class PluginMain extends JavaPlugin {
 
     public ClassLoader getDependsClassLoader() {
         return dependsClassLoader;
-    }
-
-    public ReferenceDock getReferenceDock() {
-        return referenceDock;
     }
 }

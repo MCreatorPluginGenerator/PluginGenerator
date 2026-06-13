@@ -1,36 +1,29 @@
 # PluginGenerator
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/MCreatpr/org.cdc.generator.DemoJavaPlugin/blob/master/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![MCreator](https://img.shields.io/badge/MCreator-2026.1+-blue.svg)](https://mcreator.net/)
 
-This repository demonstrates a basic MCreator Java plugin structure. 
-Java plugins only work with MCreator 2022.2 or newer.
+**PluginGenerator** – 一个专门为 [MCreator](https://mcreator.net/) 设计的插件生成器。  
+**PluginGenerator** – A plugin generator specifically designed for MCreator.
 
-# Setup
+它可以快速生成 MCreator 插件的基础结构，帮助开发者专注于业务逻辑而非重复的样板代码。
 
-In order for the plugin to work, make a new file called `gradle.properties` with the following contents:
+## ✨ 特性 (Features)
 
-```
-mcreator_path=<path to MCreator core Gradle project directory>
-```
+- 🚀 **一键生成** – 基于模板生成完整的 MCreator 插件项目结构
+- 📦 **自动配置** – 自动生成 `plugin.json`、Gradle 构建脚本、主类文件
+- 🧩 **模块化设计** – 支持生成生成器模块、元素类型扩展、自定义 UI 组件
+- ⚡ **开箱即用** – 生成的代码可直接导入 MCreator 进行编译和测试
+- 🛠️ **可扩展模板** – 允许用户自定义 Velocity / FreeMarker 模板
 
-# Running MCreator with the plugin
+## 📥 安装与使用 (Installation & Usage)
 
-This demo plugin comes with some Gradle tasks to help you with the development of your plugin. 
+### 前置要求
+- Java 17 或更高版本
+- MCreator 2024.3+（开发插件所需）
 
-* `runMCreatorWithPlugin`: Run MCreator with the plugin loaded
-
-There is also IntelliJ IDEA run configuration for this task provided in the repository.
-
-**Make sure to enable Java plugins in MCreator preferences, or the plugin will not be loaded.**
-
-# Testing
-
-We highly recommend to test your plugin by running MCreator's tests with your plugin loaded.
-
-This Gradle project does this for you, you just need to run the `test` task.
-
-There is also IntelliJ IDEA run configuration for this task provided in the repository.
-
-# Exporting
-
-To export the plugin, run `jar` task and find the plugin zip file in `build/libs`.
+### 从源码构建
+```bash
+git clone https://github.com/yourusername/PluginGenerator.git
+cd PluginGenerator
+./gradlew build

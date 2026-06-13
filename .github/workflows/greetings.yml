@@ -12,5 +12,21 @@ jobs:
     - uses: actions/first-interaction@v1
       with:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        issue-message: "Message that will be displayed on users' first issue"
-        pr-message: "Message that will be displayed on users' first pull request"
+        issue-message: |
+          **中文**：  
+          感谢你提交这个问题！这是一个适合新贡献者的入门任务（good first issue）。  
+          如果你想尝试解决它，请留言告知，我们会协助你。欢迎为项目做出你的第一次贡献 🎉
+        
+          **English**：  
+          Thanks for opening this issue! This is a good first issue for new contributors.  
+          Let us know if you'd like to work on it — we're happy to help. Welcome to make your first contribution to the project 🎉
+        pr-message: |
+          **中文**：  
+          非常感谢你提交第一个 Pull Request！🎉  
+          我们会尽快审核。如果有需要修改的地方，维护者会给你反馈。  
+          欢迎加入社区，继续为项目贡献力量。
+        
+          **English**：  
+          Thank you very much for your first Pull Request! 🎉  
+          We will review it as soon as possible. If any changes are needed, maintainers will provide feedback.  
+          Welcome to the community and keep contributing!

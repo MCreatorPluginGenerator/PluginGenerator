@@ -12,7 +12,7 @@
 - Java 21 or higher
 - MCreator 2026.1+
 
-### 从源码构建
+### Build
 ```bash
 git clone https://github.com/yourusername/PluginGenerator.git
 cd PluginGenerator

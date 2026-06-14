@@ -1,0 +1,13 @@
+templates:
+  - template: movable_resource_element.ftl
+    condition: isFile()
+    writer: file
+    name: "@RESROOT/@[folder]"
+  - template: movable_resource_element.ftl
+    condition: isJson()
+    writer: json
+    name: "@RESROOT/@[folder]"
+  - template: movable_resource_element.yaml.ftl
+    condition: isYaml()
+    writer: file
+    name: "@RESROOT/@[folder]"

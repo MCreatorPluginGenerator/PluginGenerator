@@ -29,7 +29,8 @@ public class RSyntaxTextAreaFactory {
     }
 
     public static RTextScrollPane createDefaultTextScrollPane(RSyntaxTextArea jTextArea, Component parent) {
-        RTextScrollPane jScrollPane = new RTextScrollPane(jTextArea);
+        RTextScrollPane jScrollPane = new RTextScrollPane(jTextArea,
+                PreferencesManager.PREFERENCES.ide.lineNumbers.get());
         RSyntaxTextAreaStyler.style(jTextArea, jScrollPane, PreferencesManager.PREFERENCES.ide.fontSize.get());
         jScrollPane.getGutter().setFoldBackground(parent.getBackground());
         jScrollPane.getGutter().setBorderColor(parent.getBackground());

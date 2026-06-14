@@ -48,6 +48,9 @@ import javax.annotation.Nullable;
             "pluginaitasksprocedure", null, PluginAITaskProcedureModElementGUI::new,
             PluginAITasksProcedureModElement.class);
 
+    public static final ModElementType<MovableCustomResourceModElement> MOVABLE_CUSTOM_RESOURCE_MOD_ELEMENT_MOD_ELEMENT_TYPE = register("movable_resource_element",null,MovableCustomResourceModElementGUI::new,
+            MovableCustomResourceModElement.class);
+
     private static <E extends GeneratableElement> ModElementType<E> register(String registryName,
             @Nullable Character shortcut, ModElementType.ModElementGUIProvider<E> modElementGUIProvider,
             Class<E> modElementStorageClass) {

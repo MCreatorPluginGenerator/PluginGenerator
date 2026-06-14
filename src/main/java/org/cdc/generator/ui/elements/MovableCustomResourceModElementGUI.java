@@ -58,7 +58,7 @@ public class MovableCustomResourceModElementGUI
         });
 
         addPage("Configuration", PanelUtils.northAndCenterElement(buildConfiguration(2),
-                RSyntaxTextAreaFactory.createDefaultTextScrollPane(content, this)));
+                RSyntaxTextAreaFactory.createDefaultTextScrollPane(content, this))).validate(folder);
     }
 
     @Override protected void openInEditingMode(MovableCustomResourceModElement generatableElement) {
@@ -75,9 +75,5 @@ public class MovableCustomResourceModElementGUI
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
         return null;
-    }
-
-    @Override protected boolean allowCodePreview() {
-        return isEditingMode();
     }
 }

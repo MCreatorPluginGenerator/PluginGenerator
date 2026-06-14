@@ -14,6 +14,8 @@ public class MovableCustomResourceModElement extends GeneratableElement {
 
     public MovableCustomResourceModElement(ModElement element) {
         super(element);
+
+        this.folder = "";
     }
 
     public boolean isJson(){

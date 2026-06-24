@@ -226,8 +226,11 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         for (int i = 0; i < entries.size(); i++) {
             var entry = entries.get(i);
             AtomicInteger atomicInteger = new AtomicInteger();
+            String[] columns = new String[this.columns.length + 1];
+            System.arraycopy(this.columns, 0, columns, 0, this.columns.length);
+            columns[columns.length - 1] = "Builtin";
             if (Stream.of(entry.getName(), entry.getReadableName(), entry.getType(), entry.getTexture(),
-                            entry.getDescription(), entry.getOther().toString())
+                            entry.getDescription(), entry.getOther().toString(), String.valueOf(entry.isBuiltIn()))
                     .map(a -> Map.entry(columns[atomicInteger.getAndIncrement()],
                             Rules.SearchRules.applyIgnoreCaseRule(a))).anyMatch(a -> {
                         if (!search.getKey().isBlank()) {

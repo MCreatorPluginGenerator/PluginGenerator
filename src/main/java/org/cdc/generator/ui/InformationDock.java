@@ -13,6 +13,7 @@ import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.references.ReferencesFinder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cdc.generator.ui.elements.DataListModElementGUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -77,7 +78,7 @@ public class InformationDock extends JPanel {
 
         JPanel topBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         topBar.setBackground(Theme.current().getAltBackgroundColor());
-        topBar.add(ComponentUtils.setForeground(ComponentUtils.deriveFont(new JLabel("Controls"), 10f),
+        topBar.add(ComponentUtils.setForeground(ComponentUtils.deriveFont(new JLabel("Information"), 10f),
                 Theme.current().getAltForegroundColor()));
 
         topBar.setBorder(BorderFactory.createCompoundBorder(
@@ -99,8 +100,14 @@ public class InformationDock extends JPanel {
                 references.add(new ModElementReferenceNode(modElement.getName()));
             }
             node.add(references);
-            node.add(new FilterTreeNode("!Right click your configuration area to show the helper menu."));
         }
+
+        var tips = new FilterTreeNode("Tips");
+        tips.add(new FilterTreeNode("Right click your configuration area to show the helper menu."));
+        if (mcreator.getTabs().getCurrentTab().getContent() instanceof DataListModElementGUI){
+            tips.add(new FilterTreeNode("You can use 'Builtin=false' to filter your entries."));
+        }
+        node.add(tips);
 
         if (!duplicatedElements.isEmpty()) {
             var duplicatedElements = new FilterTreeNode("Duplicated elements");

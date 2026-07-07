@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import net.mcreator.io.writer.JSONWriter;
+import net.mcreator.generator.io.JSONWriter;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.interfaces.IArg0Type;
 import org.cdc.generator.utils.ioc.InjectField;

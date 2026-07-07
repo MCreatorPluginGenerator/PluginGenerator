@@ -6,9 +6,9 @@ import net.mcreator.util.DesktopUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
 
+import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
-import java.net.URISyntaxException;
 
 public class RSyntaxTextAreaFactory {
     public static RSyntaxTextArea createDefaultRSyntaxTextArea() {
@@ -18,10 +18,9 @@ public class RSyntaxTextAreaFactory {
         jTextArea.setColumns(60);
         jTextArea.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-                try {
-                    DesktopUtils.browse(e.getURL().toURI());
-                } catch (URISyntaxException ex) {
-                    throw new RuntimeException(ex);
+                var option = JOptionPane.showConfirmDialog(null,"You will open "+e.getURL().toString(),"Warning",JOptionPane.OK_CANCEL_OPTION);
+                if (option == JOptionPane.OK_OPTION){
+                    DesktopUtils.browseSafe(e.getURL().toString());
                 }
             }
         });

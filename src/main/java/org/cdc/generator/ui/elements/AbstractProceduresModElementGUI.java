@@ -12,6 +12,7 @@ import net.mcreator.ui.component.JStringListField;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
+import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.validation.IValidable;
 import net.mcreator.ui.validation.ValidationResult;
@@ -261,6 +262,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
 
         JButton addLine = createAddButton();
         JButton removeLine = createRemoveRowButton();
+        JButton refresh = new JButton(UIRES.get("16px.build"));
         JButton importArg0JsonArrary = L10N.button("import arg0 array");
 
         splitPane = new JSplitPane();
@@ -282,7 +284,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         JPanel rightComponent = new JPanel(new BorderLayout());
         rightComponent.setBorder(BorderFactory.createTitledBorder("Config"));
         splitPane.setRightComponent(rightComponent);
-        args0ToolBar.add(addLine);
+
         convertCopiedInitValue.addActionListener(e -> {
             if (arg0List.getSelectedValue() != null) {
                 var str = JOptionPane.showInputDialog(mcreator, "wrap your copied procedure xml or null");
@@ -303,6 +305,37 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             model.add(new ArgTypeProxy(json));
         });
         removeLine.addActionListener(a -> model.remove(arg0List.getSelectedValue()));
+        refresh.setToolTipText("Refresh all inputs, fields and statements");
+        refresh.addActionListener(a->{
+            var inputs = new ArrayList<String>();
+            var fields = new ArrayList<String>();
+            var statements = new ArrayList<String>();
+            for (ArgTypeProxy argTypeProxy : getModel()) {
+                if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.INPUT)) {
+                    inputs.add(argTypeProxy.getUniqueName());
+                }
+                if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.FIELD)) {
+                    fields.add(argTypeProxy.getUniqueName());
+                }
+                if (argTypeProxy.getArg0Type().getType().equals(Arg0InputType.STATEMENT)) {
+                    statements.add(argTypeProxy.getUniqueName());
+                }
+            }
+            var inputs1 = new HashSet<String>();
+            inputs1.addAll(getInputs().getTextList());
+            inputs1.addAll(inputs);
+            getInputs().setTextList(inputs1);
+
+            var fields1 = new HashSet<String>();
+            fields1.addAll(getFields().getTextList());
+            fields1.addAll(fields);
+            getFields().setTextList(fields1);
+
+            var statements1 = new HashSet<String>();
+            statements1.addAll(getStatements().getTextList());
+            statements1.addAll(statements);
+            getStatements().setTextList(statements1);
+        });
         importArg0JsonArrary.addActionListener(a -> {
             RSyntaxTextArea rSyntaxTextArea = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
             var i = DialogUtils.showOptionPaneWithTextArea(rSyntaxTextArea, mcreator, "Input your json array",
@@ -316,6 +349,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         });
         args0ToolBar.add(addLine);
         args0ToolBar.add(removeLine);
+        args0ToolBar.add(refresh);
         args0ToolBar.add(importArg0JsonArrary);
         arg0List.addListSelectionListener(listSelectionEvent -> reloadComponent(rightComponent));
         arg0List.setCellRenderer(new DefaultListCellRenderer() {

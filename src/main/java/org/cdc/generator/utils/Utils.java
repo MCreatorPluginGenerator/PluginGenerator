@@ -208,9 +208,9 @@ public class Utils {
      * @param generator generator of current mcreator. Do not need the specific generator.
      */
     public static void initCompletionWithGenerator(DefaultCompletionProvider provider, Generator generator) {
-        new BaseDataModelProvider(generator).provide().forEach((key, value) -> {
-            provider.addCompletion(new BasicCompletion(provider, key, value.getClass().getName()));
-            for (Method method : value.getClass().getMethods()) {
+        new BaseDataModelProvider(generator).provide().forEach((key, value1) -> {
+            provider.addCompletion(new BasicCompletion(provider, key, value1.getClass().getName()));
+            for (Method method : value1.getClass().getMethods()) {
                 if (method.getReturnType() != Void.TYPE) {
                     provider.addCompletion(
                             new ShorthandCompletion(provider, key + ".", key + "." + method.getName() + "(",
@@ -234,16 +234,6 @@ public class Utils {
     public static String convertColor(Color color) {
         if (color == null) {
             return "0";
-        }
-        float[] hsbvals = new float[3];
-        Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), hsbvals);
-
-        double hue = Math.ceil(hsbvals[0] * 360);
-        double saturation = Math.ceil(hsbvals[1] * 100);
-        double brightness = Math.ceil(hsbvals[2] * 100);
-
-        if (saturation == Rules.defaultHsvSaturation && brightness == Rules.defaultHsvValue) {
-            return String.valueOf((int) hue);
         }
         return "\"" + ColorUtils.formatColor(color) + "\"";
     }

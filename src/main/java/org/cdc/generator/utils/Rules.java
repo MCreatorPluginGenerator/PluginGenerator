@@ -17,9 +17,6 @@ public class Rules {
     public static final Pattern FILE_NAME = Pattern.compile("[a-z_]+");
     public static final Pattern VALID_MODID = Pattern.compile("^(?=.{2,64}$)[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$");
 
-    public static final int defaultHsvSaturation = 45;
-    public static final int defaultHsvValue = 65;
-
     public static Validator getFileNameValidator(Supplier<String> supplier) {
         return () -> {
             if (Rules.FILE_NAME.matcher(Objects.requireNonNull(supplier.get())).matches()) {

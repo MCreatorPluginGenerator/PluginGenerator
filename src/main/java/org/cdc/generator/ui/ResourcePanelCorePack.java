@@ -58,7 +58,7 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
                 DesktopUtils.openSafe(new File(parent,
                         Arrays.stream(selection.getPath()).filter(a -> a instanceof FilterTreeNode)
                                 .map(a -> ((FilterTreeNode) a).getUserObject().toString())
-                                .collect(Collectors.joining(File.separator))));
+                                .collect(Collectors.joining(File.separator))), true);
             }
         });
         popupMenu.add(openInExplorer);

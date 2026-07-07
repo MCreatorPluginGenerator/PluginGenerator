@@ -95,7 +95,17 @@ public class Menus {
                 .setActionListener(a -> {
                     var selfDependants = "mcreator" + Launcher.version.versionlong;
                     if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
+                        mcreator.getToolkit().beep();
                         mcreator.getWorkspaceSettings().dependants.add(selfDependants);
+                        mcreator.getStatusBar().setPersistentMessage("Appended");
+                    }
+                }).build());
+        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("append_current_major")
+                .setActionListener(a -> {
+                    var selfDependants = "mcreator" + Launcher.version.majorlong;
+                    if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
+                        mcreator.getWorkspaceSettings().dependants.add(selfDependants);
+                        mcreator.getToolkit().beep();
                         mcreator.getStatusBar().setPersistentMessage("Appended");
                     }
                 }).build());

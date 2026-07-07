@@ -224,7 +224,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         remrow.setOpaque(false);
         ComponentUtils.deriveFont(remrow, 11);
         remrow.setBorder(BorderFactory.createEmptyBorder(1, 1, 0, 1));
-        remrow.setToolTipText("Remove");
+        remrow.setToolTipText("Remove (Shortcut: Delete)");
         return remrow;
     }
 

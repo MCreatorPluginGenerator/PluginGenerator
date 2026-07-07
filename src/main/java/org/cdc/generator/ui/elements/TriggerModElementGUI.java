@@ -237,6 +237,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
         this.requiredApis.setListElements(generatableElement.required_apis);
         this.dependencies.addAll(
                 generatableElement.dependencies_provided.stream().map(TriggerModElement.Dependency::clone).toList());
+        refreshNames();
     }
 
     @Override public TriggerModElement getElementFromGUI() {

@@ -12,9 +12,9 @@ repositories {
 }
 
 group = 'org.cdc.pluginmaker'
-version = "1.7.10.2"
+version = "1.7.10.3"
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 configurations {
     implementation.extendsFrom jarInJar

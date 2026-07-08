@@ -9,7 +9,7 @@
   "colour": ${data.getColor()}
   ,"inputsInline": ${data.inputsInline}
   <#if data.getOutputs()??>
-    <#if data.getOutputs() == "\"Null\"">
+    <#if data.getOutputs() == "\'Null\'">
     ,"output": null
     <#else>
     ,"output": ${data.getOutputs()}

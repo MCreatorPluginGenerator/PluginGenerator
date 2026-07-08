@@ -2,7 +2,7 @@ package org.cdc.generator.ui;
 
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JItemListField;
-import net.mcreator.ui.validation.component.VComboBox;
+import net.mcreator.ui.component.SearchableComboBox;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Rules;
 
@@ -16,9 +16,8 @@ public class APIListField extends JItemListField<String> {
     }
 
     @Override protected List<String> getElementsToAdd() {
-        var check = new VComboBox<String>();
-        check.setValidator(Rules.getFileNameValidator(check::getSelectedItem));
-        check.setEditable(true);
+        var check = new SearchableComboBox<String>();
+        check.setModel(new AppendableComboBoxModel(check::addItem,a -> Rules.getFileNameValidator(a::getText)));
         for (String api : ElementsUtils.getAllAPIS()) {
             check.addItem(api);
         }

@@ -183,12 +183,12 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         addConfigurationWithHelpEntry("toolbox_init", PanelUtils.centerAndEastElement(toolboxInit, openProcedure));
         localizationValue.setValidator(() -> {
             var count = BuilderUtils.countLanguageParameterCount(localizationValue.getText());
-            if (count < model.size()) {
-                return new ValidationResult(ValidationResult.Type.ERROR, "\" " + localizationValue.getText()
-                        + " \"is a irregular content because we need parameter count: " + model.size());
-            } else if (count > model.size()) {
-                return new ValidationResult(ValidationResult.Type.WARNING,
-                        "We expect " + model.size() + " but have " + count);
+            var expect = getExpectCount();
+            if (count < expect) {
+                return new ValidationResult(ValidationResult.Type.ERROR, "we need count: " + expect);
+            } else if (count > expect) {
+                return new ValidationResult(ValidationResult.Type.ERROR,
+                        "We expect " + expect + " but we have " + count);
             }
             return ValidationResult.PASSED;
         });
@@ -306,7 +306,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         });
         removeLine.addActionListener(a -> model.remove(arg0List.getSelectedValue()));
         refresh.setToolTipText("Refresh all inputs, fields and statements");
-        refresh.addActionListener(a->{
+        refresh.addActionListener(a -> {
             var inputs = new ArrayList<String>();
             var fields = new ArrayList<String>();
             var statements = new ArrayList<String>();
@@ -363,6 +363,10 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             }
         });
 
+    }
+
+    private int getExpectCount() {
+        return inputs.getTextList().size() + fields.getTextList().size() + statements.getTextList().size();
     }
 
     protected abstract Container getContainer();

@@ -7,7 +7,6 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.help.HelpUtils;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.laf.themes.Theme;
-import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.util.StringUtils;
 import net.mcreator.workspace.elements.ModElement;
@@ -15,6 +14,7 @@ import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.APIListField;
+import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
@@ -94,7 +94,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
                 L10N.label("elementgui.common.required_apis")));
         componentList.add(requiredApis);
 
-        var typeComboBox = new VComboBox<String>();
+        var typeComboBox = new SearchableComboBox<String>();
         typeComboBox.setOpaque(false);
         typeComboBox.setEditable(true);
 
@@ -125,6 +125,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
                     for (VariableType supportedType : ElementsUtils.getAllSupportedVariableTypes()) {
                         typeComboBox.addItem(supportedType.name());
                     }
+                    typeComboBox.setSelectedItem(value);
                 }
                 return super.getTableCellEditorComponent(table, value, isSelected, rowIndex, columnIndex);
             }

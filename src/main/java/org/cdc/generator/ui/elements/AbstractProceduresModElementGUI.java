@@ -28,6 +28,7 @@ import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.ui.APIListField;
+import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.ui.TypeListField;
 import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
@@ -62,7 +63,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     protected final VTextField mutator;
     protected final TypeListField outputs;
     protected final JStringListField extensions;
-    protected final VComboBox<String> toolboxId = new VComboBox<>();
+    protected final SearchableComboBox<String> toolboxId = new SearchableComboBox<>();
     protected final VTextField group = new VTextField();
     protected final JStringListField warnings;
     protected final APIListField requiredApis;
@@ -148,7 +149,6 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         addConfigurationWithHelpEntry("outputs", outputs);
         addConfigurationWithHelpEntry("extensions", extensions);
 
-        toolboxId.setEditable(true);
         toolboxId.setSelectedItem("other");
         toolboxId.setRenderer(new DefaultListCellRenderer() {
             @Override

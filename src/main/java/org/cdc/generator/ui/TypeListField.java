@@ -2,7 +2,6 @@ package org.cdc.generator.ui;
 
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JItemListField;
-import net.mcreator.ui.component.SearchableComboBox;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.VariableType;
 

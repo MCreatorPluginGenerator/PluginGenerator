@@ -5,12 +5,12 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
-import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.DataListModElement;
 import org.cdc.generator.elements.MappingsModElement;
 import org.cdc.generator.init.ModElementTypes;
+import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.ioc.InjectField;
@@ -37,8 +37,8 @@ import java.util.stream.Stream;
 public class MappingsModElementGUI extends AbstractConfigurationTableModElementGUI<MappingsModElement>
         implements ISearchable {
 
-    final VComboBox<String> generator = new VComboBox<>();
-    final VComboBox<String> datalistName = new VComboBox<>();
+    final SearchableComboBox<String> generator = new SearchableComboBox<>();
+    final SearchableComboBox<String> datalistName = new SearchableComboBox<>();
 
     public List<MappingsModElement.MappingEntry> mappingEntries;
 

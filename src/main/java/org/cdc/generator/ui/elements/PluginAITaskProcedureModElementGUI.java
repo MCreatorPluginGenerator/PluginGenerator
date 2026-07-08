@@ -77,7 +77,7 @@ public class PluginAITaskProcedureModElementGUI
         // compatible with previous version.
         element.outputs = outputs.getListElements();
         element.extensions = this.extensions.getTextList();
-        element.toolbox_id = this.toolboxId.getSelectedItem();
+        element.toolbox_id = Objects.requireNonNull(this.toolboxId.getSelectedItem());
         element.group = this.group.getText();
         element.warnings = Objects.requireNonNullElse(this.warnings.getTextList(), List.of());
         element.required_apis = Objects.requireNonNullElse(requiredApis.getListElements(), List.of());

@@ -151,7 +151,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                         try {
                             prop.load(new StringReader(str));
                             var cacheMap = new HashMap<String, String>();
-                            prop.forEach((key, value) -> cacheMap.put(key.toString(), value.toString()));
+                            prop.forEach((key, valie) -> cacheMap.put(key.toString(), valie.toString()));
                             row.setOthers(cacheMap);
                         } catch (IOException e) {
                             throw new RuntimeException(e);

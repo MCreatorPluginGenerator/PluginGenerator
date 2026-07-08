@@ -6,13 +6,13 @@ import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.ValidationResult;
-import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.TriggerImplementationModElement;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
+import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
@@ -36,8 +36,8 @@ import java.util.*;
 public class TriggerImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<TriggerImplementationModElement> {
 
-    final VComboBox<String> generator = new VComboBox<>();
-    final VComboBox<String> triggerFileName = new VComboBox<>();
+    final SearchableComboBox<String> generator = new SearchableComboBox<>();
+    final SearchableComboBox<String> triggerFileName = new SearchableComboBox<>();
     private final JCheckBox enableCustom = createDefaultCheckBox();
 
     private final VTextField eventName = new VTextField();

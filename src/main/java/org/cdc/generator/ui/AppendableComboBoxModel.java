@@ -30,6 +30,10 @@ public class AppendableComboBoxModel extends DefaultComboBoxModel<String> {
     }
 
     @Override public void setSelectedItem(Object anObject) {
+        if (anObject == null){
+            super.setSelectedItem(null);
+            return;
+        }
         var index = getIndexOf(anObject);
         if (index == -1) {
             add.accept(Objects.toString(anObject));
@@ -39,7 +43,8 @@ public class AppendableComboBoxModel extends DefaultComboBoxModel<String> {
                 check.setValidator(validator.apply(check));
                 check.enableRealtimeValidation();
             }
-            var id = JOptionPane.showConfirmDialog(null, check, "input a element", JOptionPane.OK_CANCEL_OPTION);
+            var id = JOptionPane.showConfirmDialog(null, check, "input a element", JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE);
             if (check.getValidationStatus() == null
                     || check.getValidationStatus() == ValidationResult.PASSED && id == JOptionPane.OK_OPTION) {
                 var input = check.getText();

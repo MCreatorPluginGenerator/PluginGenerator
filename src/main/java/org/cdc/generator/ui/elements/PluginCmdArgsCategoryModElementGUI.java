@@ -6,7 +6,6 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.PluginCmdArgsCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
-import org.cdc.generator.utils.Utils;
 import org.jspecify.annotations.NonNull;
 
 public class PluginCmdArgsCategoryModElementGUI extends AbstractProcedureCategoryModElementGUI<PluginCmdArgsCategoryModElement>{
@@ -39,11 +38,7 @@ public class PluginCmdArgsCategoryModElementGUI extends AbstractProcedureCategor
         modElement.setRegistryName(name.getText());
         var element = new PluginCmdArgsCategoryModElement(modElement);
         element.readableName = readableName.getText();
-        if (customCategory.getText() != null && !customCategory.getText().isBlank()) {
-            element.parentCategory = customCategory.getText();
-        } else {
-            element.parentCategory = Utils.nullToNoneOrNoneToNull(parentCategory.getSelectedItem(), false);
-        }
+        element.parentCategory = getParentCategory();
         element.color = color.getColor();
         element.api = isApi.isSelected();
         return element;

@@ -77,4 +77,12 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
         stringArrayList.add(Constants.NONE);
         ComboBoxUtil.updateComboBoxContents(parentCategory, stringArrayList.stream().sorted().toList());
     }
+
+    protected String getParentCategory(){
+        if (customCategory.getText() != null && !customCategory.getText().isBlank()) {
+            return customCategory.getText();
+        } else {
+            return Utils.nullToNoneOrNoneToNull(parentCategory.getSelectedItem(), false);
+        }
+    }
 }

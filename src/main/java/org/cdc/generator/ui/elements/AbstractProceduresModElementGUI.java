@@ -206,9 +206,9 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             var count = BuilderUtils.countLanguageParameterCount(localizationValue.getText());
             var expect = getExpectCount();
             if (count < expect) {
-                return new ValidationResult(ValidationResult.Type.ERROR, "we need count: " + expect);
+                return new ValidationResult(ValidationResult.Type.ERROR, "we need " + expect + " parameter(s)");
             } else if (count > expect) {
-                return new ValidationResult(ValidationResult.Type.ERROR,
+                return new ValidationResult(ValidationResult.Type.WARNING,
                         "We expect " + expect + " but we have " + count);
             }
             return ValidationResult.PASSED;

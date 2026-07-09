@@ -5,8 +5,6 @@ plugins {
 group = 'net.mcreator.demojavaplugin'
 version = '1.0'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
-
 configurations {
     implementation.extendsFrom export
 }

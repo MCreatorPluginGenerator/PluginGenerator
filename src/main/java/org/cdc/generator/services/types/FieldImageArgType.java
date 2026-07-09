@@ -84,7 +84,7 @@ public class FieldImageArgType extends AbstractArgType {
     }
 
     @Override public Arg0InputType getType() {
-        return Arg0InputType.FIELD;
+        return Arg0InputType.DEPENDENCY;
     }
 
     @Override public String getUniqueName(JsonObject jsonObject) {

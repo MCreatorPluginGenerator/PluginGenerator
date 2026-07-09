@@ -8,232 +8,210 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class SearchableComboBox<T> extends VComboBox<T> implements KeyListener {
 
-	public SearchableComboBox(T[] data) {
-		super(data);
-		init();
-	}
+    public SearchableComboBox() {
+        init();
+    }
 
-	public SearchableComboBox(Collection<T> data) {
-		super(new Vector<>(data));
-		init();
-	}
+    private void init() {
+        addKeyListener(this);
 
-	public SearchableComboBox() {
-		init();
-	}
+        this.getEditor().getEditorComponent().addKeyListener(this);
+    }
 
-	private void init() {
-		addKeyListener(this);
+    private boolean canSearch() {
+        return isPopupVisible();
+    }
 
-		this.getEditor().getEditorComponent().addKeyListener(this);
-	}
+    @Override public void keyTyped(KeyEvent e) {
+        // 不处理
+    }
 
-	private boolean canSearch() {
-		return isPopupVisible();
-	}
+    @Override public void keyPressed(KeyEvent e) {
 
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// 不处理
-	}
+        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_F) {
+            e.consume();
+            showSearchDialog();
+            return;
+        }
 
-	@Override
-	public void keyPressed(KeyEvent e) {
+        // 不可编辑模式：字母/数字/常用符号触发搜索
+        if (canSearch()) {
+            char ch = e.getKeyChar();
+            if (Character.isLetterOrDigit(ch) || ch == '_' || ch == '-' || ch == ':' || ch == ' ') {
+                e.consume();
+                showSearchDialog();
+            } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                e.consume();
+                showSearchDialog();
+            }
+        }
+    }
 
-		if (isEditable) {
-			if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_F) {
-				e.consume();
-				showSearchDialog();
-			}
-			// 其他按键不触发搜索
-			return;
-		}
+    @Override public void keyReleased(KeyEvent e) {
+    }
 
-		// 不可编辑模式：字母/数字/常用符号触发搜索
-		if (canSearch()) {
-			char ch = e.getKeyChar();
-			if (Character.isLetterOrDigit(ch) || ch == '_' || ch == '-' || ch == ':' || ch == ' ') {
-				e.consume();
-				showSearchDialog();
-			} else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				e.consume();
-				showSearchDialog();
-			}
-		}
-	}
+    private void showSearchDialog() {
+        if (isPopupVisible()) {
+            setPopupVisible(false);
+        }
 
-	@Override
-	public void keyReleased(KeyEvent e) {
-		// 不处理
-	}
+        // 从模型中获取所有条目
+        List<T> allEntries = new ArrayList<>();
+        ComboBoxModel<T> model = getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            allEntries.add(model.getElementAt(i));
+        }
 
-	private void showSearchDialog() {
-		if (isPopupVisible()) {
-			setPopupVisible(false);
-		}
+        SearchDialog dialog = new SearchDialog(SwingUtilities.getWindowAncestor(this), allEntries);
+        dialog.setVisible(true);
 
-		// 从模型中获取所有条目
-		List<T> allEntries = new ArrayList<>();
-		ComboBoxModel<T> model = getModel();
-		for (int i = 0; i < model.getSize(); i++) {
-			allEntries.add(model.getElementAt(i));
-		}
+        T selected = dialog.getSelectedValue();
+        if (selected != null) {
+            setSelectedItem(selected);
+        }
+    }
 
-		SearchDialog dialog = new SearchDialog(SwingUtilities.getWindowAncestor(this), allEntries);
-		dialog.setVisible(true);
+    // ==================== 内部搜索对话框 ====================
 
-		T selected = dialog.getSelectedValue();
-		if (selected != null) {
-			setSelectedItem(selected);
-		}
-	}
+    private class SearchDialog extends JDialog {
 
-	// ==================== 内部搜索对话框 ====================
+        private final List<T> allEntries;
+        private T selectedValue = null;
 
-	private class SearchDialog extends JDialog {
+        private final DefaultListModel<T> listModel = new DefaultListModel<>();
+        private final JList<T> list = new JList<>(listModel);
+        private final JTextField searchField = new JTextField(20);
 
-		private final List<T> allEntries;
-		private T selectedValue = null;
+        public SearchDialog(Window parent, List<T> entries) {
+            super(parent, "Search", ModalityType.APPLICATION_MODAL);
+            this.allEntries = new ArrayList<>(entries);
 
-		private final DefaultListModel<T> listModel = new DefaultListModel<>();
-		private final JList<T> list = new JList<>(listModel);
-		private final JTextField searchField = new JTextField(20);
+            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+            setResizable(true);
+            initUI();
+            pack();
+            setLocationRelativeTo(parent);
+            updateList("");
+        }
 
-		public SearchDialog(Window parent, List<T> entries) {
-			super(parent, "Search", ModalityType.APPLICATION_MODAL);
-			this.allEntries = new ArrayList<>(entries);
+        private void initUI() {
+            setLayout(new BorderLayout(10, 10));
 
-			setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-			setResizable(true);
-			initUI();
-			pack();
-			setLocationRelativeTo(parent);
-			updateList("");
-		}
+            JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+            topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
 
-		private void initUI() {
-			setLayout(new BorderLayout(10, 10));
+            JLabel label = new JLabel("Search:");
+            topPanel.add(label, BorderLayout.WEST);
+            topPanel.add(searchField, BorderLayout.CENTER);
 
-			JPanel topPanel = new JPanel(new BorderLayout(5, 5));
-			topPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 5, 10));
+            searchField.getDocument().addDocumentListener(new DocumentListener() {
+                @Override public void insertUpdate(DocumentEvent e) {filterList();}
 
-			JLabel label = new JLabel("Search:");
-			topPanel.add(label, BorderLayout.WEST);
-			topPanel.add(searchField, BorderLayout.CENTER);
+                @Override public void removeUpdate(DocumentEvent e) {filterList();}
 
-			searchField.getDocument().addDocumentListener(new DocumentListener() {
-				@Override
-				public void insertUpdate(DocumentEvent e) { filterList(); }
-				@Override
-				public void removeUpdate(DocumentEvent e) { filterList(); }
-				@Override
-				public void changedUpdate(DocumentEvent e) { filterList(); }
-				private void filterList() { updateList(searchField.getText()); }
-			});
+                @Override public void changedUpdate(DocumentEvent e) {filterList();}
 
-			list.setCellRenderer(new DefaultListCellRenderer() {
-				@Override
-				public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-						boolean isSelected, boolean cellHasFocus) {
-					String display;
-					if (value instanceof DataListEntry dle) {
-						display = dle.getReadableName();
-					} else {
-						display = value != null ? value.toString() : "";
-					}
-					return super.getListCellRendererComponent(list, display, index, isSelected, cellHasFocus);
-				}
-			});
+                private void filterList() {updateList(searchField.getText());}
+            });
 
-			JScrollPane scrollPane = new JScrollPane(list);
-			scrollPane.setPreferredSize(new Dimension(400, 300));
-			topPanel.add(scrollPane, BorderLayout.SOUTH);
-			add(topPanel, BorderLayout.CENTER);
+            list.setCellRenderer(new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                        boolean isSelected, boolean cellHasFocus) {
+                    String display;
+                    if (value instanceof DataListEntry dle) {
+                        display = dle.getReadableName();
+                    } else {
+                        display = value != null ? value.toString() : "";
+                    }
+                    return super.getListCellRendererComponent(list, display, index, isSelected, cellHasFocus);
+                }
+            });
 
-			JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-			JButton okButton = new JButton("OK");
-			JButton cancelButton = new JButton("Cancel");
+            JScrollPane scrollPane = new JScrollPane(list);
+            scrollPane.setPreferredSize(new Dimension(400, 300));
+            topPanel.add(scrollPane, BorderLayout.SOUTH);
+            add(topPanel, BorderLayout.CENTER);
 
-			okButton.addActionListener(e -> {
-				T selected = list.getSelectedValue();
-				if (selected != null) selectedValue = selected;
-				dispose();
-			});
-			cancelButton.addActionListener(e -> dispose());
+            JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+            JButton okButton = new JButton("OK");
+            JButton cancelButton = new JButton("Cancel");
 
-			list.addMouseListener(new MouseAdapter() {
-				@Override
-				public void mouseClicked(MouseEvent e) {
-					if (e.getClickCount() == 2) {
-						T selected = list.getSelectedValue();
-						if (selected != null) {
-							selectedValue = selected;
-							dispose();
-						}
-					}
-				}
-			});
+            okButton.addActionListener(e -> {
+                T selected = list.getSelectedValue();
+                if (selected != null)
+                    selectedValue = selected;
+                dispose();
+            });
+            cancelButton.addActionListener(e -> dispose());
 
-			list.addKeyListener(new KeyAdapter() {
-				@Override
-				public void keyPressed(KeyEvent e) {
-					if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-						T selected = list.getSelectedValue();
-						if (selected != null) {
-							selectedValue = selected;
-							dispose();
-						}
-					}
-				}
-			});
+            list.addMouseListener(new MouseAdapter() {
+                @Override public void mouseClicked(MouseEvent e) {
+                    if (e.getClickCount() == 2) {
+                        T selected = list.getSelectedValue();
+                        if (selected != null) {
+                            selectedValue = selected;
+                            dispose();
+                        }
+                    }
+                }
+            });
 
-			bottomPanel.add(okButton);
-			bottomPanel.add(cancelButton);
-			add(bottomPanel, BorderLayout.SOUTH);
+            list.addKeyListener(new KeyAdapter() {
+                @Override public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                        T selected = list.getSelectedValue();
+                        if (selected != null) {
+                            selectedValue = selected;
+                            dispose();
+                        }
+                    }
+                }
+            });
 
-			addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosed(WindowEvent e) { searchField.setText(""); }
-			});
+            bottomPanel.add(okButton);
+            bottomPanel.add(cancelButton);
+            add(bottomPanel, BorderLayout.SOUTH);
 
-			addComponentListener(new ComponentAdapter() {
-				@Override
-				public void componentShown(ComponentEvent e) { searchField.requestFocusInWindow(); }
-			});
+            addWindowListener(new WindowAdapter() {
+                @Override public void windowClosed(WindowEvent e) {searchField.setText("");}
+            });
 
-			getRootPane().registerKeyboardAction(e -> dispose(),
-					KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-					JComponent.WHEN_IN_FOCUSED_WINDOW);
-		}
+            addComponentListener(new ComponentAdapter() {
+                @Override public void componentShown(ComponentEvent e) {searchField.requestFocusInWindow();}
+            });
 
-		private void updateList(String searchText) {
-			listModel.clear();
-			String lower = searchText.toLowerCase(Locale.ENGLISH);
-			List<T> filtered = allEntries.stream()
-					.filter(item -> {
-						String display;
-						if (item instanceof DataListEntry dle) {
-							display = dle.getReadableName();
-						} else {
-							display = item != null ? item.toString() : "";
-						}
-						return display.toLowerCase(Locale.ENGLISH).contains(lower);
-					})
-					.collect(Collectors.toList());
-			for (T item : filtered) {
-				listModel.addElement(item);
-			}
-			if (listModel.getSize() > 0) {
-				list.setSelectedIndex(0);
-			}
-		}
+            getRootPane().registerKeyboardAction(e -> dispose(), KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+                    JComponent.WHEN_IN_FOCUSED_WINDOW);
+        }
 
-		public T getSelectedValue() { return selectedValue; }
-	}
+        private void updateList(String searchText) {
+            listModel.clear();
+            String lower = searchText.toLowerCase(Locale.ENGLISH);
+            List<T> filtered = allEntries.stream().filter(item -> {
+                String display;
+                if (item instanceof DataListEntry dle) {
+                    display = dle.getReadableName();
+                } else {
+                    display = item != null ? item.toString() : "";
+                }
+                return display.toLowerCase(Locale.ENGLISH).contains(lower);
+            }).collect(Collectors.toList());
+            for (T item : filtered) {
+                listModel.addElement(item);
+            }
+            if (listModel.getSize() > 0) {
+                list.setSelectedIndex(0);
+            }
+        }
+
+        public T getSelectedValue() {return selectedValue;}
+    }
 }

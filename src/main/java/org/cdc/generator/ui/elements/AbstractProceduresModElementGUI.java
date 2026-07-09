@@ -28,8 +28,10 @@ import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.services.types.ArgTypeProxy;
 import org.cdc.generator.ui.APIListField;
+import org.cdc.generator.ui.JCustomizeStringListField;
 import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.ui.TypeListField;
+import org.cdc.generator.ui.renderer.CustomWarningStringListCellRenderer;
 import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IArg0Type;
@@ -65,7 +67,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     protected final JStringListField extensions;
     protected final SearchableComboBox<String> toolboxId = new SearchableComboBox<>();
     protected final VTextField group = new VTextField();
-    protected final JStringListField warnings;
+    protected final JCustomizeStringListField warnings;
     protected final APIListField requiredApis;
     protected final JStringListField inputs;
     protected final JStringListField fields;
@@ -90,7 +92,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         this.mutator = new VTextField();
         this.outputs = new TypeListField(mcreator, VariableType::blocklyTypeName);
         this.extensions = new JStringListField(mcreator, null);
-        this.warnings = new JStringListField(mcreator, null).setUniqueEntries(true);
+        this.warnings = new JCustomizeStringListField(mcreator, null).setUniqueEntries(true);
         this.requiredApis = new APIListField(mcreator);
         this.model = new ArrayListListModel<>();
         this.arg0List = new JList<>(model);
@@ -156,8 +158,10 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
                     boolean cellHasFocus) {
                 JLabel jLabel = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
                         cellHasFocus);
-                var text = L10N.t(L10NHelper.getBlocklyCategoryKey(jLabel.getText()));
-                if (text != null && !text.isEmpty()) {
+                var key = L10NHelper.getBlocklyCategoryKey(jLabel.getText());
+                var text = Objects.requireNonNullElse(L10N.t(key),
+                        L10NHelper.getDefaultTranslation(mcreator, key, jLabel.getText()));
+                if (!text.isEmpty()) {
                     jLabel.setText(text);
                 }
                 return jLabel;
@@ -168,6 +172,23 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         group.setValidator(new NotEmptyValidator(group::getText));
         addConfigurationWithHelpEntry("group", group);
 
+        warnings.addMouseListener(new MouseAdapter() {
+            @Override public void mouseReleased(MouseEvent e) {
+                if (e.getClickCount() == 2) {
+                    if (warnings.getSelectedItem() != null) {
+                        var str = JOptionPane.showInputDialog(mcreator, "Edit translation",
+                                L10NHelper.getDefaultTranslation(mcreator,
+                                        L10NHelper.getWarningKey(warnings.getSelectedItem()),
+                                        L10NHelper.getWarningKey(warnings.getSelectedItem())));
+                        if (str != null && !str.isEmpty()) {
+                            mcreator.getWorkspace()
+                                    .setLocalization(L10NHelper.getWarningKey(warnings.getSelectedItem()), str);
+                        }
+                    }
+                }
+            }
+        });
+        warnings.setCellRenderer(new CustomWarningStringListCellRenderer(mcreator));
         addConfigurationWithHelpEntry("warnings", warnings);
         addConfigurationWithHelpEntry("required_apis", requiredApis);
         addConfigurationWithHelpEntry("inputs", inputs);
@@ -526,7 +547,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         }
     }
 
-    public JStringListField getWarnings() {
+    public JCustomizeStringListField getWarnings() {
         return warnings;
     }
 

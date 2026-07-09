@@ -12,6 +12,7 @@ public class PluginMakerPreference extends PreferencesSection {
     public BooleanEntry searchIgnoreCase;
     public StringEntry defaultProcedureTooltip;
     public BooleanEntry generateFtlComment;
+    public BooleanEntry triggerDependencyUsingNameToType;
 
     public PluginMakerPreference(String preferencesIdentifier) {
         super(preferencesIdentifier);
@@ -21,7 +22,9 @@ public class PluginMakerPreference extends PreferencesSection {
         this.defaultProcedureTooltip = addPluginEntry(identifier,
                 new StringEntry("default_procedure_tooltip", "Practice makes perfect", true));
         this.searchIgnoreCase = addPluginEntry(identifier, new BooleanEntry("search_ignore_case", true));
-        this.generateFtlComment = addPluginEntry(identifier,new BooleanEntry("generate_ftl_comment",false));
+        this.generateFtlComment = addPluginEntry(identifier, new BooleanEntry("generate_ftl_comment", false));
+        this.triggerDependencyUsingNameToType = addPluginEntry(identifier,
+                new BooleanEntry("use_name_to_type_trigger_dependency", true));
     }
 
     @Override public String getSectionKey() {

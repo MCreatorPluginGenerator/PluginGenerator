@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import org.cdc.generator.elements.DataListModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.ResourcePanelIcons;
+import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
@@ -122,8 +123,9 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
                 return label;
             }
         });
-        var module = new TableComboBoxModule();
-        var comboBox = new JComboBox<>(module);
+        var module = new TableComboBoxModel();
+        var comboBox = new SearchableComboBox<String>();
+        comboBox.setModel(module);
         comboBox.setEditable(true);
         types = new ArrayList<>();
         jTable.setDefaultEditor(String.class, new DefaultCellEditor(comboBox) {
@@ -378,7 +380,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         }
     }
 
-    private class TableComboBoxModule extends DefaultComboBoxModel<String> {
+    private class TableComboBoxModel extends DefaultComboBoxModel<String> {
 
         private String type;
 

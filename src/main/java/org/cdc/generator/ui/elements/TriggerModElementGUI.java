@@ -15,6 +15,7 @@ import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.APIListField;
 import org.cdc.generator.ui.SearchableComboBox;
+import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
@@ -120,12 +121,16 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowIndex,
                     int columnIndex) {
                 var columnName = columns[columnIndex];
+                var row = dependencies.get(rowIndex);
                 typeComboBox.removeAllItems();
                 if (columnName.equals("Type")) {
                     for (VariableType supportedType : ElementsUtils.getAllSupportedVariableTypes()) {
                         typeComboBox.addItem(supportedType.name());
                     }
                     typeComboBox.setSelectedItem(value);
+                } else if (columnName.equals("Name")
+                        && PluginMakerPreference.INSTANCE.triggerDependencyUsingNameToType.get()) {
+                    value = value + ":" + row.getType();
                 }
                 return super.getTableCellEditorComponent(table, value, isSelected, rowIndex, columnIndex);
             }

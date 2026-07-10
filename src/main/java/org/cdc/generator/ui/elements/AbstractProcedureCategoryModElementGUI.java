@@ -3,12 +3,12 @@ package org.cdc.generator.ui.elements;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JColor;
-import net.mcreator.ui.component.SearchableComboBox;
 import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.ProcedureCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
+import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
@@ -27,7 +27,6 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
     protected final VTextField readableName;
     protected final JColor color;
     protected final SearchableComboBox<String> parentCategory;
-    protected final VTextField customCategory;
     protected final JCheckBox isApi;
 
     public AbstractProcedureCategoryModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
@@ -37,7 +36,6 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
         this.readableName = new VTextField();
         this.color = new JColor(mcreator, false, false);
         this.parentCategory = new SearchableComboBox<>();
-        this.customCategory = new VTextField();
         this.isApi = createDefaultCheckBox();
     }
 
@@ -52,9 +50,10 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
         addConfigurationWithHelpEntry("color", color);
 
         parentCategory.setSelectedItem(Constants.NONE);
+        parentCategory.setEditable(true);
         addConfigurationWithHelpEntry("parent_category", parentCategory);
 
-        addConfigurationWithHelpEntry("custom_parent_category", customCategory);
+        //        addConfigurationWithHelpEntry("custom_parent_category", customCategory);
 
         addConfigurationWithHelpEntry("is_api", isApi);
     }
@@ -63,12 +62,13 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
         this.name.setEnabled(false);
         this.readableName.setText(generatableElement.readableName);
         this.color.setColor(generatableElement.color);
-        this.parentCategory.setSelectedItem(generatableElement.parentCategory);
+        this.parentCategory.setSelectedItem(Utils.nullToNoneOrNoneToNull(generatableElement.parentCategory, true));
         this.isApi.setSelected(generatableElement.api);
     }
 
     @Override @Nullable public URI contextURL() throws URISyntaxException {
-        return new URI("https://mcreator.net/wiki/create-new-procedure-blocks#:~:text=name%22%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22fields%22%3A%20%5B%0A%20%20%20%20%20%20%22vars%22%0A%20%20%20%20%5D%0A%20%20%7D%0A%7D-,Create%20your%20procedure%20block%20section,-To%20have%20your");
+        return new URI(
+                "https://mcreator.net/wiki/create-new-procedure-blocks#:~:text=name%22%0A%20%20%20%20%5D%2C%0A%20%20%20%20%22fields%22%3A%20%5B%0A%20%20%20%20%20%20%22vars%22%0A%20%20%20%20%5D%0A%20%20%7D%0A%7D-,Create%20your%20procedure%20block%20section,-To%20have%20your");
     }
 
     @Override public void reloadDataLists() {
@@ -78,11 +78,7 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
         ComboBoxUtil.updateComboBoxContents(parentCategory, stringArrayList.stream().sorted().toList());
     }
 
-    protected String getParentCategory(){
-        if (customCategory.getText() != null && !customCategory.getText().isBlank()) {
-            return customCategory.getText();
-        } else {
-            return Utils.nullToNoneOrNoneToNull(parentCategory.getSelectedItem(), false);
-        }
+    protected String getParentCategory() {
+        return Utils.nullToNoneOrNoneToNull(parentCategory.getSelectedItem(), false);
     }
 }

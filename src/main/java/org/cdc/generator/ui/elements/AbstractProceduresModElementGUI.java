@@ -31,6 +31,7 @@ import org.cdc.generator.ui.APIListField;
 import org.cdc.generator.ui.JCustomizeStringListField;
 import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.ui.TypeListField;
+import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.ui.renderer.CustomWarningStringListCellRenderer;
 import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
@@ -152,6 +153,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         addConfigurationWithHelpEntry("extensions", extensions);
 
         toolboxId.setSelectedItem("other");
+        toolboxId.setEditable(true);
         toolboxId.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -219,7 +221,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         tooltip.setText("Practice makes perfect");
         addConfigurationWithHelpEntry("tooltip", tooltip);
 
-        var typeComboBox = new VComboBox<String>();
+        var typeComboBox = new SearchableComboBox<String>();
         typeComboBox.setOpaque(false);
         typeComboBox.setEditable(true);
 
@@ -244,12 +246,16 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int rowIndex,
                     int columnIndex) {
+                var row = dependencies.get(rowIndex);
                 var columnName = columns[columnIndex];
                 typeComboBox.removeAllItems();
                 if (columnName.equals("Type")) {
                     for (VariableType supportedType : ElementsUtils.getAllSupportedVariableTypes()) {
                         typeComboBox.addItem(supportedType.name());
                     }
+                } else if (columnName.equals("Dependency name")
+                        && PluginMakerPreference.INSTANCE.triggerDependencyUsingNameToType.get()) {
+                    value = value + ":" + row.getType();
                 }
                 return super.getTableCellEditorComponent(table, value, isSelected, rowIndex, columnIndex);
             }
@@ -540,7 +546,14 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         @Override public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
             var row = dependencies.get(rowIndex);
             if (columns[columnIndex].equals("Dependency name")) {
-                row.setName(aValue.toString());
+                var str = aValue.toString();
+                String name = str;
+                if (str.contains(":")) {
+                    var sp = str.split(":", 2);
+                    name = sp[0];
+                    row.setType(sp[1]);
+                }
+                row.setName(name);
             } else if (columns[columnIndex].equals("Type")) {
                 row.setType(aValue.toString());
             }

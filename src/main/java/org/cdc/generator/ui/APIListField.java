@@ -1,8 +1,8 @@
 package org.cdc.generator.ui;
 
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.component.JItemListField;
 import org.cdc.generator.utils.ElementsUtils;
+import org.cdc.generator.utils.Rules;
 
 import javax.swing.*;
 import java.util.List;
@@ -15,7 +15,9 @@ public class APIListField extends JItemListField<String> {
 
     @Override protected List<String> getElementsToAdd() {
         var check = new SearchableComboBox<String>();
-        check.setModel(new AppendableComboBoxModel(check::addItem));
+        check.setEditable(true);
+        check.enableRealtimeValidation();
+        check.setValidator(Rules.getFileNameValidator(check::getSelectedItem));
         for (String api : ElementsUtils.getAllAPIS()) {
             check.addItem(api);
         }

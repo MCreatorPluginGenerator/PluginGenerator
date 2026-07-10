@@ -1,7 +1,6 @@
 package org.cdc.generator.ui;
 
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.component.JItemListField;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.VariableType;
 
@@ -22,7 +21,7 @@ public class TypeListField extends JItemListField<String> {
 
     @Override protected List<String> getElementsToAdd() {
         var check = new SearchableComboBox<String>();
-        check.setModel(new AppendableComboBoxModel(check::addItem));
+        check.setEditable(true);
         for (VariableType supportedType : ElementsUtils.getAllSupportedVariableTypes()) {
             check.addItem(getter.apply(supportedType));
         }

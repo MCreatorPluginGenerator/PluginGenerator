@@ -29,6 +29,8 @@ import java.util.function.Consumer;
             if (generator != null) {
                 var num = getVariableScope("number", name, columnName, generator);
                 exampleConsumer.accept(String.join("\n", num));
+            } else {
+                fireInvalidGenerator();
             }
         });
         componentConsumer.accept(number);
@@ -39,19 +41,30 @@ import java.util.function.Consumer;
             if (generator != null) {
                 var num = getVariableScope("logic", name, columnName, generator);
                 exampleConsumer.accept(String.join("\n", num));
+            } else {
+                fireInvalidGenerator();
             }
         });
         componentConsumer.accept(logic);
         JButton custom = new JButton("Custom");
         custom.setOpaque(false);
-        custom.addActionListener(a->{
+        custom.addActionListener(a -> {
             var generator = Generator.GENERATOR_CACHE.get(generatorName);
             if (generator != null) {
-                var num = getVariableScope(JOptionPane.showInputDialog("Type name"), name, columnName, generator);
-                exampleConsumer.accept(String.join("\n", num));
+                var input = JOptionPane.showInputDialog("Type name");
+                if (input != null) {
+                    var num = getVariableScope(input, name, columnName, generator);
+                    exampleConsumer.accept(String.join("\n", num));
+                }
+            } else {
+                fireInvalidGenerator();
             }
         });
         componentConsumer.accept(custom);
+    }
+
+    private static void fireInvalidGenerator() {
+        JOptionPane.showMessageDialog(null, "Generator is invalid", "Invalid generator", JOptionPane.WARNING_MESSAGE);
     }
 
     private static @NonNull List<String> getVariableScope(String variableName, String scopeName, String phaseName,

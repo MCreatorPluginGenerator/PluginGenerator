@@ -21,8 +21,6 @@ public class SearchableComboBox<T> extends VComboBox<T> implements KeyListener {
 
     private void init() {
         addKeyListener(this);
-
-        this.getEditor().getEditorComponent().addKeyListener(this);
     }
 
     private boolean canSearch() {
@@ -33,11 +31,22 @@ public class SearchableComboBox<T> extends VComboBox<T> implements KeyListener {
         // 不处理
     }
 
+    @Override public void setEditable(boolean aFlag) {
+        super.setEditable(aFlag);
+        if (aFlag){
+            this.getEditor().getEditorComponent().addKeyListener(this);
+        } else {
+            this.getEditor().getEditorComponent().removeKeyListener(this);
+        }
+    }
+
     @Override public void keyPressed(KeyEvent e) {
 
-        if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_F) {
-            e.consume();
-            showSearchDialog();
+        if (isEditable) {
+            if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_F) {
+                e.consume();
+                showSearchDialog();
+            }
             return;
         }
 

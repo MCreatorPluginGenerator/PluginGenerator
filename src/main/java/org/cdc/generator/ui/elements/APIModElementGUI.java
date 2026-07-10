@@ -3,10 +3,10 @@ package org.cdc.generator.ui.elements;
 import jdk.jfr.Description;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.PanelUtils;
-import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.APIModElement;
+import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.Rules;
@@ -83,7 +83,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
         bar.add(remrow);
         bar.add(Utils.initSearchComponent(lastSearchResult, this));
 
-        VComboBox<String> generatorCom = new VComboBox<>();
+        SearchableComboBox<String> generatorCom = new SearchableComboBox<>();
         generatorCom.setEditable(true);
 
         jTable.setDefaultRenderer(String.class, new DefaultTableCellRenderer() {
@@ -142,7 +142,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
                 return super.getTableCellEditorComponent(table, value, isSelected, rowIndex, columnIndex);
             }
         });
-        jTable.setDefaultEditor(List.class, new DefaultCellEditor(new VComboBox<>()) {
+        jTable.setDefaultEditor(List.class, new DefaultCellEditor(new VTextField()) {
             @Override
             public Component getTableCellEditorComponent(JTable table, Object value1, boolean isSelected, int rowIndex,
                     int column) {

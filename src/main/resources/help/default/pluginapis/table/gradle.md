@@ -1,0 +1,1 @@
+The code to execute when a workspace will be set up or a Gradle project will be reloaded (e.g. when adding the API to a workspace). This code will be added in the mcreator.gradlewhich is called with the build.gradle.

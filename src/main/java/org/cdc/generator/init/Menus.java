@@ -18,6 +18,7 @@ import java.awt.datatransfer.StringSelection;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Supplier;
@@ -91,24 +92,26 @@ public class Menus {
                 .setOpenURL("https://mcreator.net/repository").build());
         PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")
                 .setOpenURL("https://mcreator.net/changelog").build());
-        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("append_current")
-                .setActionListener(a -> {
-                    var selfDependants = "mcreator" + Launcher.version.versionlong;
-                    if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
-                        mcreator.getToolkit().beep();
-                        mcreator.getWorkspaceSettings().dependants.add(selfDependants);
-                        mcreator.getStatusBar().setPersistentMessage("Appended");
-                    }
-                }).build());
-        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("append_current_major")
-                .setActionListener(a -> {
-                    var selfDependants = "mcreator" + Launcher.version.majorlong;
-                    if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
-                        mcreator.getWorkspaceSettings().dependants.add(selfDependants);
-                        mcreator.getToolkit().beep();
-                        mcreator.getStatusBar().setPersistentMessage("Appended");
-                    }
-                }).build());
+        PLUGIN_MAKER.add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("append_version").setReload(a->{
+            a.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("append_current")
+                    .setActionListener(_ -> {
+                        var selfDependants = "mcreator" + Launcher.version.versionlong;
+                        if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
+                            mcreator.getToolkit().beep();
+                            mcreator.getWorkspaceSettings().dependants.add(selfDependants);
+                            mcreator.getStatusBar().setPersistentMessage("Appended");
+                        }
+                    }).build());
+            a.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("append_current_major")
+                    .setActionListener(_ -> {
+                        var selfDependants = "mcreator" + Launcher.version.majorlong;
+                        if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
+                            mcreator.getWorkspaceSettings().dependants.add(selfDependants);
+                            mcreator.getToolkit().beep();
+                            mcreator.getStatusBar().setPersistentMessage("Appended");
+                        }
+                    }).build());
+        }).build());
         DATALIST_UTILS.add(
                 new JMenuBuilder().setParentMenuName("datalist_utils").setName("calculate_types").setReload(jMenu -> {
                     if (mcreator.getTabs().getCurrentTab()
@@ -128,6 +131,20 @@ public class Menus {
                         });
                     }
                 }).build());
+        DATALIST_UTILS.add(new JMenuItemBuilder().setParentMenuName("datalist_utils").setName("uppercase").setActionListener(a->{
+            var str = JOptionPane.showInputDialog("english");
+            if (str != null && !str.isEmpty()) {
+                var str1 = new StringSelection(str.toUpperCase(Locale.ROOT));
+                mcreator.getToolkit().getSystemClipboard().setContents(str1,str1);
+            }
+        }).build());
+        DATALIST_UTILS.add(new JMenuItemBuilder().setParentMenuName("datalist_utils").setName("lowercase").setActionListener(a->{
+            var str = JOptionPane.showInputDialog("english");
+            if (str != null && !str.isEmpty()) {
+                var str1 = new StringSelection(str.toUpperCase(Locale.ROOT));
+                mcreator.getToolkit().getSystemClipboard().setContents(str1,str1);
+            }
+        }).build());
         // TODO: Mapping_utils functions: like temporary plugin to add item and blocks.
     }
 

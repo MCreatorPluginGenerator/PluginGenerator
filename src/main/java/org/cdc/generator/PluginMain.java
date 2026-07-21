@@ -34,6 +34,7 @@ import org.cdc.generator.ui.InformationDock;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
+import org.cdc.generator.utils.WorkspaceUtils;
 import org.cdc.generator.utils.ZipUtils;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.writers.JSONWriter;
@@ -265,15 +266,15 @@ public class PluginMain extends JavaPlugin {
         registerAll(mcreator);
 
         CompletableFuture.runAsync(() -> {
-            if (mcreator.getWorkspaceSettings().dependants.stream().noneMatch(str -> str.startsWith("weight_"))) {
+            if (WorkspaceUtils.getDependants(mcreator.getWorkspaceSettings()).stream().noneMatch(str -> str.startsWith("weight_"))) {
                 LOG.debug("Try to add weight_0 to dependants");
-                mcreator.getWorkspaceSettings().dependants.add("weight_0");
+                WorkspaceUtils.getDependants(mcreator.getWorkspaceSettings()).add(WorkspaceUtils.weightDependant(0));
 
                 warnSnapshot();
             }
 
-            var libs = new File(mcreator.getWorkspaceFolder(), ".mcreator/libs");
-            var oldLibs = new File(mcreator.getWorkspaceFolder(), "libs");
+            var libs = new File(WorkspaceUtils.getWorkspaceFolder(mcreator), ".mcreator/libs");
+            var oldLibs = new File(WorkspaceUtils.getWorkspaceFolder(mcreator), "libs");
             if (oldLibs.isDirectory()) {
                 FileIO.deleteDir(oldLibs);
             }

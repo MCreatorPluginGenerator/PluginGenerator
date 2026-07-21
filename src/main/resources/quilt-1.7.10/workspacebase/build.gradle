@@ -1,3 +1,7 @@
+import groovy.json.JsonSlurper
+
+import java.util.zip.ZipFile
+
 plugins {
     id "java"
 }
@@ -23,6 +27,41 @@ tasks.register('exportToMyMCreator', Copy) {
     destinationDir(new File(getUserFolder(), "plugins/"))
     rename { String fileName ->
         fileName == "demo-plugin.zip" ? "demo-plugin" + UUID.randomUUID() + ".zip" : fileName
+    }
+    doFirst {
+        def zipFile = file('build/libs/demo-plugin.zip')
+        if (!zipFile.exists()) {
+            throw new GradleException("ERROR: Zip file not found at ${zipFile.absolutePath}")
+        }
+
+        try (ZipFile zf = new ZipFile(zipFile)) {
+            def entry = zf.getEntry("plugin.json")
+            if (entry == null) {
+                throw new GradleException("ERROR: plugin.json not found in the root of the ZIP archive.")
+            }
+
+            def json = new JsonSlurper().parse(zf.getInputStream(entry))
+            def supportedVersions = json.supportedversions
+
+            if (!(supportedVersions instanceof List)) {
+                throw new GradleException("ERROR: supportedversions is not a list in plugin.json")
+            }
+
+            // check support for 2026.2
+            def versionTarget = 2026002
+            boolean supports = supportedVersions.any { it == versionTarget || it.toString() == versionTarget.toString() }
+
+            if (!supports) {
+                throw new GradleException(
+                        "ERROR: The generated plugin does not support your MCreator. " +
+                                "Please let your plugin support this version."
+                )
+            }
+        } catch (Exception e) {
+            throw new GradleException("ERROR: Failed to validate plugin.json: ${e.message}", e)
+        }
+
+        println "Version check passed: plugin supports MCreator 2026.2"
     }
     doLast {
         println("You can restart your mcreator with folder: " + destinationDir)

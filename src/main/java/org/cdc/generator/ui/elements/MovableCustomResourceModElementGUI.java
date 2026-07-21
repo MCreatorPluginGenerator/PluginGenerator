@@ -2,7 +2,7 @@ package org.cdc.generator.ui.elements;
 
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.PanelUtils;
-import net.mcreator.ui.validation.component.VTextField;
+import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.MovableCustomResourceModElement;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
@@ -23,13 +23,13 @@ import java.net.URISyntaxException;
 public class MovableCustomResourceModElementGUI
         extends AbstractConfigurationTableModElementGUI<MovableCustomResourceModElement> {
 
-    private VTextField folder;
+    private VComboBox<String> folder;
     private RSyntaxTextArea content;
 
     public MovableCustomResourceModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
-        folder = new VTextField();
+        folder = new VComboBox<>();
         content = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
 
         if (editingMode) {
@@ -41,12 +41,12 @@ public class MovableCustomResourceModElementGUI
     }
 
     @Override protected void initGUI() {
-        folder.setValidator(new NotEmptyValidator(folder::getText));
+        folder.setValidator(new NotEmptyValidator(folder::getSelectedItem));
         addConfigurationWithHelpEntry("folder", folder);
 
         content.addFocusListener(new FocusAdapter() {
             @Override public void focusGained(FocusEvent e) {
-                var file = folder.getText();
+                var file = folder.getSelectedItem();
                 if (file.endsWith(".json") || file.endsWith(".mcmeta")) {
                     content.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JSON);
                 } else if (file.endsWith(".yaml") || file.endsWith(".yml")) {
@@ -62,13 +62,13 @@ public class MovableCustomResourceModElementGUI
     }
 
     @Override protected void openInEditingMode(MovableCustomResourceModElement generatableElement) {
-        this.folder.setText(generatableElement.folder);
+        this.folder.setSelectedItem(generatableElement.folder);
         this.content.setText(generatableElement.content);
     }
 
     @Override public MovableCustomResourceModElement getElementFromGUI() {
         var element = new MovableCustomResourceModElement(modElement);
-        element.folder = folder.getText().replace('\\','/');
+        element.folder = folder.getSelectedItem().replace('\\','/');
         element.content = content.getText();
         return element;
     }

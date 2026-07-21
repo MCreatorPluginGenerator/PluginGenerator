@@ -11,6 +11,7 @@ import java.util.List;
 
 public class APIModElement extends GeneratableElement {
     public String apiName;
+    // default value for requiredWhenEnable
     public boolean requiredWhenEnable;
 
     public List<Configuration> configurations;

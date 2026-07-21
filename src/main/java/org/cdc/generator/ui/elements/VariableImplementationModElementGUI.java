@@ -2,7 +2,6 @@ package org.cdc.generator.ui.elements;
 
 import jdk.jfr.Description;
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.ValidationResult;
@@ -14,6 +13,7 @@ import org.cdc.generator.elements.VariableImplementationModElement;
 import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.SearchableComboBox;
+import org.cdc.generator.utils.ComboBoxUtil;
 import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.YamlUtils;

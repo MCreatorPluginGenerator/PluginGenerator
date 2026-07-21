@@ -30,22 +30,33 @@ public class JMenuItemBuilder {
         return this;
     }
 
+    public JMenuItemBuilder setInputListener(String title, String message, Consumer<String> inputListener) {
+        this.actionListener = _ -> {
+            var str = JOptionPane.showInputDialog(null, message, title, JOptionPane.PLAIN_MESSAGE);
+            if (str != null && !str.isEmpty()) {
+                inputListener.accept(str);
+            }
+        };
+        return this;
+    }
+
     public JMenuItemBuilder setActionListener(ActionListener actionListener) {
         this.actionListener = actionListener;
         return this;
     }
 
-    public JMenuItemBuilder setOpenURL(String url){
-        this.actionListener = a->{
+    public JMenuItemBuilder setOpenURL(String url) {
+        this.actionListener = _ -> {
             DesktopUtils.browseSafe(url);
         };
         return this;
     }
 
-    public <E extends JComponent> JMenuItemBuilder setCurrentModElementGUIConsumer(MCreator mCreator,Class<E> cls, Consumer<E> consumer){
-        this.actionListener = a->{
-            if (cls.isInstance(mCreator.getTabs().getCurrentTab().getContent())){
-                consumer.accept((E)mCreator.getTabs().getCurrentTab().getContent());
+    public <E extends JComponent> JMenuItemBuilder setCurrentModElementGUIConsumer(MCreator mCreator, Class<E> cls,
+            Consumer<E> consumer) {
+        this.actionListener = a -> {
+            if (cls.isInstance(mCreator.getTabs().getCurrentTab().getContent())) {
+                consumer.accept((E) mCreator.getTabs().getCurrentTab().getContent());
             }
         };
         return this;

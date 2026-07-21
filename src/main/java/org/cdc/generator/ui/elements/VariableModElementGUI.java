@@ -2,7 +2,6 @@ package org.cdc.generator.ui.elements;
 
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.JColor;
-import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.validation.component.VComboBox;
@@ -13,6 +12,7 @@ import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.APIListField;
+import org.cdc.generator.utils.ComboBoxUtil;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.validators.NotEmptyValidator;

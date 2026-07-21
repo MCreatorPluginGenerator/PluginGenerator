@@ -2,7 +2,6 @@ package org.cdc.generator.ui.elements;
 
 import net.mcreator.generator.Generator;
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.component.util.ComboBoxUtil;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.workspace.elements.ModElement;
@@ -133,7 +132,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
                         row.setEdited(MappingsModElement.MappingEntry.isEdited(generator.getSelectedItem(),
                                 ElementsUtils.getDataListName(mcreator.getWorkspace(), datalistName.getSelectedItem()),
                                 row));
-                        LOG.info("Mark line: {} editable: {}",rowIndex,row.isEdited());
+                        LOG.info("Mark line: {} editable: {}", rowIndex, row.isEdited());
                     }
                     return null;
                 }
@@ -177,12 +176,12 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
                     }
                 }
                 for (String s : Constants.builtEntriesInDataList) {
-                    if (set.isEmpty() || !set.contains(s)){
-                        mappingEntries.add(new MappingsModElement.MappingEntry(s,new ArrayList<>()));
+                    if (set.isEmpty() || !set.contains(s)) {
+                        mappingEntries.add(new MappingsModElement.MappingEntry(s, new ArrayList<>()));
                     }
                 }
-                mappingEntries.sort(Comparator.comparing(a->{
-                    if (a.getName().charAt(0) == '_'){
+                mappingEntries.sort(Comparator.comparing(a -> {
+                    if (a.getName().charAt(0) == '_') {
                         return 0;
                     }
                     return 1;
@@ -205,21 +204,21 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
     @Override protected void openInEditingMode(MappingsModElement generatableElement) {
         datalistName.setSelectedItem(generatableElement.datalistElementName);
         generator.setSelectedItem(generatableElement.generatorName);
-        mappingEntries.addAll(generatableElement.mappingsContent.stream().map(MappingsModElement.MappingEntry::clone).toList());
+        mappingEntries.addAll(
+                generatableElement.mappingsContent.stream().map(MappingsModElement.MappingEntry::clone).toList());
     }
 
     @Override public MappingsModElement getElementFromGUI() {
         var element = new MappingsModElement(modElement);
         element.datalistElementName = datalistName.getSelectedItem();
         element.generatorName = generator.getSelectedItem();
-        element.mappingsContent =
-                mappingEntries.stream().filter(MappingsModElement.MappingEntry::isEdited)
-                        .sorted(Comparator.comparing(a -> {
-                            if (a.getName().charAt(0) == '_') {
-                                return -1;
-                            }
-                            return 0;
-                        })).toList();
+        element.mappingsContent = mappingEntries.stream().filter(MappingsModElement.MappingEntry::isEdited)
+                .sorted(Comparator.comparing(a -> {
+                    if (a.getName().charAt(0) == '_') {
+                        return -1;
+                    }
+                    return 0;
+                })).toList();
         modElement.setRegistryName(element.getDatalistName());
         return element;
     }

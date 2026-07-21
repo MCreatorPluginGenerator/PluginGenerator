@@ -22,4 +22,8 @@ public class WorkspaceUtils {
     public static String weightDependant(int weight){
         return "weight_"+weight;
     }
+
+    public static String supportedVersionDependant(long version){
+        return "mcreator" + version;
+    }
 }

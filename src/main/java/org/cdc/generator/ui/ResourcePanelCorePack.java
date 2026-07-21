@@ -39,7 +39,7 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
 
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem copyName = new JMenuItem(L10N.t("workspace.resources.tab.core_pack.menus.copy_name"));
-        copyName.addActionListener(e -> {
+        copyName.addActionListener(_ -> {
             if (tree.getSelectionPath() != null) {
                 var content = new StringSelection(
                         tree.getSelectionPath().getLastPathComponent().toString().split("\\.")[0]);
@@ -52,7 +52,7 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
         });
         popupMenu.add(copyName);
         JMenuItem openInExplorer = new JMenuItem(L10N.t("workspace.resources.tab.core_pack.menus.open_in_explorer"));
-        openInExplorer.addActionListener(e -> {
+        openInExplorer.addActionListener(_ -> {
             if (tree.getLastSelectedPathComponent() != null) {
                 FilterTreeNode selection = (FilterTreeNode) tree.getLastSelectedPathComponent();
                 DesktopUtils.openSafe(new File(parent,

@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -236,7 +237,7 @@ public class PluginMain extends JavaPlugin {
 
         });
 
-        this.addListener(ModElementGUIEvent.WhenSaving.class,event -> {
+        this.addListener(ModElementGUIEvent.WhenSaving.class, event -> {
             dockHashMap.get(event.getMCreator()).getNotGenerate();
             dockHashMap.get(event.getMCreator()).getDuplicatedElements();
         });
@@ -266,7 +267,8 @@ public class PluginMain extends JavaPlugin {
         registerAll(mcreator);
 
         CompletableFuture.runAsync(() -> {
-            if (WorkspaceUtils.getDependants(mcreator.getWorkspaceSettings()).stream().noneMatch(str -> str.startsWith("weight_"))) {
+            if (WorkspaceUtils.getDependants(mcreator.getWorkspaceSettings()).stream()
+                    .noneMatch(str -> str.startsWith("weight_"))) {
                 LOG.debug("Try to add weight_0 to dependants");
                 WorkspaceUtils.getDependants(mcreator.getWorkspaceSettings()).add(WorkspaceUtils.weightDependant(0));
 
@@ -313,10 +315,12 @@ public class PluginMain extends JavaPlugin {
                     FileIO.deleteDir(runPlugins);
                 }
 
-                var mcreatorPlugins = new File("plugins");
-                if (mcreatorPlugins.isDirectory()) {
-                    FileIO.copyDirectory(mcreatorPlugins, runPlugins);
-                    LOG.debug("Plugin maker has copied all mcreator plugins");
+                for (Plugin instancePlugin : PluginLoader.INSTANCE.getPlugins()) {
+                    try {
+                        Files.copy(instancePlugin.getFile().toPath(), runPlugins.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });
@@ -325,7 +329,7 @@ public class PluginMain extends JavaPlugin {
     private void warnSnapshot() {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(null,
-                    "But for the help from the community, this wouldn't be finished. If you encounter a bug, please report it in my plugin page.",
+                    "This wouldn't have been possible without the incredible support from the community. If you encounter any bugs, please report them on my plugin page.",
                     "You are using snapshot", JOptionPane.WARNING_MESSAGE);
         });
     }

@@ -11,7 +11,7 @@
     </#list>
     ],
   <#if settings.getMCreatorDependenciesRaw().contains("javaplugin")>
-  "javaplugin": "${package}.PluginMain",
+  "javaplugin": "${package}.${JavaModName}",
   </#if>
   "weight": ${weight},
   "info": {

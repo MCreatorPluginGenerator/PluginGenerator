@@ -5,12 +5,13 @@ import org.apache.logging.log4j.Logger;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.JavaPlugin;
 
-public class PluginMain extends JavaPlugin{
-    private static final Logger LOG = LogManager.getLogger("Demo Java Plugin");
+public class ${JavaModName} extends JavaPlugin{
+    private static final Logger LOG = LogManager.getLogger(${JavaModName}.class);
 
-    public PluginMain(Plugin plugin) {
+    public ${JavaModName}(Plugin plugin) {
         super(plugin);
 
-        LOG.info("Demo java plugin was loaded");
+        // Start of user code block mod constructor
+        // End of user code block mod constructor
     }
 }

@@ -2,6 +2,7 @@ package org.cdc.generator.ui;
 
 import net.mcreator.io.tree.FileNode;
 import net.mcreator.io.tree.FileTree;
+import net.mcreator.io.zip.ZipIO;
 import net.mcreator.ui.component.tree.FilterTreeNode;
 import net.mcreator.ui.component.tree.FilteredTreeModel;
 import net.mcreator.ui.component.tree.JFileTree;
@@ -22,7 +23,6 @@ import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.zip.ZipFile;
 
 public class ResourcePanelCorePack extends JPanel implements IReloadableFilterable {
 
@@ -80,13 +80,7 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
             FileTree<String> fileTree = new FileTree<>(new FileNode<>("", ""));
             parent = Utils.tryToFindCorePlugin();
             if (parent.isFile() && parent.getName().endsWith(".zip")) {
-                try (ZipFile zipFile = new ZipFile(parent)) {
-                    zipFile.stream().forEach(a -> {
-                        fileTree.addElement(a.getName(), parent + File.separator + a.getName());
-                    });
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                ZipIO.iterateZip(parent, entry -> fileTree.addElement(entry.getName()), true);
             } else {
                 try (var walker = Files.walk(parent.toPath())) {
                     walker.forEach(a -> {

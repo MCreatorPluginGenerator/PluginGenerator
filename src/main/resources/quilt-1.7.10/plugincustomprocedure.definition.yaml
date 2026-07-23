@@ -1,0 +1,11 @@
+templates:
+  - template: pluginproecedure.json.ftl
+    writer: file
+    name: "@RESROOT/@[getBlocklyFolder()]/@registryname.json"
+
+localizationkeys:
+  - key: blockly.block.@registryname
+    mapto: getLocalization()
+  - key: blockly.block.@registryname.tooltip
+    condition: hasToolTip()
+    mapto: getTooltip()

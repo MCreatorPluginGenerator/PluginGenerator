@@ -47,6 +47,11 @@ import javax.annotation.Nullable;
     public static final ModElementType<PluginAITasksProcedureModElement> AI_TASK_PROCEDURE_MOD_ELEMENT_GUI_MOD_ELEMENT_TYPE = register(
             "pluginaitasksprocedure", null, PluginAITaskProcedureModElementGUI::new,
             PluginAITasksProcedureModElement.class);
+    public static final ModElementType<PluginCustomCategoryModElement> CUSTOM_CATEGORY_MOD_ELEMENT_MOD_ELEMENT_TYPE = register(
+            "plugincustomcategory", null, PluginCustomCategoryModElementGUI::new,
+            PluginCustomCategoryModElement.class);
+    public static final ModElementType<PluginCustomProcedureModElement> CUSTOM_PROCEDURE_MOD_ELEMENT_MOD_ELEMENT_TYPE = register("plugincustomprocedure",null,PluginCustomProcedureModElementGUI::new,
+            PluginCustomProcedureModElement.class);
 
     public static final ModElementType<MovableCustomResourceModElement> MOVABLE_CUSTOM_RESOURCE_MOD_ELEMENT_MOD_ELEMENT_TYPE = register("movable_resource_element",null,MovableCustomResourceModElementGUI::new,
             MovableCustomResourceModElement.class);

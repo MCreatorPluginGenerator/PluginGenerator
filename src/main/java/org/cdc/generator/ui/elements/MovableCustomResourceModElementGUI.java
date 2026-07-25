@@ -29,7 +29,7 @@ public class MovableCustomResourceModElementGUI
     public MovableCustomResourceModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
-        folder = new VComboBox<>(new String[]{"blockly/js","themes"});
+        folder = new VComboBox<>(new String[]{"blockly/js/","themes/"});
         content = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
 
         if (editingMode) {

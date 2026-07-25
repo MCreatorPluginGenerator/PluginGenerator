@@ -1,12 +1,16 @@
 package org.cdc.generator.services.types;
 
+import com.google.common.io.Files;
 import com.google.gson.JsonObject;
 import net.mcreator.ui.init.UIRES;
+import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.validation.component.VComboBox;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
+import java.awt.*;
+import java.util.Objects;
 
 public class FieldImageArgType extends AbstractArgType {
     @InjectField int index;
@@ -23,6 +27,23 @@ public class FieldImageArgType extends AbstractArgType {
         src.addItem("./res/server.png");
         src.addItem("./res/client.png");
         src.addItem("./res/null.png");
+        src.setRenderer(new DefaultListCellRenderer(){
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
+                    boolean cellHasFocus) {
+                JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                var res = Files.getNameWithoutExtension(label.getText());
+                try {
+                    var re = new ImageIcon(Objects.requireNonNull(
+                            Theme.class.getClassLoader().getResource("blockly/res/" + res + ".png")));
+                    label.setText(label.getText() + "  W" + re.getIconWidth() + "H" + re.getIconHeight());
+                } catch (Exception e){
+                    System.out.println(res);
+                    e.printStackTrace();
+                }
+                return label;
+            }
+        });
         src.setEditable(true);
         if (jsonObject.has("src")) {
             src.setSelectedItem(jsonObject.get("src").getAsString());

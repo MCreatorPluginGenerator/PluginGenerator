@@ -164,7 +164,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     }
 
     protected JPanel buildConfiguration(int columns) {
-        configurationPanel = new JPanel(new GridLayout(componentList.size() / columns, columns, 5, 5));
+        configurationPanel = new JPanel(new GridLayout(0, columns, 5, 5));
         configurationPanel.setOpaque(false);
         configurationPanel.setBorder(BorderFactory.createTitledBorder(configurationTitle));
         for (JComponent component : componentList) {

@@ -28,7 +28,7 @@ tasks.register('exportToMyMCreator', Copy) {
     rename { String fileName ->
         fileName == "demo-plugin.zip" ? "demo-plugin" + UUID.randomUUID() + ".zip" : fileName
     }
-    doFirst {
+    <#noparse>doFirst {
         def zipFile = file('build/libs/demo-plugin.zip')
         if (!zipFile.exists()) {
             throw new GradleException("ERROR: Zip file not found at ${zipFile.absolutePath}")
@@ -65,7 +65,7 @@ tasks.register('exportToMyMCreator', Copy) {
     }
     doLast {
         println("You can restart your mcreator with folder: " + destinationDir)
-    }
+    }</#noparse>
 }
 
 tasks.register('runMCreatorWithPlugin', JavaExec) {

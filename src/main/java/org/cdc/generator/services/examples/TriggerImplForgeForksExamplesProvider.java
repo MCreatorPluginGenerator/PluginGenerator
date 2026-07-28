@@ -21,6 +21,7 @@ public class TriggerImplForgeForksExamplesProvider implements IExamplesProvider 
     Pattern methodNamePattern = Pattern.compile("(?<=\\.).+?(?=\\(\\))");
 
     @InjectField TriggerImplementationModElementGUI modElementGui;
+
     @Override
     public void provideExamples(Consumer<JComponent> componentConsumer, Consumer<Object> exampleConsumer,
             String[] args) {

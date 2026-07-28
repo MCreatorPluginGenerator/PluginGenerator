@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.function.Consumer;
 
 @Description("TriggerImplExamples")
-// Not the official generator
+// It is not a official generator
 public class TriggerImplGoldenFabricExamplesProvider implements IExamplesProvider {
     @InjectField TriggerImplementationModElementGUI modElementGui;
 
@@ -38,6 +38,7 @@ public class TriggerImplGoldenFabricExamplesProvider implements IExamplesProvide
             String head = "(@Placeholder@" + String.join(",", map.keySet()) + """
                          ) -> {
                         """;
+            // try generate parameters from related resource
             if (!modElementGui.getRelatedSourceText().isEmpty()) {
                 var type = Roaster.parse(modElementGui.getRelatedSourceText());
                 if (type instanceof JavaInterface<?> javaInterface){

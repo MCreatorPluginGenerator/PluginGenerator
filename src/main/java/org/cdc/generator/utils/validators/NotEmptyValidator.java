@@ -16,6 +16,6 @@ public class NotEmptyValidator implements Validator {
         if (getter.get() != null && !getter.get().isBlank()) {
             return ValidationResult.PASSED;
         }
-        return new ValidationResult(ValidationResult.Type.ERROR, "can not be empty");
+        return new ValidationResult(ValidationResult.Type.ERROR, "Can not be empty");
     }
 }

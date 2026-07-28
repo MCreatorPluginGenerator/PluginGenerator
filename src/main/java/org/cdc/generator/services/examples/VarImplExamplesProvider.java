@@ -46,6 +46,11 @@ import java.util.function.Consumer;
             }
         });
         componentConsumer.accept(logic);
+        JButton custom = getCustom(exampleConsumer);
+        componentConsumer.accept(custom);
+    }
+
+    private @NonNull JButton getCustom(Consumer<Object> exampleConsumer) {
         JButton custom = new JButton("Custom");
         custom.setOpaque(false);
         custom.addActionListener(a -> {
@@ -60,7 +65,7 @@ import java.util.function.Consumer;
                 fireInvalidGenerator();
             }
         });
-        componentConsumer.accept(custom);
+        return custom;
     }
 
     private static void fireInvalidGenerator() {

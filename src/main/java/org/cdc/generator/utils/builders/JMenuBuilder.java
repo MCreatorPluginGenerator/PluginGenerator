@@ -1,6 +1,7 @@
 package org.cdc.generator.utils.builders;
 
 import net.mcreator.ui.init.L10N;
+import org.jetbrains.annotations.Contract;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -17,22 +18,22 @@ public class JMenuBuilder {
 
     }
 
-    public JMenuBuilder setParentMenuName(String parentMenuName) {
+    @Contract("_->this") public JMenuBuilder setParentMenuName(String parentMenuName) {
         this.parentMenuName = parentMenuName;
         return this;
     }
 
-    public JMenuBuilder setName(String name) {
+    @Contract("_->this") public JMenuBuilder setName(String name) {
         this.name = name;
         return this;
     }
 
-    public JMenuBuilder setReload(Consumer<JMenu> reload) {
+    @Contract("_->this") public JMenuBuilder setReload(Consumer<JMenu> reload) {
         this.reload = reload;
         return this;
     }
 
-    public JMenuBuilder setInit(Consumer<JMenu> init) {
+    @Contract("_->this") public JMenuBuilder setInit(Consumer<JMenu> init) {
         this.init = init;
         return this;
     }

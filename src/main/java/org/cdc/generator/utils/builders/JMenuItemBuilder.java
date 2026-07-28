@@ -3,6 +3,7 @@ package org.cdc.generator.utils.builders;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.util.DesktopUtils;
+import org.jetbrains.annotations.Contract;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -20,16 +21,17 @@ public class JMenuItemBuilder {
 
     }
 
-    public JMenuItemBuilder setParentMenuName(String parentMenuName) {
+    @Contract("_->this") public JMenuItemBuilder setParentMenuName(String parentMenuName) {
         this.parentMenuName = parentMenuName;
         return this;
     }
 
-    public JMenuItemBuilder setName(String name) {
+    @Contract("_->this") public JMenuItemBuilder setName(String name) {
         this.name = name;
         return this;
     }
 
+    @Contract("_,_,_->this")
     public JMenuItemBuilder setInputListener(String title, String message, Consumer<String> inputListener) {
         this.actionListener = _ -> {
             var str = JOptionPane.showInputDialog(null, message, title, JOptionPane.PLAIN_MESSAGE);
@@ -40,18 +42,19 @@ public class JMenuItemBuilder {
         return this;
     }
 
-    public JMenuItemBuilder setActionListener(ActionListener actionListener) {
+    @Contract("_->this") public JMenuItemBuilder setActionListener(ActionListener actionListener) {
         this.actionListener = actionListener;
         return this;
     }
 
-    public JMenuItemBuilder setOpenURL(String url) {
+    @Contract("_->this") public JMenuItemBuilder setOpenURL(String url) {
         this.actionListener = _ -> {
             DesktopUtils.browseSafe(url);
         };
         return this;
     }
 
+    @Contract("_,_,_->this")
     public <E extends JComponent> JMenuItemBuilder setCurrentModElementGUIConsumer(MCreator mCreator, Class<E> cls,
             Consumer<E> consumer) {
         this.actionListener = a -> {

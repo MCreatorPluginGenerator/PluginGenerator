@@ -28,10 +28,10 @@ tasks.register('exportToMyMCreator', Copy) {
     rename { String fileName ->
         fileName == "demo-plugin.zip" ? "demo-plugin" + UUID.randomUUID() + ".zip" : fileName
     }
-    <#noparse>doFirst {
+    doFirst {
         def zipFile = file('build/libs/demo-plugin.zip')
         if (!zipFile.exists()) {
-            throw new GradleException("ERROR: Zip file not found at ${zipFile.absolutePath}")
+            throw new GradleException("ERROR: Zip file not found at " + zipFile.absolutePath)
         }
 
         try (ZipFile zf = new ZipFile(zipFile)) {
@@ -58,14 +58,14 @@ tasks.register('exportToMyMCreator', Copy) {
                 )
             }
         } catch (Exception e) {
-            throw new GradleException("ERROR: Failed to validate plugin.json: ${e.message}", e)
+            throw new GradleException("ERROR: Failed to validate plugin.json: " + e.message, e)
         }
 
         println "Version check passed: plugin supports MCreator 2026.2"
     }
     doLast {
         println("You can restart your mcreator with folder: " + destinationDir)
-    }</#noparse>
+    }
 }
 
 tasks.register('runMCreatorWithPlugin', JavaExec) {

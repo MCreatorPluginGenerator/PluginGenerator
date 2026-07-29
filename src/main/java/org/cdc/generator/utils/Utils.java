@@ -1,12 +1,15 @@
 package org.cdc.generator.utils;
 
+import net.mcreator.Launcher;
 import net.mcreator.blockly.data.BlocklyLoader;
 import net.mcreator.generator.Generator;
 import net.mcreator.generator.template.base.BaseDataModelProvider;
+import net.mcreator.io.net.api.update.Release;
 import net.mcreator.minecraft.DataListLoader;
 import net.mcreator.plugin.Plugin;
 import net.mcreator.plugin.PluginLoader;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.MCreatorApplication;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.PanelUtils;
@@ -45,6 +48,21 @@ public class Utils {
 
     public static boolean isNotPluginGenerator(Generator generator) {
         return !generator.getGeneratorConfiguration().getRaw().containsKey("is_plugin_maker");
+    }
+
+    public static List<Long> getAllMCreatorVersions() {
+        var list = new ArrayList<Long>();
+        list.addFirst(Launcher.version.versionlong);
+        var updateInfo = MCreatorApplication.WEB_API.getUpdateInfo();
+        if (updateInfo != null) {
+            for (Map.Entry<String, Release> s : updateInfo.getReleases().entrySet()) {
+                list.add(Rules.versionStringToVersionLong(s.getKey()));
+                list.add(Rules.versionStringToVersionLong(s.getKey()+s.getValue().getLatestBuild()));
+            }
+        } else {
+            list.add(Launcher.version.majorlong);
+        }
+        return list;
     }
 
     public static List<String> getAllSupportedGenerators() {
@@ -135,7 +153,8 @@ public class Utils {
                 searchbar.getValidationStatus();
             }
         });
-        searchbar.registerKeyboardAction(a -> downSearch.doClick(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), JComponent.WHEN_FOCUSED);
+        searchbar.registerKeyboardAction(a -> downSearch.doClick(), KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
+                JComponent.WHEN_FOCUSED);
         downSearch.addActionListener(a -> {
             var index = lastSearchResult.getFirst() + 1;
             if (index >= lastSearchResult.size()) {
@@ -170,16 +189,16 @@ public class Utils {
         return new Dimension(dimen.width / 6, dimen.height / 30);
     }
 
-    public static String nullToNoneOrNoneToNull(String none,boolean editingMode) {
+    public static String nullToNoneOrNoneToNull(String none, boolean editingMode) {
         if (editingMode) {
-            if (none == null){
+            if (none == null) {
                 return Constants.NONE;
             }
             if (none.isBlank()) {
                 return Constants.NONE;
             }
         } else {
-            if (Constants.NONE.equals(none)){
+            if (Constants.NONE.equals(none)) {
                 return null;
             }
         }
@@ -219,7 +238,9 @@ public class Utils {
             }
         });
 
-        Stream.of("aiconditions", "boundingboxes", "mcelements", "mcitems", "procedures", "triggers").forEach(a -> provider.addCompletion(new ShorthandCompletion(provider, "in" + a, "<#include \"" + a + ".ftl\">")));
+        Stream.of("aiconditions", "boundingboxes", "mcelements", "mcitems", "procedures", "triggers").forEach(
+                a -> provider.addCompletion(
+                        new ShorthandCompletion(provider, "in" + a, "<#include \"" + a + ".ftl\">")));
 
         provider.addCompletion(
                 new TemplateCompletion(provider, "include", "include", "<#include \"${include}\">${cursor}"));

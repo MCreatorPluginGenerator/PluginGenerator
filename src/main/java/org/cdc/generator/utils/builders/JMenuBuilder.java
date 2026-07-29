@@ -39,7 +39,7 @@ public class JMenuBuilder {
     }
 
     public JMenu build() {
-        JMenu menu = L10N.menu("menus." + (parentMenuName == null ? "" : parentMenuName + ".") + name);
+        JMenu menu = parentMenuName == null ? new JMenu(name) : L10N.menu("menus." + parentMenuName + "." + name);
         menu.setName(name);
         if (init != null) {
             init.accept(menu);

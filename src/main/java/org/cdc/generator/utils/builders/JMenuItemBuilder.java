@@ -66,7 +66,12 @@ public class JMenuItemBuilder {
     }
 
     public JMenuItem build() {
-        var menuitem = new JMenuItem(L10N.t("menus." + parentMenuName + "." + name));
+        JMenuItem menuitem = null;
+        if (parentMenuName != null){
+            menuitem = new JMenuItem(L10N.t("menus." + parentMenuName + "." + name));
+        } else {
+            menuitem = new JMenuItem(name);
+        }
         menuitem.setName(name);
         menuitem.addActionListener(actionListener);
         return menuitem;

@@ -27,6 +27,16 @@ public class Rules {
         };
     }
 
+    /**
+     * This can convert version string to version long
+     * For example
+     * 2026.2 -> 2026002
+     * 2026.2.10803 -> 202600210803
+     */
+    public static long versionStringToVersionLong(String version){
+        return Long.parseLong(version.replaceFirst("\\.","00").replace(".",""));
+    }
+
     public static class SearchRules {
         private static boolean ignoreCase;
 

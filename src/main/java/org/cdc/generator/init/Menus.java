@@ -1,6 +1,5 @@
 package org.cdc.generator.init;
 
-import net.mcreator.Launcher;
 import net.mcreator.plugin.events.ui.TabEvent;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.dialogs.file.FileDialogs;
@@ -9,6 +8,7 @@ import org.cdc.generator.PluginMain;
 import org.cdc.generator.ui.elements.AbstractProceduresModElementGUI;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
 import org.cdc.generator.utils.MenuProvider;
+import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.WorkspaceUtils;
 import org.cdc.generator.utils.builders.JMenuBuilder;
 import org.cdc.generator.utils.builders.JMenuItemBuilder;
@@ -94,24 +94,15 @@ public class Menus {
         PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")
                 .setOpenURL("https://mcreator.net/changelog").build());
         PLUGIN_MAKER.add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("append_version").setReload(a -> {
-            a.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("append_current")
-                    .setActionListener(_ -> {
-                        var selfDependants = WorkspaceUtils.supportedVersionDependant(Launcher.version.versionlong);
-                        if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
+            Utils.getAllMCreatorVersions()
+                    .forEach(key -> a.add(new JMenuItemBuilder().setName(key + "").setActionListener(_ -> {
+                        var dependants = WorkspaceUtils.supportedVersionDependant(key);
+                        if (!mcreator.getWorkspaceSettings().dependants.contains(dependants)) {
+                            mcreator.getWorkspaceSettings().dependants.add(dependants);
                             mcreator.getToolkit().beep();
-                            mcreator.getWorkspaceSettings().dependants.add(selfDependants);
-                            mcreator.getStatusBar().setPersistentMessage("Appended");
+                            mcreator.getStatusBar().setPersistentMessage("Appended " + dependants);
                         }
-                    }).build());
-            a.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("append_current_major")
-                    .setActionListener(_ -> {
-                        var selfDependants = WorkspaceUtils.supportedVersionDependant(Launcher.version.majorlong);
-                        if (!mcreator.getWorkspaceSettings().dependants.contains(selfDependants)) {
-                            mcreator.getWorkspaceSettings().dependants.add(selfDependants);
-                            mcreator.getToolkit().beep();
-                            mcreator.getStatusBar().setPersistentMessage("Appended");
-                        }
-                    }).build());
+                    }).build()));
         }).build());
         DATALIST_UTILS.add(
                 new JMenuBuilder().setParentMenuName("datalist_utils").setName("calculate_types").setReload(jMenu -> {
@@ -132,13 +123,13 @@ public class Menus {
                         });
                     }
                 }).build());
-        DATALIST_UTILS.add(
-                new JMenuItemBuilder().setParentMenuName("datalist_utils").setName("uppercase").setInputListener("Input text","english",str->{
+        DATALIST_UTILS.add(new JMenuItemBuilder().setParentMenuName("datalist_utils").setName("uppercase")
+                .setInputListener("Input text", "english", str -> {
                     var str1 = new StringSelection(str.toUpperCase(Locale.ROOT));
                     mcreator.getToolkit().getSystemClipboard().setContents(str1, str1);
                 }).build());
-        DATALIST_UTILS.add(
-                new JMenuItemBuilder().setParentMenuName("datalist_utils").setName("lowercase").setInputListener("Input text","english",str->{
+        DATALIST_UTILS.add(new JMenuItemBuilder().setParentMenuName("datalist_utils").setName("lowercase")
+                .setInputListener("Input text", "english", str -> {
                     var str1 = new StringSelection(str.toUpperCase(Locale.ROOT));
                     mcreator.getToolkit().getSystemClipboard().setContents(str1, str1);
                 }).build());

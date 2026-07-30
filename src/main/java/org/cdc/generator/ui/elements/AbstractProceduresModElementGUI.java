@@ -314,9 +314,18 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
         convertCopiedInitValue.addActionListener(e -> {
             if (arg0List.getSelectedValue() != null) {
                 var str = JOptionPane.showInputDialog(mcreator, "wrap your copied procedure xml or null");
-                var content = new StringSelection(
-                        "<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\">" + str + "</value>");
-                arg0List.getToolkit().getSystemClipboard().setContents(content, content);
+                if (str != null && !str.isEmpty()) {
+                    var converted =
+                            "<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\">" + str + "</value>";
+                    // add to toolbox init
+                    var list = new ArrayList<String>();
+                    toolboxInit.getTextList().stream().filter(a->!a.startsWith("<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\">")).forEach(
+                            list::add);
+                    list.add(converted);
+                    toolboxInit.setTextList(list);
+                    var content = new StringSelection(converted);
+                    arg0List.getToolkit().getSystemClipboard().setContents(content, content);
+                }
             }
         });
         copyPlaceHolder.addActionListener(e -> {
@@ -412,7 +421,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("type", proxy.getArg0TypeName());
 
-            var configurationPanel = new JPanel(new GridLayout(1, 2));
+            var configurationPanel = new JPanel(new GridLayout(0, 2));
             var typeName = new VComboBox<String>();
             IArg0Type.arg0types.stream().map(a -> a.get().getName()).forEach(typeName::addItem);
             typeName.setOpaque(false);

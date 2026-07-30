@@ -1,8 +1,6 @@
 package org.cdc.generator.services.types;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.VariableTypeLoader;
@@ -41,18 +39,31 @@ public class InputValueArgType extends AbstractArgType {
         if (newJsonObject.has("check")) {
             var elemt = newJsonObject.get("check");
             if (elemt.isJsonArray()) {
-                check.setListElements(elemt.getAsJsonArray().asList().stream().map(JsonElement::getAsString).toList());
+                check.setListElements(elemt.getAsJsonArray().asList().stream().map(a->a.isJsonNull()?new JsonPrimitive("Null") :a).map(JsonElement::getAsString).toList());
             } else {
-                check.setListElements(List.of(elemt.getAsString()));
+                if (elemt.isJsonNull()){
+                    check.setListElements(List.of("Null"));
+                } else {
+                    check.setListElements(List.of(elemt.getAsString()));
+                }
             }
         }
         addConfiguration("check", check);
 
         name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
-        check.addChangeListener(a -> {
+        check.addChangeListener(_ -> {
             var array = new JsonArray();
-            for (String listElement : check.getListElements()) {
-                array.add(listElement);
+            if (check.getListElements().size() == 1){
+                var type = check.getListElements().getFirst();
+                if (type.equals("Null")){
+                    array.add(JsonNull.INSTANCE);
+                } else {
+                    array.add(type);
+                }
+            } else {
+                for (String listElement : check.getListElements()) {
+                    array.add(listElement);
+                }
             }
             newJsonObject.add("check", array);
         });

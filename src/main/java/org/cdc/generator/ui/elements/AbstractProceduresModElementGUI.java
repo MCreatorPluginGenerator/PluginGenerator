@@ -202,6 +202,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             ModElement modElement1 = new ModElement(mcreator.getWorkspace(), "Null", ModElementType.PROCEDURE);
             ModElementType.PROCEDURE.getModElementGUI(mcreator, modElement1, false).showView();
         });
+        toolboxInit.setUniqueEntries(true);
         addConfigurationWithHelpEntry("toolbox_init", PanelUtils.centerAndEastElement(toolboxInit, openProcedure));
         localizationValue.setValidator(() -> {
             var count = BuilderUtils.countLanguageParameterCount(localizationValue.getText());

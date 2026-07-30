@@ -16,6 +16,8 @@ public class InputValueArgType extends AbstractArgType {
     @InjectField MCreator mcreator;
     @InjectField int index;
 
+    private final String NULL_TYPE = "Null";
+
     public InputValueArgType() {
         super(3, 2);
     }
@@ -39,11 +41,11 @@ public class InputValueArgType extends AbstractArgType {
             var elemt = newJsonObject.get("check");
             if (elemt.isJsonArray()) {
                 check.setListElements(elemt.getAsJsonArray().asList().stream()
-                        .map(a -> a.isJsonNull() ? new JsonPrimitive("Null") : a).map(JsonElement::getAsString)
+                        .map(a -> a.isJsonNull() ? new JsonPrimitive(NULL_TYPE) : a).map(JsonElement::getAsString)
                         .toList());
             } else {
                 if (elemt.isJsonNull()) {
-                    check.setListElements(List.of("Null"));
+                    check.setListElements(List.of(NULL_TYPE));
                 } else {
                     check.setListElements(List.of(elemt.getAsString()));
                 }
@@ -55,7 +57,7 @@ public class InputValueArgType extends AbstractArgType {
         check.addChangeListener(_ -> {
             if (check.getListElements().size() == 1) {
                 var type = check.getListElements().getFirst();
-                if (!type.equals("Null")) {
+                if (!type.equals(NULL_TYPE)) {
                     newJsonObject.add("check", new JsonPrimitive(type));
                 }
             } else {

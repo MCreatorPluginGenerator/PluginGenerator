@@ -12,6 +12,7 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.WorkspaceUtils;
 import org.cdc.generator.utils.builders.JMenuBuilder;
 import org.cdc.generator.utils.builders.JMenuItemBuilder;
+import org.cdc.generator.utils.decorators.WorkspaceDecorator;
 import org.cdc.generator.utils.interfaces.IMenusProvider;
 
 import javax.swing.*;
@@ -65,6 +66,7 @@ public class Menus {
     }
 
     public static void registerAllSubMenus(MCreator mcreator) {
+        var workspace = WorkspaceDecorator.getInstance(mcreator.getWorkspace());
         PLUGIN_MAKER.add(
                 new JMenuBuilder().setParentMenuName("plugin_maker").setName("load_from_external").setReload(a -> {
                     final var langmap = mcreator.getWorkspace().getLanguageMap();
@@ -96,11 +98,10 @@ public class Menus {
         PLUGIN_MAKER.add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("append_version").setReload(a -> {
             Utils.getAllMCreatorVersions()
                     .forEach(key -> a.add(new JMenuItemBuilder().setName(key + "").setActionListener(_ -> {
-                        var dependants = WorkspaceUtils.supportedVersionDependant(key);
-                        if (!mcreator.getWorkspaceSettings().dependants.contains(dependants)) {
-                            mcreator.getWorkspaceSettings().dependants.add(dependants);
+                        if (!workspace.hasSupportedVersion(key)) {
+                            workspace.addSupportedVersion(key);
                             mcreator.getToolkit().beep();
-                            mcreator.getStatusBar().setPersistentMessage("Appended " + dependants);
+                            mcreator.getStatusBar().setPersistentMessage("Appended " + WorkspaceUtils.supportedVersionDependant(key));
                         }
                     }).build()));
         }).build());
@@ -133,8 +134,6 @@ public class Menus {
                     var str1 = new StringSelection(str.toUpperCase(Locale.ROOT));
                     mcreator.getToolkit().getSystemClipboard().setContents(str1, str1);
                 }).build());
-
-        // TODO: Mapping_utils functions: like temporary plugin to add item and blocks.
     }
 
 }

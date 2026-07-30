@@ -14,6 +14,7 @@ import net.mcreator.workspace.references.ReferencesFinder;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
+import org.cdc.generator.utils.decorators.WorkspaceDecorator;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,9 +50,10 @@ public class InformationDock extends JPanel {
         setLayout(new BorderLayout(0, 0));
 
         this.mcreator = mcreator;
+        var workspace = WorkspaceDecorator.getInstance(mcreator.getWorkspace());
 
         JButton refresh = new JButton("Refresh");
-        refresh.addActionListener(a -> reloadTree());
+        refresh.addActionListener(_ -> reloadTree());
         toolBar.add(refresh);
 
         tree.addMouseListener(new MouseAdapter() {
@@ -68,6 +70,17 @@ public class InformationDock extends JPanel {
                     if (selectedComp instanceof GradleTaskNode gradleTaskNode) {
                         mcreator.getGradleConsole().exec(gradleTaskNode.getUserObject().toString());
                         mcreator.showConsole();
+                    }
+                    if (selectedComp instanceof CommentNode commentNode) {
+                        var option = JOptionPane.showInputDialog(mcreator, "Comment",
+                                commentNode.getUserObject().toString());
+                        if (option != null) {
+                            if (mcreator.getTabs().getCurrentTab()
+                                    .getContent() instanceof ModElementGUI<?> abstractConfigurationTableModElementGUI) {
+                                workspace.setComment(abstractConfigurationTableModElementGUI.getModElement(), option);
+                                reloadTree();
+                            }
+                        }
                     }
                 }
             }
@@ -88,6 +101,8 @@ public class InformationDock extends JPanel {
     }
 
     public void reloadTree() {
+        var workspace = WorkspaceDecorator.getInstance(mcreator.getWorkspace());
+
         tree.setSelectionPath(null);
 
         FilterTreeNode node = new FilterTreeNode(mcreator.getWorkspaceSettings().getModName());
@@ -100,11 +115,18 @@ public class InformationDock extends JPanel {
                 references.add(new ModElementReferenceNode(modElement.getName()));
             }
             node.add(references);
+
+            workspace.getCommentOfElement(abstractConfigurationTableModElementGUI.getModElement())
+                    .ifPresentOrElse(a -> {
+                        node.add(new CommentNode("Comment: " + a));
+                    }, () -> {
+                        node.add(new CommentNode("Set comment"));
+                    });
         }
 
         var tips = new FilterTreeNode("Tips");
         tips.add(new FilterTreeNode("Right click your configuration area to show the helper menu."));
-        if (mcreator.getTabs().getCurrentTab().getContent() instanceof DataListModElementGUI){
+        if (mcreator.getTabs().getCurrentTab().getContent() instanceof DataListModElementGUI) {
             tips.add(new FilterTreeNode("You can use 'Builtin=false' to filter your entries."));
         }
         node.add(tips);
@@ -164,6 +186,13 @@ public class InformationDock extends JPanel {
     private static class GradleTaskNode extends FilterTreeNode {
 
         public GradleTaskNode(Object userObject) {
+            super(userObject);
+        }
+    }
+
+    private static class CommentNode extends FilterTreeNode {
+
+        public CommentNode(Object userObject) {
             super(userObject);
         }
     }

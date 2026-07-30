@@ -36,6 +36,7 @@ import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.WorkspaceUtils;
 import org.cdc.generator.utils.ZipUtils;
+import org.cdc.generator.utils.decorators.WorkspaceDecorator;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.writers.JSONWriter;
 import org.cdc.generator.utils.writers.YamlWriter;
@@ -267,15 +268,15 @@ public class PluginMain extends JavaPlugin {
         registerAll(mcreator);
 
         CompletableFuture.runAsync(() -> {
-            if (WorkspaceUtils.getDependants(mcreator.getWorkspaceSettings()).stream()
-                    .noneMatch(str -> str.startsWith("weight_"))) {
+            var workspaceDecorator = WorkspaceDecorator.getInstance(mcreator.getWorkspace());
+            if (workspaceDecorator.hasWeight()) {
                 LOG.debug("Try to add weight_0 to dependants");
-                WorkspaceUtils.getDependants(mcreator.getWorkspaceSettings()).add(WorkspaceUtils.weightDependant(0));
+                workspaceDecorator.addWeight(0);
 
                 warnSnapshot();
             }
 
-            var libs = new File(WorkspaceUtils.getWorkspaceFolder(mcreator), ".mcreator/libs");
+            var libs = workspaceDecorator.getWorkspaceLibraryFile();
             var oldLibs = new File(WorkspaceUtils.getWorkspaceFolder(mcreator), "libs");
             if (oldLibs.isDirectory()) {
                 FileIO.deleteDir(oldLibs);
@@ -310,7 +311,7 @@ public class PluginMain extends JavaPlugin {
             }
 
             if (!Launcher.version.isDevelopment()) {
-                var runPlugins = new File(mcreator.getWorkspaceFolder(), "run/plugins");
+                var runPlugins = workspaceDecorator.getWorkspacePluginsFile();
                 if (runPlugins.isDirectory()) {
                     FileIO.deleteDir(runPlugins);
                 }

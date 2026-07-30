@@ -3,7 +3,6 @@ package org.cdc.generator.services.types;
 import com.google.gson.*;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.validation.component.VTextField;
-import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.ui.TypeListField;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.Utils;
@@ -39,9 +38,11 @@ public class InputValueArgType extends AbstractArgType {
         if (newJsonObject.has("check")) {
             var elemt = newJsonObject.get("check");
             if (elemt.isJsonArray()) {
-                check.setListElements(elemt.getAsJsonArray().asList().stream().map(a->a.isJsonNull()?new JsonPrimitive("Null") :a).map(JsonElement::getAsString).toList());
+                check.setListElements(elemt.getAsJsonArray().asList().stream()
+                        .map(a -> a.isJsonNull() ? new JsonPrimitive("Null") : a).map(JsonElement::getAsString)
+                        .toList());
             } else {
-                if (elemt.isJsonNull()){
+                if (elemt.isJsonNull()) {
                     check.setListElements(List.of("Null"));
                 } else {
                     check.setListElements(List.of(elemt.getAsString()));
@@ -52,20 +53,19 @@ public class InputValueArgType extends AbstractArgType {
 
         name.getDocument().addDocumentListener(createDefaultDocumentListener(name::getText, () -> newJsonObject));
         check.addChangeListener(_ -> {
-            var array = new JsonArray();
-            if (check.getListElements().size() == 1){
+            if (check.getListElements().size() == 1) {
                 var type = check.getListElements().getFirst();
-                if (type.equals("Null")){
-                    array.add(JsonNull.INSTANCE);
-                } else {
-                    array.add(type);
+                if (!type.equals("Null")) {
+                    newJsonObject.add("check", new JsonPrimitive(type));
                 }
             } else {
+                var array = new JsonArray();
                 for (String listElement : check.getListElements()) {
                     array.add(listElement);
                 }
+                newJsonObject.add("check", array);
             }
-            newJsonObject.add("check", array);
+
         });
 
         return wrapConfigurationPanel();
@@ -80,7 +80,7 @@ public class InputValueArgType extends AbstractArgType {
         if (jsonObject.has("check")) {
             newJsonObject.add("check", jsonObject.get("check"));
         } else {
-            newJsonObject.addProperty("check", VariableTypeLoader.BuiltInTypes.NUMBER.getBlocklyVariableType());
+            newJsonObject.add("check", JsonNull.INSTANCE);
         }
     }
 

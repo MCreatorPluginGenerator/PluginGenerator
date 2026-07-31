@@ -98,7 +98,7 @@ public class PluginMain extends JavaPlugin {
             HashMap<String, ArrayList<String>> duplicatedElements = new HashMap<>();
             for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
                 if (modElement.getGeneratableElement() instanceof IUniqueElement uniqueElement) {
-                    duplicatedElements.compute("duplicated " + uniqueElement.getUniqueID(), (a, b) -> {
+                    duplicatedElements.compute("duplicated " + uniqueElement.getUniqueID(), (_, b) -> {
                         if (b == null) {
                             b = new ArrayList<>();
                         }

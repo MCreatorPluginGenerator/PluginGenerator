@@ -320,8 +320,8 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
                             "<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\">" + str + "</value>";
                     // add to toolbox init
                     var list = new ArrayList<String>();
-                    toolboxInit.getTextList().stream().filter(a->!a.startsWith("<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\">")).forEach(
-                            list::add);
+                    toolboxInit.getTextList().stream().filter(a -> !a.startsWith(
+                            "<value name=\"" + arg0List.getSelectedValue().getUniqueName() + "\">")).forEach(list::add);
                     list.add(converted);
                     toolboxInit.setTextList(list);
                     var content = new StringSelection(converted);
@@ -515,12 +515,20 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
 
     @Override public Validator getValidator() {
         return () -> {
-            if (builtInColor.getSelectedIndex() != 0) {
-                return ValidationResult.PASSED;
+            // please flat this, this will cause a blunder.
+            if (builtInColor.getSelectedIndex() == 0 && color.getColor().equals(Color.WHITE)) {
+                return new ValidationResult(ValidationResult.Type.ERROR, "White is too bright");
             }
-            return color.getColor().equals(Color.WHITE) ?
-                    new ValidationResult(ValidationResult.Type.ERROR, "White is too bright") :
-                    ValidationResult.PASSED;
+            var concreteLocalizationKey = "blockly.block." + getModElement().getRegistryName();
+            var count = BuilderUtils.countLanguageParameterCount(localizationValue.getText());
+            var stream = mcreator.getWorkspace().getLanguageMap().entrySet().stream().filter(a -> {
+                var keyCount = BuilderUtils.countLanguageParameterCount(a.getValue().get(concreteLocalizationKey));
+                return keyCount != count;
+            }).map(Map.Entry::getKey).toList();
+            if (!stream.isEmpty()) {
+                return new ValidationResult(ValidationResult.Type.ERROR, "Count mismatch in language " + stream);
+            }
+            return ValidationResult.PASSED;
         };
     }
 

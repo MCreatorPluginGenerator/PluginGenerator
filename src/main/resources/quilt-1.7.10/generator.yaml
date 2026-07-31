@@ -1,6 +1,6 @@
 name: Plugin maker @buildfileversion
 status: experimental
-buildfileversion: 1.7.10.3
+buildfileversion: 1.7.10.4
 is_plugin_maker: true
 
 # gradle task definitions
@@ -12,22 +12,11 @@ gradle:
 import_formatter:
   duplicates_whitelist:
     - java.util
-    - net.minecraft
+    - net.mcreator
   priority_imports:
     Logger: org.apache.logging.log4j
     Nullable: javax.annotation
-    Codec: com.mojang.serialization
-    SoundEvent: net.minecraft.sounds
-    Blocks: net.minecraft.world.level.block
-    Items: net.minecraft.world.item
-    Multimap: com.google.common.collect
-    ImmutableSet: com.google.common.collect
-    Iterables: com.google.common.collect
-    Attributes: net.minecraft.world.entity.ai.attributes
-    Keyframe: net.minecraft.client.animation
-    Potion: net.minecraft.world.item.alchemy
-    AttachmentType: net.neoforged.neoforge.attachment
-    MapColor: net.minecraft.world.level.material
+
 
 # base generator roots
 source_root: "@WORKSPACEROOT/src/main/java"

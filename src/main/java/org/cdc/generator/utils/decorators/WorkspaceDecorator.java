@@ -10,6 +10,7 @@ import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.settings.WorkspaceSettings;
 import org.cdc.generator.utils.WorkspaceUtils;
 
+import javax.annotation.Nonnull;
 import java.io.*;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,7 +61,7 @@ public class WorkspaceDecorator {
         return Optional.empty();
     }
 
-    public void setComment(ModElement modElement,String commentContent) {
+    public void setComment(ModElement modElement,@Nonnull String commentContent) {
         var registryName = modElement.getRegistryName();
         if (!comment.has(registryName)) {
             comment.add(registryName, new JsonObject());
@@ -84,15 +85,15 @@ public class WorkspaceDecorator {
     public void addWeight(int weight){
         getDependants().stream()
                 .filter(str -> str.startsWith("weight_")).forEach(a-> workspace.getWorkspaceSettings().dependants.remove(a));
-        workspace.getWorkspaceSettings().dependants.add(WorkspaceUtils.weightDependant(weight));
+        getWorkspaceSettings().dependants.add(WorkspaceUtils.weightDependant(weight));
     }
 
     public boolean hasSupportedVersion(long versionLong){
-        return workspace.getWorkspaceSettings().dependants.stream().anyMatch(a->a.equals(WorkspaceUtils.supportedVersionDependant(versionLong)));
+        return getWorkspaceSettings().dependants.stream().anyMatch(a->a.equals(WorkspaceUtils.supportedVersionDependant(versionLong)));
     }
 
     public void addSupportedVersion(long versionLong){
-        workspace.getWorkspaceSettings().dependants.add(WorkspaceUtils.supportedVersionDependant(versionLong));
+       getWorkspaceSettings().dependants.add(WorkspaceUtils.supportedVersionDependant(versionLong));
     }
 
     public Workspace getWorkspace() {

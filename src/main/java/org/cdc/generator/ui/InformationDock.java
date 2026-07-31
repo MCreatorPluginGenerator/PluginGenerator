@@ -120,7 +120,7 @@ public class InformationDock extends JPanel {
                     .ifPresentOrElse(a -> {
                         node.add(new CommentNode("Comment: " + a));
                     }, () -> {
-                        node.add(new CommentNode("Set comment"));
+                        node.add(new CommentNode("Edit comment"));
                     });
         }
 

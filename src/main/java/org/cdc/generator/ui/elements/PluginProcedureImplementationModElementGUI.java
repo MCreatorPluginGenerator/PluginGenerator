@@ -1,6 +1,11 @@
 package org.cdc.generator.ui.elements;
 
 import com.google.gson.JsonArray;
+import freemarker.core.Environment;
+import freemarker.template.TemplateDirectiveBody;
+import freemarker.template.TemplateDirectiveModel;
+import freemarker.template.TemplateModel;
+import freemarker.template.TemplateModelException;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.component.util.PanelUtils;
@@ -28,11 +33,11 @@ import javax.swing.*;
 import java.awt.event.ItemEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Objects;
+import java.util.*;
 
 public class PluginProcedureImplementationModElementGUI
-        extends AbstractConfigurationTableModElementGUI<PluginProcedureImplementationModElement> {
+        extends AbstractConfigurationTableModElementGUI<PluginProcedureImplementationModElement>
+        implements IFreemakerDebugger {
     final SearchableComboBox<String> generator = new SearchableComboBox<>();
     final VTextField parentFolder = new VTextField();
     final SearchableComboBox<String> procedureFileName = new SearchableComboBox<>();
@@ -121,7 +126,7 @@ public class PluginProcedureImplementationModElementGUI
                     + BuilderUtils.generateFieldsComment(fields) + System.lineSeparator()
                     + BuilderUtils.generateStatementsComment(statements) + System.lineSeparator();
             var text = content.getText();
-            if (!text.endsWith(";") && !text.startsWith("(")){
+            if (!text.endsWith(";") && !text.startsWith("(")) {
                 text = "(" + text + ")";
             }
             content.setText(comment + "\n" + text);
@@ -133,7 +138,8 @@ public class PluginProcedureImplementationModElementGUI
         toolbar.add(syncLocalImplFile(content::setText));
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(content, mcreator);
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
-        panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete) You must complete the inputs and fields"));
+        panel.setBorder(BorderFactory.createTitledBorder(
+                "Body (ctrl+1 to auto complete) You must complete the inputs and fields"));
 
         addPage(PanelUtils.northAndCenterElement(buildConfiguration(2), panel)).validate(generator)
                 .validate(procedureFileName);
@@ -145,6 +151,8 @@ public class PluginProcedureImplementationModElementGUI
         scrollPanelForSource.setBorder(BorderFactory.createTitledBorder("You can give the source"));
 
         addPage("Related source", scrollPanelForSource);
+
+        addPage("Debbuger", getDebuggerComponent(mcreator));
     }
 
     private CompletionProvider createCompletionProvider() {
@@ -234,5 +242,48 @@ public class PluginProcedureImplementationModElementGUI
         }
         LOG.error("Can not find procedure element {}", procedureFileName.getSelectedItem());
         return null;
+    }
+
+    @Override public String getFreemakerContent() {
+        return content.getText();
+    }
+
+    @Override public Properties getDefaultParametersProperties() {
+        var properties = new Properties();
+        var element = getPluginProcedureModElement();
+        for (String input : element.inputs) {
+            properties.setProperty("input$" + input, input);
+        }
+        for (String field : element.fields) {
+            properties.setProperty("field$" + field, field);
+        }
+        for (String statement : element.statements) {
+            properties.setProperty("statement$" + statement, statement);
+        }
+        return properties;
+    }
+
+    @Override public Map<String, Object> getDefaultParameterMap() {
+        var dataModel = new HashMap<String, Object>();
+        dataModel.put("cbi", (int) (Math.random() * 100));
+        dataModel.put("addTemplate", new CallPrinter("addTemplate", mcreator));
+        dataModel.put("addAdditionalCode", new CallPrinter("addAdditionalCode", mcreator));
+        return dataModel;
+    }
+
+    private record CallPrinter(String name, MCreator mCreator) implements TemplateDirectiveModel {
+
+        @Override public void execute(Environment env, Map params, TemplateModel[] loopVars, TemplateDirectiveBody body)
+                throws TemplateModelException {
+            mCreator.getGradleConsole().append("\n" + name + ": " + params.toString());
+        }
+
+    }
+
+    @Override public JTextArea getResultArea() {
+        var rsy = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
+        rsy.setSyntaxEditingStyle("text/java");
+        RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy,this);
+        return rsy;
     }
 }

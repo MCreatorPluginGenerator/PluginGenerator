@@ -4,6 +4,7 @@ import net.mcreator.generator.template.TemplateGenerator;
 import net.mcreator.generator.template.TemplateGeneratorException;
 import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
 
 import javax.swing.*;
@@ -43,7 +44,7 @@ public interface IFreemakerDebugger {
                 try {
                     var prop = getDefaultParametersProperties();
                     if (prop != null)
-                        prop.store(writer,"");
+                        prop.store(writer,"Edit the value to change the result");
                 } catch (IOException ignored) {
                 }
                 propertiesTextArea.setText(writer.toString());
@@ -72,7 +73,7 @@ public interface IFreemakerDebugger {
                     mCreator.getGradleConsole().append(map.toString());
                 }
             } else {
-                result.setText("Error: you should open a workspace that is using your selected generator.");
+                result.setText("Error: " + L10N.t("warnings.should_open_a_selected_generator_workspace"));
             }
         });
         panel.add(toolbar,"North");

@@ -58,6 +58,10 @@ public class TriggerModElement extends GeneratableElement {
             this.type = type;
         }
 
+        public net.mcreator.blockly.data.Dependency toDependency(){
+            return new net.mcreator.blockly.data.Dependency(name,type);
+        }
+
         @Override public Dependency clone() {
             try {
                 Dependency clone = (Dependency) super.clone();

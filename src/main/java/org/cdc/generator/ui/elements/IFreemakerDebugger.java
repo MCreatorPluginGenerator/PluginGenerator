@@ -1,5 +1,6 @@
 package org.cdc.generator.ui.elements;
 
+import net.mcreator.generator.template.TemplateGenerator;
 import net.mcreator.generator.template.TemplateGeneratorException;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.init.UIRES;
@@ -39,12 +40,14 @@ public interface IFreemakerDebugger {
             if (propertiesTextArea.getText().isBlank()){
                 var writer = new StringWriter();
                 try {
-                    getDefaultParametersProperties().store(writer,"");
+                    var prop = getDefaultParametersProperties();
+                    if (prop != null)
+                        prop.store(writer,"");
                 } catch (IOException ignored) {
                 }
                 propertiesTextArea.setText(writer.toString());
             }
-            var templateGenerator = mCreator.getGenerator().getTemplateGeneratorFromName("debugger");
+            var templateGenerator = getTemplateGenerator();
             if (templateGenerator != null){
                 var map = new HashMap<String,Object>();
                 var properties = new Properties();
@@ -67,12 +70,16 @@ public interface IFreemakerDebugger {
                     mCreator.getGradleConsole().append(writer1.toString());
                     mCreator.getGradleConsole().append(map.toString());
                 }
+            } else {
+                result.setText("Error: you should open a workspace that is using your selected generator.");
             }
         });
         panel.add(toolbar,"North");
 
         return panel;
     }
+
+    TemplateGenerator getTemplateGenerator();
 
     String getFreemakerContent();
 

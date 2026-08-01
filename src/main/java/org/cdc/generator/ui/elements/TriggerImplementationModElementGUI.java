@@ -1,13 +1,25 @@
 package org.cdc.generator.ui.elements;
 
 import jdk.jfr.Description;
+import net.mcreator.blockly.data.BlocklyLoader;
+import net.mcreator.blockly.data.Dependency;
+import net.mcreator.blockly.java.BlocklyToProcedure;
+import net.mcreator.blockly.java.ProcedureCodeOptimizer;
+import net.mcreator.generator.GeneratorFile;
+import net.mcreator.generator.blockly.BlocklyBlockCodeGenerator;
+import net.mcreator.generator.blockly.OutputBlockCodeGenerator;
+import net.mcreator.generator.blockly.ProceduralBlockCodeGenerator;
+import net.mcreator.generator.template.TemplateGenerator;
+import net.mcreator.generator.template.TemplateGeneratorException;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.Logger;
+import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.TriggerImplementationModElement;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
@@ -29,12 +41,14 @@ import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
 
 public class TriggerImplementationModElementGUI
-        extends AbstractConfigurationTableModElementGUI<TriggerImplementationModElement> {
+        extends AbstractConfigurationTableModElementGUI<TriggerImplementationModElement> implements IFreemakerDebugger {
 
     final SearchableComboBox<String> generator = new SearchableComboBox<>();
     final SearchableComboBox<String> triggerFileName = new SearchableComboBox<>();
@@ -136,9 +150,12 @@ public class TriggerImplementationModElementGUI
         relatedSource.setSyntaxEditingStyle("text/java");
         var scrollPanelForSource = RSyntaxTextAreaFactory.createDefaultTextScrollPane(relatedSource, mcreator);
 
-        scrollPanelForSource.setBorder(BorderFactory.createTitledBorder("You can give the source of the event or fabric's listener."));
+        scrollPanelForSource.setBorder(
+                BorderFactory.createTitledBorder("You can give the source of the event or fabric's listener."));
 
         addPage("Related source", scrollPanelForSource);
+
+        addPage("Debugger",getDebuggerComponent(mcreator));
     }
 
     private void reloadToolBar() {
@@ -245,6 +262,109 @@ public class TriggerImplementationModElementGUI
 
     public String getEventName() {
         return eventName.getText();
+    }
+
+    @Override public String getFreemakerContent() {
+        return getFreemakerContent0();
+    }
+
+    public String getFreemakerContent0() {
+        try {
+            List<GeneratorFile> files = modElement.getGenerator().generateElement(getElementFromGUI(), false, false);
+            return files.getFirst().contents();
+        } catch (Exception e){
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            mcreator.getGradleConsole().append(stringWriter.toString());
+        }
+        return "";
+    }
+
+    @Override public TemplateGenerator getTemplateGenerator() {
+        for (MCreator openMCreator : PluginMain.getINSTANCE().getApplication().getOpenMCreators()) {
+            if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())){
+                return openMCreator.getGenerator().getTemplateGeneratorFromName("triggers");
+            }
+        }
+        return null;
+    }
+
+    @Override public Properties getDefaultParametersProperties() {
+        return null;
+    }
+
+    @Override public Map<String, Object> getDefaultParameterMap() {
+        var additionalData = new HashMap<String, Object>();
+        try {
+            BlocklyToProcedure blocklyToJava = getBlocklyToProcedure(additionalData);
+            additionalData.put("name","Example");
+            additionalData.put("dependencies", reloadDependencies());
+            additionalData.put("procedurecode", ProcedureCodeOptimizer.removeMarkers(blocklyToJava.getGeneratedCode()));
+            additionalData.put("additional_code",
+                    ProcedureCodeOptimizer.removeMarkers(blocklyToJava.getAdditionalCode()));
+            additionalData.put("return_type", blocklyToJava.getReturnType());
+            additionalData.put("localvariables", blocklyToJava.getLocalVariables());
+            additionalData.put("procedureblocks", blocklyToJava.getUsedBlocks());
+            additionalData.put("extra_templates_code", blocklyToJava.getExtraTemplatesCode());
+        } catch (Exception e){
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            mcreator.getGradleConsole().append(stringWriter.toString());
+        }
+        return additionalData;
+    }
+
+    private BlocklyToProcedure getBlocklyToProcedure(Map<String, Object> additionalData)
+            throws TemplateGeneratorException {
+        BlocklyBlockCodeGenerator blocklyBlockCodeGenerator = new BlocklyBlockCodeGenerator(
+                BlocklyLoader.INSTANCE.getBlockLoader(BlocklyEditorType.PROCEDURE).getDefinedBlocks(),
+                getModElement().getGenerator().getGeneratorStats().getBlocklyBlocks(BlocklyEditorType.PROCEDURE),
+                getModElement().getGenerator().getTemplateGeneratorFromName(BlocklyEditorType.PROCEDURE.registryName()),
+                additionalData);
+
+        // load BlocklyToProcedure with custom generators loaded
+        return new BlocklyToProcedure(this.getModElement().getWorkspace(), this.getModElement(),
+                "<xml xmlns=\"https://developers.google.com/blockly/xml\"><block type=\"event_trigger\" deletable=\"false\" x=\"40\" y=\"40\"><field name=\"trigger\">no_ext_trigger</field></block></xml>",
+                getModElement().getGenerator().getTemplateGeneratorFromName(BlocklyEditorType.PROCEDURE.registryName()),
+                new ProceduralBlockCodeGenerator(blocklyBlockCodeGenerator),
+                new OutputBlockCodeGenerator(blocklyBlockCodeGenerator));
+    }
+
+    private List<Dependency> reloadDependencies() {
+        var dependencies = new ArrayList<>(getTriggerModElement().dependencies_provided);
+
+        int idx = dependencies.indexOf(new TriggerModElement.Dependency("z", "number"));
+        if (idx != -1) {
+            TriggerModElement.Dependency dependency = dependencies.remove(idx);
+            dependencies.addFirst(dependency);
+        }
+
+        idx = dependencies.indexOf(new TriggerModElement.Dependency("y", "number"));
+        if (idx != -1) {
+            TriggerModElement.Dependency dependency = dependencies.remove(idx);
+            dependencies.addFirst(dependency);
+        }
+
+        idx = dependencies.indexOf(new TriggerModElement.Dependency("x", "number"));
+        if (idx != -1) {
+            TriggerModElement.Dependency dependency = dependencies.remove(idx);
+            dependencies.addFirst(dependency);
+        }
+
+        idx = dependencies.indexOf(new TriggerModElement.Dependency("world", "world"));
+        if (idx != -1) {
+            TriggerModElement.Dependency dependency = dependencies.remove(idx);
+            dependencies.addFirst(dependency);
+        }
+
+        return dependencies.stream().map(TriggerModElement.Dependency::toDependency).toList();
+    }
+
+    @Override public JTextArea getResultArea() {
+        var rsy = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
+        rsy.setSyntaxEditingStyle("text/java");
+        RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy,this);
+        return rsy;
     }
 
     private class MappingTableModel extends AbstractTableModel {

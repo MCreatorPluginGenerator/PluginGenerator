@@ -7,18 +7,23 @@ import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import net.mcreator.element.GeneratableElement;
+import net.mcreator.generator.template.TemplateGenerator;
+import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.framework.utils.BuilderUtils;
+import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.PluginProcedureImplementationModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.ComboBoxUtil;
+import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
@@ -244,8 +249,37 @@ public class PluginProcedureImplementationModElementGUI
         return null;
     }
 
+    @Override public TemplateGenerator getTemplateGenerator() {
+        for (MCreator openMCreator : PluginMain.getINSTANCE().getApplication().getOpenMCreators()) {
+            if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())) {
+                return openMCreator.getGenerator()
+                        .getTemplateGeneratorFromName(BlocklyEditorType.PROCEDURE.registryName());
+            }
+        }
+        return null;
+    }
+
     @Override public String getFreemakerContent() {
-        return content.getText();
+
+        if (FTLUtils.isInputProcedure(content.getText())) {
+            return new CodeCleanup().reformatTheCodeOnly("""
+                    public class ExampleClass<E>{
+                        // This a example code. Do not use it.
+                        public static E execute(Event event){
+                            return %s;
+                        }
+                    }
+                    """.formatted(content.getText()));
+        }
+
+        return  new CodeCleanup().reformatTheCodeOnly("""
+                public class ExampleClass<E>{
+                    // This a example code. Do not use it.
+                    public static E execute(Event event){
+                        %s
+                    }
+                }
+                """.formatted(content.getText()));
     }
 
     @Override public Properties getDefaultParametersProperties() {
@@ -283,7 +317,7 @@ public class PluginProcedureImplementationModElementGUI
     @Override public JTextArea getResultArea() {
         var rsy = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
         rsy.setSyntaxEditingStyle("text/java");
-        RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy,this);
+        RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy, this);
         return rsy;
     }
 }

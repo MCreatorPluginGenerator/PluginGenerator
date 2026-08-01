@@ -8,7 +8,6 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.generator.template.TemplateGenerator;
-import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
@@ -262,24 +261,25 @@ public class PluginProcedureImplementationModElementGUI
     @Override public String getFreemakerContent() {
 
         if (FTLUtils.isInputProcedure(content.getText())) {
-            return new CodeCleanup().reformatTheCodeOnly("""
-                    public class ExampleClass<E>{
+            return """
+                    public class ExampleClass{
                         // This a example code. Do not use it.
-                        public static E execute(Event event){
+                        public static Object execute(Event event){
                             return %s;
                         }
                     }
-                    """.formatted(content.getText()));
+                    """.formatted(content.getText());
         }
 
-        return  new CodeCleanup().reformatTheCodeOnly("""
-                public class ExampleClass<E>{
-                    // This a example code. Do not use it.
-                    public static E execute(Event event){
-                        %s
+        return """
+                import org.cdc.Event;
+                public class ExampleClass{
+                /*This a example code. Do not use it*/
+                    public static void execute(Event event){
+                    %s
                     }
                 }
-                """.formatted(content.getText()));
+                """.formatted(content.getText());
     }
 
     @Override public Properties getDefaultParametersProperties() {

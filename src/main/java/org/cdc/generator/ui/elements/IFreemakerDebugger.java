@@ -2,6 +2,7 @@ package org.cdc.generator.ui.elements;
 
 import net.mcreator.generator.template.TemplateGenerator;
 import net.mcreator.generator.template.TemplateGeneratorException;
+import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.init.UIRES;
 
@@ -63,7 +64,7 @@ public interface IFreemakerDebugger {
 
                 try {
                     var str = templateGenerator.generateFromString(getFreemakerContent(),map);
-                    result.setText(str);
+                    result.setText(new CodeCleanup().reformatTheCodeOnly(str));
                 } catch (TemplateGeneratorException e) {
                     var writer1 = new StringWriter();
                     e.printStackTrace(new PrintWriter(writer1));

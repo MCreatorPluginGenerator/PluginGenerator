@@ -94,7 +94,7 @@ public class TriggerImplementationModElementGUI
         triggerFileName.setEditable(true);
         triggerFileName.setValidator(new NotEmptyValidator(triggerFileName::getSelectedItem));
         addElementSelectorConfiguration("trigger_element_name", triggerFileName,
-                () -> getTriggerModElement().getModElement());
+                () -> getTriggerModElement().get().getModElement());
 
         addConfigurationWithHelpEntry("enable_custom", enableCustom);
 
@@ -209,8 +209,10 @@ public class TriggerImplementationModElementGUI
 
     @Override public TriggerImplementationModElement getElementFromGUI() {
         var element = new TriggerImplementationModElement(modElement);
+        var triggerModElement = getTriggerModElement();
+
         element.triggerFileName = triggerFileName.getSelectedItem();
-        element.searchable = getTriggerModElement().getModElement().getName();
+        triggerModElement.ifPresent(value -> element.searchable = value.getModElement().getName());
         element.generatorName = generator.getSelectedItem();
         element.enableCustom = enableCustom.isSelected();
         element.eventName = eventName.getSelectedItem();
@@ -227,17 +229,17 @@ public class TriggerImplementationModElementGUI
                 "https://mcreator.net/wiki/creating-global-triggers#:~:text=true%22%2C%0A%20%20%22has_result%22%3A%20%22true%22%0A%7D-,Make%20the%20code%20of%20your%20global%20trigger,-The%20folder");
     }
 
-    public TriggerModElement getTriggerModElement() {
+    public Optional<TriggerModElement> getTriggerModElement() {
         if (triggerFileName.getSelectedItem() == null) {
             return null;
         }
         for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
             if (modElement.getRegistryName().equals(triggerFileName.getSelectedItem())) {
-                return (TriggerModElement) modElement.getGeneratableElement();
+                return Optional.ofNullable((TriggerModElement) modElement.getGeneratableElement());
             }
         }
         LOG.error("Can not find trigger {}", triggerFileName.getSelectedItem());
-        return null;
+        return Optional.empty();
     }
 
     @Override public void reloadDataLists() {
@@ -249,10 +251,13 @@ public class TriggerImplementationModElementGUI
         ComboBoxUtil.updateComboBoxContents(triggerFileName, stringArrayList);
 
         var map = getMappingEntries();
-        for (TriggerModElement.Dependency dependency : getTriggerModElement().dependencies_provided) {
-            if (!map.containsKey(dependency.getName()))
-                mappingEntries.add(new AbstractMap.SimpleEntry<>(dependency.getName(), dependency.getType()));
-        }
+        getTriggerModElement().ifPresent(a->{
+            for (TriggerModElement.Dependency dependency : a.dependencies_provided) {
+                if (!map.containsKey(dependency.getName()))
+                    mappingEntries.add(new AbstractMap.SimpleEntry<>(dependency.getName(), dependency.getType()));
+            }
+        });
+
     }
 
     private CompletionProvider createCompletionProvider() {
@@ -365,31 +370,34 @@ public class TriggerImplementationModElementGUI
     }
 
     private List<Dependency> reloadDependencies() {
-        var dependencies = new ArrayList<>(getTriggerModElement().dependencies_provided);
+        var dependencies = new ArrayList<TriggerModElement.Dependency>();
+        getTriggerModElement().ifPresent(modElement->{
+            dependencies.addAll(modElement.dependencies_provided);
 
-        int idx = dependencies.indexOf(new TriggerModElement.Dependency("z", "number"));
-        if (idx != -1) {
-            TriggerModElement.Dependency dependency = dependencies.remove(idx);
-            dependencies.addFirst(dependency);
-        }
+            int idx = dependencies.indexOf(new TriggerModElement.Dependency("z", "number"));
+            if (idx != -1) {
+                TriggerModElement.Dependency dependency = dependencies.remove(idx);
+                dependencies.addFirst(dependency);
+            }
 
-        idx = dependencies.indexOf(new TriggerModElement.Dependency("y", "number"));
-        if (idx != -1) {
-            TriggerModElement.Dependency dependency = dependencies.remove(idx);
-            dependencies.addFirst(dependency);
-        }
+            idx = dependencies.indexOf(new TriggerModElement.Dependency("y", "number"));
+            if (idx != -1) {
+                TriggerModElement.Dependency dependency = dependencies.remove(idx);
+                dependencies.addFirst(dependency);
+            }
 
-        idx = dependencies.indexOf(new TriggerModElement.Dependency("x", "number"));
-        if (idx != -1) {
-            TriggerModElement.Dependency dependency = dependencies.remove(idx);
-            dependencies.addFirst(dependency);
-        }
+            idx = dependencies.indexOf(new TriggerModElement.Dependency("x", "number"));
+            if (idx != -1) {
+                TriggerModElement.Dependency dependency = dependencies.remove(idx);
+                dependencies.addFirst(dependency);
+            }
 
-        idx = dependencies.indexOf(new TriggerModElement.Dependency("world", "world"));
-        if (idx != -1) {
-            TriggerModElement.Dependency dependency = dependencies.remove(idx);
-            dependencies.addFirst(dependency);
-        }
+            idx = dependencies.indexOf(new TriggerModElement.Dependency("world", "world"));
+            if (idx != -1) {
+                TriggerModElement.Dependency dependency = dependencies.remove(idx);
+                dependencies.addFirst(dependency);
+            }
+        });
 
         return dependencies.stream().map(TriggerModElement.Dependency::toDependency).toList();
     }

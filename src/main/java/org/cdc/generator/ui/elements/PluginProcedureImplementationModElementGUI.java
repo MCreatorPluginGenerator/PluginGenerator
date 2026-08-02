@@ -98,14 +98,13 @@ public class PluginProcedureImplementationModElementGUI
         procedureFileName.setValidator(Rules.getFileNameValidator(procedureFileName::getSelectedItem));
         procedureFileName.addItemListener(a -> {
             if (a.getStateChange() == ItemEvent.SELECTED && procedureFileName.isPopupVisible()) {
-                if (getPluginProcedureModElement() instanceof IBlocklyElement blocklyElement) {
-                    parentFolder.setText(blocklyElement.getBlocklyFolder());
-                }
+                IBlocklyElement blocklyElement = (IBlocklyElement) getPluginProcedureModElement().get();
+                parentFolder.setText(blocklyElement.getBlocklyFolder());
                 LOG.debug("Select folder {}", parentFolder.getText());
             }
         });
         addElementSelectorConfiguration("pluginprocedure_element_name", procedureFileName,
-                () -> getPluginProcedureModElement().getModElement());
+                () -> getPluginProcedureModElement().orElseThrow().getModElement());
 
         addConfigurationWithHelpEntry("is_template", isTemplate);
         isTemplate.addActionListener(a -> {
@@ -119,27 +118,28 @@ public class PluginProcedureImplementationModElementGUI
         generate.setToolTipText("Generate code");
         generate.addActionListener(e -> {
             JsonArray inputs = new JsonArray();
-            var procedureModElement = getPluginProcedureModElement();
-            for (String input : procedureModElement.inputs) {
-                inputs.add(input);
-            }
-            JsonArray fields = new JsonArray();
-            for (String input : procedureModElement.fields) {
-                fields.add(input);
-            }
-            JsonArray statements = new JsonArray();
-            for (String statement : procedureModElement.statements) {
-                statements.add(statement);
-            }
-            String comment = BuilderUtils.generateInputsComment(inputs) + System.lineSeparator()
-                    + BuilderUtils.generateFieldsComment(fields) + System.lineSeparator()
-                    + BuilderUtils.generateStatementsComment(statements) + System.lineSeparator();
-            var text = content.getText();
-            if (!text.endsWith(";") && !text.startsWith("(")) {
-                text = "(" + text + ")";
-            }
-            content.setText(comment + "\n" + text);
-            LOG.debug("Generated procedure impl code: {}", content.getText());
+            getPluginProcedureModElement().ifPresent(procedureModElement -> {
+                for (String input : procedureModElement.inputs) {
+                    inputs.add(input);
+                }
+                JsonArray fields = new JsonArray();
+                for (String input : procedureModElement.fields) {
+                    fields.add(input);
+                }
+                JsonArray statements = new JsonArray();
+                for (String statement : procedureModElement.statements) {
+                    statements.add(statement);
+                }
+                String comment = BuilderUtils.generateInputsComment(inputs) + System.lineSeparator()
+                        + BuilderUtils.generateFieldsComment(fields) + System.lineSeparator()
+                        + BuilderUtils.generateStatementsComment(statements) + System.lineSeparator();
+                var text = content.getText();
+                if (!text.endsWith(";") && !text.startsWith("(")) {
+                    text = "(" + text + ")";
+                }
+                content.setText(comment + "\n" + text);
+                LOG.debug("Generated procedure impl code: {}", content.getText());
+            });
         });
         toolbar.add(generate);
 
@@ -182,8 +182,7 @@ public class PluginProcedureImplementationModElementGUI
 
     private CompletionProvider createCompletionProvider() {
         var complete = new DefaultCompletionProvider();
-        var element = getPluginProcedureModElement();
-        if (element != null) {
+        getPluginProcedureModElement().ifPresent(element -> {
             for (String input : element.inputs) {
                 complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getInputPlaceHolder(input)));
                 complete.addCompletion(new BasicCompletion(complete, "input$" + input));
@@ -199,7 +198,8 @@ public class PluginProcedureImplementationModElementGUI
             for (PluginProcedureModElement.Dependency dependency : element.dependencies) {
                 complete.addCompletion(new BasicCompletion(complete, dependency.getName(), dependency.getType()));
             }
-        }
+        });
+
         //addTemplate
         for (GeneratableElement generatableElement : mcreator.getWorkspaceInfo()
                 .getGElementsOfType(ModElementTypes.PROCEDURE_IMPLEMENTATION.getRegistryName())) {
@@ -234,7 +234,9 @@ public class PluginProcedureImplementationModElementGUI
         element.generator = generator.getSelectedItem();
         element.procedureFolder = parentFolder.getText();
         element.procedureFileName = procedureFileName.getSelectedItem();
-        element.searchable = getPluginProcedureModElement().getModElement().getName();
+        getPluginProcedureModElement().ifPresent(pluginProcedureModElement -> {
+            element.searchable = pluginProcedureModElement.getModElement().getName();
+        });
         element.content = content.getText();
         element.isTemplate = isTemplate.isSelected();
         element.templateFolder = templateFolder.getText();
@@ -258,39 +260,41 @@ public class PluginProcedureImplementationModElementGUI
                 "https://mcreator.net/wiki/create-new-procedure-blocks#:~:text=0%20and%20360.-,Make%20the%20code%20of%20your%20procedure%20block,-The%20folder");
     }
 
-    public PluginProcedureModElement getPluginProcedureModElement() {
+    public Optional<PluginProcedureModElement> getPluginProcedureModElement() {
         if (procedureFileName.getSelectedItem() == null) {
             return null;
         }
         for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
             if (modElement.getRegistryName().equals(procedureFileName.getSelectedItem())) {
-                return (PluginProcedureModElement) modElement.getGeneratableElement();
+                return Optional.ofNullable((PluginProcedureModElement) modElement.getGeneratableElement());
             }
         }
         LOG.error("Can not find procedure element {}", procedureFileName.getSelectedItem());
-        return null;
+        return Optional.empty();
     }
 
     @Override public TemplateGenerator getTemplateGenerator() {
         findGeneratorMCreator();
-        if (selectedGeneratorMCreator!= null){
+        if (selectedGeneratorMCreator != null) {
             return selectedGeneratorMCreator.getGenerator().getTemplateGeneratorFromName(parentFolder.getText());
         }
         return null;
     }
 
     private final String METHOD_PARAMETER_KEY = "debugger.method.parameters";
+
     @Override
     public void modifyToolBar(MCreator mCreator, JToolBar toolBar, JTextArea propertiesTextArea, JTextArea result,
             Supplier<MCreator> mCreatorSupplier) {
-        IFreemakerDebugger.super.modifyToolBar(mCreator, toolBar, propertiesTextArea, result,()->selectedGeneratorMCreator);
+        IFreemakerDebugger.super.modifyToolBar(mCreator, toolBar, propertiesTextArea, result,
+                () -> selectedGeneratorMCreator);
 
         toolBar.add(debuged);
     }
 
-    private void findGeneratorMCreator(){
+    private void findGeneratorMCreator() {
         for (MCreator openMCreator : mcreator.getApplication().getOpenMCreators()) {
-            if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())){
+            if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())) {
                 selectedGeneratorMCreator = openMCreator;
             }
         }
@@ -324,16 +328,18 @@ public class PluginProcedureImplementationModElementGUI
 
     @Override public Properties getDefaultParametersProperties() {
         var properties = new Properties();
-        var element = getPluginProcedureModElement();
-        for (String input : element.inputs) {
-            properties.setProperty("input$" + input, input);
-        }
-        for (String field : element.fields) {
-            properties.setProperty("field$" + field, field);
-        }
-        for (String statement : element.statements) {
-            properties.setProperty("statement$" + statement, statement);
-        }
+
+        getPluginProcedureModElement().ifPresent(element -> {
+            for (String input : element.inputs) {
+                properties.setProperty("input$" + input, input);
+            }
+            for (String field : element.fields) {
+                properties.setProperty("field$" + field, field);
+            }
+            for (String statement : element.statements) {
+                properties.setProperty("statement$" + statement, statement);
+            }
+        });
         properties.setProperty(METHOD_PARAMETER_KEY, "Event event");
         return properties;
     }

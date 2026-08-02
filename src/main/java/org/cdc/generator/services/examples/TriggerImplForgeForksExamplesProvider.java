@@ -30,13 +30,16 @@ public class TriggerImplForgeForksExamplesProvider implements IExamplesProvider 
         generate.addActionListener(e -> {
             var mappingEntries = modElementGui.getMappingEntries();
             var map = new HashMap<String,String>();
-            for (TriggerModElement.Dependency dependency : modElementGui.getTriggerModElement().dependencies_provided) {
-                if (mappingEntries.containsKey(dependency.getName())){
-                    map.put(dependency.getName(),mappingEntries.get(dependency.getName()));
-                } else {
-                    map.put(dependency.getName(), dependency.getType());
+            modElementGui.getTriggerModElement().ifPresent(triggerModElement -> {
+                for (TriggerModElement.Dependency dependency : triggerModElement.dependencies_provided) {
+                    if (mappingEntries.containsKey(dependency.getName())){
+                        map.put(dependency.getName(),mappingEntries.get(dependency.getName()));
+                    } else {
+                        map.put(dependency.getName(), dependency.getType());
+                    }
                 }
-            }
+            });
+
             if (!modElementGui.getRelatedSourceText().isEmpty()){
                 var java = Roaster.parse(modElementGui.getRelatedSourceText());
                 if (java instanceof JavaClass<?> javaClass){

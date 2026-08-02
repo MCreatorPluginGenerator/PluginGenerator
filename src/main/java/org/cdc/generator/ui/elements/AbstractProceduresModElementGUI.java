@@ -519,14 +519,16 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
             if (builtInColor.getSelectedIndex() == 0 && color.getColor().equals(Color.WHITE)) {
                 return new ValidationResult(ValidationResult.Type.ERROR, "White is too bright");
             }
-            var concreteLocalizationKey = "blockly.block." + getModElement().getRegistryName();
-            var count = BuilderUtils.countLanguageParameterCount(localizationValue.getText());
-            var stream = mcreator.getWorkspace().getLanguageMap().entrySet().stream().filter(a -> {
-                var keyCount = BuilderUtils.countLanguageParameterCount(a.getValue().get(concreteLocalizationKey));
-                return keyCount != count;
-            }).map(Map.Entry::getKey).toList();
-            if (!stream.isEmpty()) {
-                return new ValidationResult(ValidationResult.Type.ERROR, "Count mismatch in language " + stream);
+            if (isEditingMode()) {
+                var concreteLocalizationKey = "blockly.block." + getModElement().getRegistryName();
+                var count = BuilderUtils.countLanguageParameterCount(localizationValue.getText());
+                var stream = mcreator.getWorkspace().getLanguageMap().entrySet().stream().filter(a -> {
+                    var keyCount = BuilderUtils.countLanguageParameterCount(a.getValue().get(concreteLocalizationKey));
+                    return keyCount != count;
+                }).map(Map.Entry::getKey).toList();
+                if (!stream.isEmpty()) {
+                    return new ValidationResult(ValidationResult.Type.ERROR, "Count mismatch in language " + stream);
+                }
             }
             return ValidationResult.PASSED;
         };

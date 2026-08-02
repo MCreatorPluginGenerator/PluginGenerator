@@ -53,7 +53,7 @@ public interface IFreemakerDebugger {
                 try {
                     var prop = getDefaultParametersProperties();
                     if (prop != null)
-                        prop.store(writer, "Edit the value to change the result");
+                        prop.store(writer, "Edit the value to change the result type indicator: /*@type*/");
                 } catch (IOException ignored) {
                 }
                 propertiesTextArea.setText(writer.toString());

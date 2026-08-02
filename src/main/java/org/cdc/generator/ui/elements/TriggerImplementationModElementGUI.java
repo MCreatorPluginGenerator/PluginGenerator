@@ -11,9 +11,12 @@ import net.mcreator.generator.blockly.OutputBlockCodeGenerator;
 import net.mcreator.generator.blockly.ProceduralBlockCodeGenerator;
 import net.mcreator.generator.template.TemplateGenerator;
 import net.mcreator.generator.template.TemplateGeneratorException;
+import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
+import net.mcreator.ui.init.L10N;
+import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.workspace.elements.ModElement;
@@ -38,8 +41,12 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -54,6 +61,7 @@ public class TriggerImplementationModElementGUI
 
     private final SearchableComboBox<String> eventName = new SearchableComboBox<>();
     private final RSyntaxTextArea methodBody = new RSyntaxTextArea();
+    final JCheckBox debuged = new JCheckBox("debuged");
 
     public List<AbstractMap.SimpleEntry<String, String>> mappingEntries;
 
@@ -113,6 +121,19 @@ public class TriggerImplementationModElementGUI
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(methodBody, mcreator);
         AutoCompletionFactory.createDefaultParameterCompletion(methodBody, this::createCompletionProvider);
         var panel = PanelUtils.northAndCenterElement(methodToolBar, scrollpane);
+        methodBody.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) {
+                debuged.setSelected(false);
+            }
+
+            @Override public void removeUpdate(DocumentEvent e) {
+                debuged.setSelected(false);
+            }
+
+            @Override public void changedUpdate(DocumentEvent e) {
+                debuged.setSelected(false);
+            }
+        });
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
         generator.addItemListener(eventName -> reloadToolBar());
@@ -156,7 +177,7 @@ public class TriggerImplementationModElementGUI
 
         addPage("Related source", scrollPanelForSource);
 
-        addPage("Debugger",getDebuggerComponent(mcreator));
+        addPage("Debugger",getDebuggerComponent(mcreator)).lazyValidate(()->debuged.isSelected()?new AggregatedValidationResult.PASS():new AggregatedValidationResult.FAIL("You must use the debugger and check the debuged"));
     }
 
     private void reloadToolBar() {
@@ -187,6 +208,7 @@ public class TriggerImplementationModElementGUI
         this.methodBody.setText(generatableElement.methodBody);
         this.mappingEntries = Objects.requireNonNullElse(generatableElement.mappingEntries, new ArrayList<>());
         this.relatedSource.setText(generatableElement.relatedClassSource);
+        this.debuged.setSelected(generatableElement.debugd);
     }
 
     @Override public TriggerImplementationModElement getElementFromGUI() {
@@ -200,6 +222,7 @@ public class TriggerImplementationModElementGUI
         element.mappingEntries = new ArrayList<>(
                 mappingEntries.stream().map(a -> new AbstractMap.SimpleEntry<>(a.getKey(), a.getValue())).toList());
         element.relatedClassSource = relatedSource.getText();
+        element.debugd = debuged.isSelected();
         return element;
     }
 
@@ -267,6 +290,56 @@ public class TriggerImplementationModElementGUI
 
     @Override public String getFreemakerContent() {
         return getFreemakerContent0();
+    }
+
+    @Override
+    public void modifyToolBar(MCreator mCreator, JToolBar toolbar, JTextArea propertiesTextArea, JTextArea result) {
+        var generate = new JButton(UIRES.get("16px.build"));
+        generate.setToolTipText("Generate");
+        toolbar.add(generate);
+
+        generate.addActionListener(_ -> {
+            if (propertiesTextArea.getText().isBlank()) {
+                var writer = new StringWriter();
+                try {
+                    var prop = getDefaultParametersProperties();
+                    if (prop != null)
+                        prop.store(writer, "Edit the value to change the result");
+                } catch (IOException ignored) {
+                }
+                propertiesTextArea.setText(writer.toString());
+            }
+            var templateGenerator = getTemplateGenerator();
+            if (templateGenerator != null) {
+                var map = new HashMap<String, Object>();
+                var properties = new Properties();
+                try {
+                    properties.load(new StringReader(propertiesTextArea.getText()));
+                } catch (IOException ignored) {
+
+                }
+                for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
+                    var key = objectObjectEntry.getKey().toString();
+                    if (!key.startsWith("debugger.")) {
+                        map.put(key, objectObjectEntry.getValue());
+                    }
+                }
+                map.putAll(getDefaultParameterMap());
+
+                try {
+                    var str = templateGenerator.generateFromString(getFreemakerContent(), map);
+                    result.setText(new CodeCleanup().reformatTheCodeAndOrganiseImports(selectedGeneratorMCreator.getWorkspace(), str));
+                } catch (TemplateGeneratorException e) {
+                    var writer1 = new StringWriter();
+                    e.printStackTrace(new PrintWriter(writer1));
+                    mCreator.getGradleConsole().append(writer1.toString());
+                    mCreator.getGradleConsole().append(map.toString());
+                }
+            } else {
+                result.setText("Error: " + L10N.t("warnings.should_open_a_selected_generator_workspace"));
+            }
+        });
+        toolbar.add(debuged);
     }
 
     public String getFreemakerContent0() {

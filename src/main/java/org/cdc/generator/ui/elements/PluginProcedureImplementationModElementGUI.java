@@ -15,6 +15,7 @@ import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
+import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.framework.utils.BuilderUtils;
@@ -36,6 +37,8 @@ import org.jetbrains.annotations.Nullable;
 import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.ItemEvent;
 import java.io.*;
 import java.net.URI;
@@ -50,6 +53,7 @@ public class PluginProcedureImplementationModElementGUI
     final SearchableComboBox<String> procedureFileName = new SearchableComboBox<>();
     final JCheckBox isTemplate = createDefaultCheckBox();
     final JTextField templateFolder = new JTextField();
+    final JCheckBox debuged = new JCheckBox("debuged");
 
     private final RSyntaxTextArea content = new RSyntaxTextArea();
     private RSyntaxTextArea relatedSource;
@@ -144,6 +148,20 @@ public class PluginProcedureImplementationModElementGUI
         toolbar.add(generate);
 
         content.setSyntaxEditingStyle("text/java");
+        content.getDocument().addDocumentListener(new DocumentListener() {
+            @Override public void insertUpdate(DocumentEvent e) {
+                debuged.setSelected(false);
+            }
+
+            @Override public void removeUpdate(DocumentEvent e) {
+                debuged.setSelected(false);
+            }
+
+            @Override public void changedUpdate(DocumentEvent e) {
+                debuged.setSelected(false);
+            }
+        });
+
         toolbar.add(syncLocalImplFile(content::setText));
         var scrollpane = RSyntaxTextAreaFactory.createDefaultTextScrollPane(content, mcreator);
         var panel = PanelUtils.northAndCenterElement(toolbar, scrollpane);
@@ -161,7 +179,9 @@ public class PluginProcedureImplementationModElementGUI
 
         addPage("Related source", scrollPanelForSource);
 
-        addPage("Debbuger", getDebuggerComponent(mcreator));
+        addPage("Debbuger", getDebuggerComponent(mcreator)).lazyValidate(() -> debuged.isSelected() ?
+                new AggregatedValidationResult.PASS() :
+                new AggregatedValidationResult.FAIL("You must use debugger and checked the debuged"));
     }
 
     private CompletionProvider createCompletionProvider() {
@@ -210,6 +230,7 @@ public class PluginProcedureImplementationModElementGUI
         this.templateFolder.setText(generatableElement.templateFolder);
         this.content.setText(generatableElement.content);
         this.relatedSource.setText(generatableElement.relatedSource);
+        this.debuged.setSelected(generatableElement.debugd);
     }
 
     @Override public PluginProcedureImplementationModElement getElementFromGUI() {
@@ -222,6 +243,7 @@ public class PluginProcedureImplementationModElementGUI
         element.isTemplate = isTemplate.isSelected();
         element.templateFolder = templateFolder.getText();
         element.relatedSource = relatedSource.getText();
+        element.debugd = debuged.isSelected();
         return element;
     }
 
@@ -264,12 +286,14 @@ public class PluginProcedureImplementationModElementGUI
         return null;
     }
 
-    private final String METHOD_PARAMETER_KEY = "debugger.parameters";
+    private final String METHOD_PARAMETER_KEY = "debugger.method.parameters";
     @Override
     public void modifyToolBar(MCreator mCreator, JToolBar toolBar, JTextArea propertiesTextArea, JTextArea result) {
         var generate = new JButton(UIRES.get("16px.build"));
         generate.setToolTipText("Generate");
         toolBar.add(generate);
+
+        toolBar.add(debuged);
 
         generate.addActionListener(_ -> {
             if (propertiesTextArea.getText().isBlank()) {
@@ -280,7 +304,7 @@ public class PluginProcedureImplementationModElementGUI
                         prop.store(writer, "Edit the value to change the result");
                 } catch (IOException ignored) {
                 }
-                propertiesTextArea.setText(writer.toString().replace(System.lineSeparator(),"\n"));
+                propertiesTextArea.setText(writer.toString().replace(System.lineSeparator(), "\n"));
             }
             var templateGenerator = getTemplateGenerator();
             if (templateGenerator != null) {
@@ -301,7 +325,8 @@ public class PluginProcedureImplementationModElementGUI
 
                 try {
                     System.out.println(properties);
-                    var str = templateGenerator.generateFromString(getFreemakerContent0(properties.getProperty(METHOD_PARAMETER_KEY)), map);
+                    var str = templateGenerator.generateFromString(
+                            getFreemakerContent0(properties.getProperty(METHOD_PARAMETER_KEY)), map);
                     result.setText(new CodeCleanup().reformatTheCodeAndOrganiseImports(
                             selectedGeneratorMCreator.getWorkspace(), str));
                 } catch (TemplateGeneratorException e) {
@@ -354,7 +379,7 @@ public class PluginProcedureImplementationModElementGUI
         for (String statement : element.statements) {
             properties.setProperty("statement$" + statement, statement);
         }
-        properties.setProperty(METHOD_PARAMETER_KEY,"Event event");
+        properties.setProperty(METHOD_PARAMETER_KEY, "Event event");
         return properties;
     }
 

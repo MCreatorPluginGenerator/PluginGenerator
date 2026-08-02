@@ -19,46 +19,46 @@ import java.util.Map;
 import java.util.Properties;
 
 public interface IFreemakerDebugger {
-    default JComponent getDebuggerComponent(MCreator mCreator){
+    default JComponent getDebuggerComponent(MCreator mCreator) {
         var panel = new JPanel(new BorderLayout());
 
         var propertiesTextArea = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
         propertiesTextArea.setRows(10);
         propertiesTextArea.setSyntaxEditingStyle("text/properties");
         propertiesTextArea.setBorder(BorderFactory.createTitledBorder("Format: Properties"));
-        panel.add(RSyntaxTextAreaFactory.createDefaultTextScrollPane(propertiesTextArea,mCreator),BorderLayout.SOUTH);
+        panel.add(RSyntaxTextAreaFactory.createDefaultTextScrollPane(propertiesTextArea, mCreator), BorderLayout.SOUTH);
 
         var result1 = getResultArea();
         JTextArea result = (JTextArea) result1.getViewport().getView();
         result1.setBorder(BorderFactory.createTitledBorder("Result"));
-        panel.add(result1,"Center");
+        panel.add(result1, "Center");
 
         var toolbar = new JToolBar();
         toolbar.setBorder(BorderFactory.createTitledBorder("Control"));
-        modifyToolBar(mCreator,toolbar,propertiesTextArea,result);
-        panel.add(toolbar,"North");
+        modifyToolBar(mCreator, toolbar, propertiesTextArea, result);
+        panel.add(toolbar, "North");
         return panel;
     }
 
-    default void modifyToolBar(MCreator mCreator,JToolBar toolbar,JTextArea propertiesTextArea,JTextArea result){
+    default void modifyToolBar(MCreator mCreator, JToolBar toolbar, JTextArea propertiesTextArea, JTextArea result) {
         var generate = new JButton(UIRES.get("16px.build"));
         generate.setToolTipText("Generate");
         toolbar.add(generate);
 
-        generate.addActionListener(_->{
-            if (propertiesTextArea.getText().isBlank()){
+        generate.addActionListener(_ -> {
+            if (propertiesTextArea.getText().isBlank()) {
                 var writer = new StringWriter();
                 try {
                     var prop = getDefaultParametersProperties();
                     if (prop != null)
-                        prop.store(writer,"Edit the value to change the result");
+                        prop.store(writer, "Edit the value to change the result");
                 } catch (IOException ignored) {
                 }
                 propertiesTextArea.setText(writer.toString());
             }
             var templateGenerator = getTemplateGenerator();
-            if (templateGenerator != null){
-                var map = new HashMap<String,Object>();
+            if (templateGenerator != null) {
+                var map = new HashMap<String, Object>();
                 var properties = new Properties();
                 try {
                     properties.load(new StringReader(propertiesTextArea.getText()));
@@ -74,8 +74,8 @@ public interface IFreemakerDebugger {
                 map.putAll(getDefaultParameterMap());
 
                 try {
-                    var str = templateGenerator.generateFromString(getFreemakerContent(),map);
-                    result.setText(new CodeCleanup().reformatTheCodeOnly(str));
+                    var str = templateGenerator.generateFromString(getFreemakerContent(), map);
+                    result.setText(new CodeCleanup().reformatTheCodeAndOrganiseImports(mCreator.getWorkspace(), str));
                 } catch (TemplateGeneratorException e) {
                     var writer1 = new StringWriter();
                     e.printStackTrace(new PrintWriter(writer1));
@@ -97,7 +97,7 @@ public interface IFreemakerDebugger {
      */
     Properties getDefaultParametersProperties();
 
-    Map<String,Object> getDefaultParameterMap();
+    Map<String, Object> getDefaultParameterMap();
 
     JScrollPane getResultArea();
 }

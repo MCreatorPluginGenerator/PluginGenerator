@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class TriggerImplementationModElement extends GeneratableElement implements IGeneratorElement, IUniqueElement {
 
+    public boolean debugd;
     public String generatorName;
     public String triggerFileName;
     @ModElementReference public String searchable;

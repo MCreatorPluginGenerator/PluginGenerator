@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 public class PluginProcedureImplementationModElement extends GeneratableElement
         implements IBlocklyElement, IGeneratorElement, IUniqueElement {
 
+    public boolean debugd;
     public String generator;
     public String procedureFileName;
 

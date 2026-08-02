@@ -17,6 +17,7 @@ import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Supplier;
 
 public interface IFreemakerDebugger {
     default JComponent getDebuggerComponent(MCreator mCreator) {
@@ -35,12 +36,13 @@ public interface IFreemakerDebugger {
 
         var toolbar = new JToolBar();
         toolbar.setBorder(BorderFactory.createTitledBorder("Control"));
-        modifyToolBar(mCreator, toolbar, propertiesTextArea, result);
+        modifyToolBar(mCreator, toolbar, propertiesTextArea, result,null);
         panel.add(toolbar, "North");
         return panel;
     }
 
-    default void modifyToolBar(MCreator mCreator, JToolBar toolbar, JTextArea propertiesTextArea, JTextArea result) {
+    default void modifyToolBar(MCreator mCreator, JToolBar toolbar, JTextArea propertiesTextArea, JTextArea result,
+            Supplier<MCreator> debugMCreator) {
         var generate = new JButton(UIRES.get("16px.build"));
         generate.setToolTipText("Generate");
         toolbar.add(generate);
@@ -74,8 +76,14 @@ public interface IFreemakerDebugger {
                 map.putAll(getDefaultParameterMap());
 
                 try {
-                    var str = templateGenerator.generateFromString(getFreemakerContent(), map);
-                    result.setText(new CodeCleanup().reformatTheCodeAndOrganiseImports(mCreator.getWorkspace(), str));
+                    var str = templateGenerator.generateFromString(getFreemakerContent(properties), map);
+                    var clean = new CodeCleanup();
+                    if (debugMCreator != null) {
+                        result.setText(
+                                clean.reformatTheCodeAndOrganiseImports(debugMCreator.get().getWorkspace(), str));
+                    } else {
+                        result.setText(clean.reformatTheCodeOnly(str));
+                    }
                 } catch (TemplateGeneratorException e) {
                     var writer1 = new StringWriter();
                     e.printStackTrace(new PrintWriter(writer1));
@@ -90,7 +98,7 @@ public interface IFreemakerDebugger {
 
     TemplateGenerator getTemplateGenerator();
 
-    String getFreemakerContent();
+    String getFreemakerContent(Properties properties);
 
     /**
      * This will be output to the propertiesTextArea which is editable for user.

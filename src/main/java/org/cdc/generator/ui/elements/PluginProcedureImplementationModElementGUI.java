@@ -8,12 +8,8 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.generator.template.TemplateGenerator;
-import net.mcreator.generator.template.TemplateGeneratorException;
-import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreator;
-import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
-import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.component.VTextField;
@@ -40,10 +36,10 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.ItemEvent;
-import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.function.Supplier;
 
 public class PluginProcedureImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<PluginProcedureImplementationModElement>
@@ -276,73 +272,32 @@ public class PluginProcedureImplementationModElementGUI
     }
 
     @Override public TemplateGenerator getTemplateGenerator() {
-        for (MCreator openMCreator : mcreator.getApplication().getOpenMCreators()) {
-            if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())) {
-                selectedGeneratorMCreator = openMCreator;
-                return openMCreator.getGenerator()
-                        .getTemplateGeneratorFromName(BlocklyEditorType.PROCEDURE.registryName());
-            }
+        findGeneratorMCreator();
+        if (selectedGeneratorMCreator!= null){
+            return selectedGeneratorMCreator.getGenerator().getTemplateGeneratorFromName(parentFolder.getText());
         }
         return null;
     }
 
     private final String METHOD_PARAMETER_KEY = "debugger.method.parameters";
     @Override
-    public void modifyToolBar(MCreator mCreator, JToolBar toolBar, JTextArea propertiesTextArea, JTextArea result) {
-        var generate = new JButton(UIRES.get("16px.build"));
-        generate.setToolTipText("Generate");
-        toolBar.add(generate);
+    public void modifyToolBar(MCreator mCreator, JToolBar toolBar, JTextArea propertiesTextArea, JTextArea result,
+            Supplier<MCreator> mCreatorSupplier) {
+        IFreemakerDebugger.super.modifyToolBar(mCreator, toolBar, propertiesTextArea, result,()->selectedGeneratorMCreator);
 
         toolBar.add(debuged);
-
-        generate.addActionListener(_ -> {
-            if (propertiesTextArea.getText().isBlank()) {
-                var writer = new ByteArrayOutputStream();
-                try {
-                    var prop = getDefaultParametersProperties();
-                    if (prop != null)
-                        prop.store(writer, "Edit the value to change the result");
-                } catch (IOException ignored) {
-                }
-                propertiesTextArea.setText(writer.toString().replace(System.lineSeparator(), "\n"));
-            }
-            var templateGenerator = getTemplateGenerator();
-            if (templateGenerator != null) {
-                var map = new HashMap<String, Object>();
-                var properties = new Properties();
-                try {
-                    properties.load(new StringReader(propertiesTextArea.getText()));
-                } catch (IOException ignored) {
-
-                }
-                for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
-                    var key = objectObjectEntry.getKey().toString();
-                    if (!key.startsWith("debugger.")) {
-                        map.put(key, objectObjectEntry.getValue());
-                    }
-                }
-                map.putAll(getDefaultParameterMap());
-
-                try {
-                    System.out.println(properties);
-                    var str = templateGenerator.generateFromString(
-                            getFreemakerContent0(properties.getProperty(METHOD_PARAMETER_KEY)), map);
-                    result.setText(new CodeCleanup().reformatTheCodeAndOrganiseImports(
-                            selectedGeneratorMCreator.getWorkspace(), str));
-                } catch (TemplateGeneratorException e) {
-                    var writer1 = new StringWriter();
-                    e.printStackTrace(new PrintWriter(writer1));
-                    mcreator.getGradleConsole().append(writer1.toString());
-                    mcreator.getGradleConsole().append(map.toString());
-                }
-            } else {
-                result.setText("Error: " + L10N.t("warnings.should_open_a_selected_generator_workspace"));
-            }
-        });
     }
 
-    @Override public String getFreemakerContent() {
-        return null;
+    private void findGeneratorMCreator(){
+        for (MCreator openMCreator : mcreator.getApplication().getOpenMCreators()) {
+            if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())){
+                selectedGeneratorMCreator = openMCreator;
+            }
+        }
+    }
+
+    @Override public String getFreemakerContent(Properties properties) {
+        return getFreemakerContent0(properties.getProperty(METHOD_PARAMETER_KEY));
     }
 
     public String getFreemakerContent0(String parms) {

@@ -11,12 +11,9 @@ import net.mcreator.generator.blockly.OutputBlockCodeGenerator;
 import net.mcreator.generator.blockly.ProceduralBlockCodeGenerator;
 import net.mcreator.generator.template.TemplateGenerator;
 import net.mcreator.generator.template.TemplateGeneratorException;
-import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
-import net.mcreator.ui.init.L10N;
-import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.ValidationResult;
 import net.mcreator.workspace.elements.ModElement;
@@ -44,13 +41,12 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.function.Supplier;
 
 public class TriggerImplementationModElementGUI
         extends AbstractConfigurationTableModElementGUI<TriggerImplementationModElement> implements IFreemakerDebugger {
@@ -288,57 +284,14 @@ public class TriggerImplementationModElementGUI
         return eventName.getSelectedItem();
     }
 
-    @Override public String getFreemakerContent() {
+    @Override public String getFreemakerContent(Properties properties) {
         return getFreemakerContent0();
     }
 
     @Override
-    public void modifyToolBar(MCreator mCreator, JToolBar toolbar, JTextArea propertiesTextArea, JTextArea result) {
-        var generate = new JButton(UIRES.get("16px.build"));
-        generate.setToolTipText("Generate");
-        toolbar.add(generate);
-
-        generate.addActionListener(_ -> {
-            if (propertiesTextArea.getText().isBlank()) {
-                var writer = new StringWriter();
-                try {
-                    var prop = getDefaultParametersProperties();
-                    if (prop != null)
-                        prop.store(writer, "Edit the value to change the result");
-                } catch (IOException ignored) {
-                }
-                propertiesTextArea.setText(writer.toString());
-            }
-            var templateGenerator = getTemplateGenerator();
-            if (templateGenerator != null) {
-                var map = new HashMap<String, Object>();
-                var properties = new Properties();
-                try {
-                    properties.load(new StringReader(propertiesTextArea.getText()));
-                } catch (IOException ignored) {
-
-                }
-                for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
-                    var key = objectObjectEntry.getKey().toString();
-                    if (!key.startsWith("debugger.")) {
-                        map.put(key, objectObjectEntry.getValue());
-                    }
-                }
-                map.putAll(getDefaultParameterMap());
-
-                try {
-                    var str = templateGenerator.generateFromString(getFreemakerContent(), map);
-                    result.setText(new CodeCleanup().reformatTheCodeAndOrganiseImports(selectedGeneratorMCreator.getWorkspace(), str));
-                } catch (TemplateGeneratorException e) {
-                    var writer1 = new StringWriter();
-                    e.printStackTrace(new PrintWriter(writer1));
-                    mCreator.getGradleConsole().append(writer1.toString());
-                    mCreator.getGradleConsole().append(map.toString());
-                }
-            } else {
-                result.setText("Error: " + L10N.t("warnings.should_open_a_selected_generator_workspace"));
-            }
-        });
+    public void modifyToolBar(MCreator mCreator, JToolBar toolbar, JTextArea propertiesTextArea, JTextArea result,
+            Supplier<MCreator> mCreatorSupplier) {
+        IFreemakerDebugger.super.modifyToolBar(mCreator, toolbar, propertiesTextArea, result,()->selectedGeneratorMCreator);
         toolbar.add(debuged);
     }
 
@@ -354,12 +307,18 @@ public class TriggerImplementationModElementGUI
         return "";
     }
 
-    @Override public TemplateGenerator getTemplateGenerator() {
+    private void findGeneratorMCreator(){
         for (MCreator openMCreator : mcreator.getApplication().getOpenMCreators()) {
             if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())){
                 selectedGeneratorMCreator = openMCreator;
-                return openMCreator.getGenerator().getTemplateGeneratorFromName("triggers");
             }
+        }
+    }
+
+    @Override public TemplateGenerator getTemplateGenerator() {
+        findGeneratorMCreator();
+        if (selectedGeneratorMCreator!= null){
+            return selectedGeneratorMCreator.getGenerator().getTemplateGeneratorFromName("triggers");
         }
         return null;
     }

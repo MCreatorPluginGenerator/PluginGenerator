@@ -6,6 +6,7 @@ import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
+import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -21,19 +22,25 @@ public interface IFreemakerDebugger {
     default JComponent getDebuggerComponent(MCreator mCreator){
         var panel = new JPanel(new BorderLayout());
 
-        var propertiesTextArea = new JTextArea();
+        var propertiesTextArea = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
         propertiesTextArea.setRows(10);
+        propertiesTextArea.setSyntaxEditingStyle("text/properties");
         propertiesTextArea.setBorder(BorderFactory.createTitledBorder("Format: Properties"));
-        panel.add(new JScrollPane(propertiesTextArea),BorderLayout.SOUTH);
+        panel.add(RSyntaxTextAreaFactory.createDefaultTextScrollPane(propertiesTextArea,mCreator),BorderLayout.SOUTH);
 
-        var result = getResultArea();
-        result.setBorder(BorderFactory.createTitledBorder("Result"));
-        result.setEditable(false);
-        panel.add(new JScrollPane(result),"Center");
+        var result1 = getResultArea();
+        JTextArea result = (JTextArea) result1.getViewport().getView();
+        result1.setBorder(BorderFactory.createTitledBorder("Result"));
+        panel.add(result1,"Center");
 
         var toolbar = new JToolBar();
         toolbar.setBorder(BorderFactory.createTitledBorder("Control"));
+        modifyToolBar(mCreator,toolbar,propertiesTextArea,result);
+        panel.add(toolbar,"North");
+        return panel;
+    }
 
+    default void modifyToolBar(MCreator mCreator,JToolBar toolbar,JTextArea propertiesTextArea,JTextArea result){
         var generate = new JButton(UIRES.get("16px.build"));
         generate.setToolTipText("Generate");
         toolbar.add(generate);
@@ -59,7 +66,10 @@ public interface IFreemakerDebugger {
 
                 }
                 for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
-                    map.put(objectObjectEntry.getKey().toString(),objectObjectEntry.getValue());
+                    var key = objectObjectEntry.getKey().toString();
+                    if (!key.startsWith("debugger.")) {
+                        map.put(key, objectObjectEntry.getValue());
+                    }
                 }
                 map.putAll(getDefaultParameterMap());
 
@@ -76,9 +86,6 @@ public interface IFreemakerDebugger {
                 result.setText("Error: " + L10N.t("warnings.should_open_a_selected_generator_workspace"));
             }
         });
-        panel.add(toolbar,"North");
-
-        return panel;
     }
 
     TemplateGenerator getTemplateGenerator();
@@ -92,5 +99,5 @@ public interface IFreemakerDebugger {
 
     Map<String,Object> getDefaultParameterMap();
 
-    JTextArea getResultArea();
+    JScrollPane getResultArea();
 }

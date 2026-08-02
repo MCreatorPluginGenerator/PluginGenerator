@@ -8,14 +8,16 @@ import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.generator.template.TemplateGenerator;
+import net.mcreator.generator.template.TemplateGeneratorException;
+import net.mcreator.java.CodeCleanup;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
+import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.framework.utils.BuilderUtils;
-import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.PluginProcedureImplementationModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
@@ -35,6 +37,7 @@ import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import java.awt.event.ItemEvent;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -53,6 +56,8 @@ public class PluginProcedureImplementationModElementGUI
     private AutoCompletion lastAutoCompletion;
 
     @InjectField org.apache.logging.log4j.Logger LOG;
+
+    private MCreator selectedGeneratorMCreator;
 
     public PluginProcedureImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
             boolean editingMode) {
@@ -249,8 +254,9 @@ public class PluginProcedureImplementationModElementGUI
     }
 
     @Override public TemplateGenerator getTemplateGenerator() {
-        for (MCreator openMCreator : PluginMain.getINSTANCE().getApplication().getOpenMCreators()) {
+        for (MCreator openMCreator : mcreator.getApplication().getOpenMCreators()) {
             if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())) {
+                selectedGeneratorMCreator = openMCreator;
                 return openMCreator.getGenerator()
                         .getTemplateGeneratorFromName(BlocklyEditorType.PROCEDURE.registryName());
             }
@@ -258,28 +264,82 @@ public class PluginProcedureImplementationModElementGUI
         return null;
     }
 
-    @Override public String getFreemakerContent() {
+    private final String METHOD_PARAMETER_KEY = "debugger.parameters";
+    @Override
+    public void modifyToolBar(MCreator mCreator, JToolBar toolBar, JTextArea propertiesTextArea, JTextArea result) {
+        var generate = new JButton(UIRES.get("16px.build"));
+        generate.setToolTipText("Generate");
+        toolBar.add(generate);
 
+        generate.addActionListener(_ -> {
+            if (propertiesTextArea.getText().isBlank()) {
+                var writer = new ByteArrayOutputStream();
+                try {
+                    var prop = getDefaultParametersProperties();
+                    if (prop != null)
+                        prop.store(writer, "Edit the value to change the result");
+                } catch (IOException ignored) {
+                }
+                propertiesTextArea.setText(writer.toString().replace(System.lineSeparator(),"\n"));
+            }
+            var templateGenerator = getTemplateGenerator();
+            if (templateGenerator != null) {
+                var map = new HashMap<String, Object>();
+                var properties = new Properties();
+                try {
+                    properties.load(new StringReader(propertiesTextArea.getText()));
+                } catch (IOException ignored) {
+
+                }
+                for (Map.Entry<Object, Object> objectObjectEntry : properties.entrySet()) {
+                    var key = objectObjectEntry.getKey().toString();
+                    if (!key.startsWith("debugger.")) {
+                        map.put(key, objectObjectEntry.getValue());
+                    }
+                }
+                map.putAll(getDefaultParameterMap());
+
+                try {
+                    System.out.println(properties);
+                    var str = templateGenerator.generateFromString(getFreemakerContent0(properties.getProperty(METHOD_PARAMETER_KEY)), map);
+                    result.setText(new CodeCleanup().reformatTheCodeAndOrganiseImports(
+                            selectedGeneratorMCreator.getWorkspace(), str));
+                } catch (TemplateGeneratorException e) {
+                    var writer1 = new StringWriter();
+                    e.printStackTrace(new PrintWriter(writer1));
+                    mcreator.getGradleConsole().append(writer1.toString());
+                    mcreator.getGradleConsole().append(map.toString());
+                }
+            } else {
+                result.setText("Error: " + L10N.t("warnings.should_open_a_selected_generator_workspace"));
+            }
+        });
+    }
+
+    @Override public String getFreemakerContent() {
+        return null;
+    }
+
+    public String getFreemakerContent0(String parms) {
         if (FTLUtils.isInputProcedure(content.getText())) {
             return """
                     public class ExampleClass{
                         // This a example code. Do not use it.
-                        public static Object execute(Event event){
+                        public static Object execute(%s){
                             return %s;
                         }
                     }
-                    """.formatted(content.getText());
+                    """.formatted(parms, content.getText());
         }
 
         return """
-                import org.cdc.Event;
                 public class ExampleClass{
-                /*This a example code. Do not use it*/
-                    public static void execute(Event event){
+                    /*This a example code. Do not use it*/
+                    public static void execute(%s){
                     %s
                     }
                 }
-                """.formatted(content.getText());
+                """.formatted(parms, content.getText());
     }
 
     @Override public Properties getDefaultParametersProperties() {
@@ -294,6 +354,7 @@ public class PluginProcedureImplementationModElementGUI
         for (String statement : element.statements) {
             properties.setProperty("statement$" + statement, statement);
         }
+        properties.setProperty(METHOD_PARAMETER_KEY,"Event event");
         return properties;
     }
 
@@ -314,10 +375,9 @@ public class PluginProcedureImplementationModElementGUI
 
     }
 
-    @Override public JTextArea getResultArea() {
+    @Override public JScrollPane getResultArea() {
         var rsy = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
         rsy.setSyntaxEditingStyle("text/java");
-        RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy, this);
-        return rsy;
+        return RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy, this);
     }
 }

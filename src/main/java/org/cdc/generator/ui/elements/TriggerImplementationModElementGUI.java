@@ -16,10 +16,8 @@ import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.AggregatedValidationResult;
 import net.mcreator.ui.validation.ValidationResult;
-import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.Logger;
-import org.cdc.generator.PluginMain;
 import org.cdc.generator.elements.TriggerImplementationModElement;
 import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
@@ -54,7 +52,7 @@ public class TriggerImplementationModElementGUI
     final SearchableComboBox<String> triggerFileName = new SearchableComboBox<>();
     private final JCheckBox enableCustom = createDefaultCheckBox();
 
-    private final VTextField eventName = new VTextField();
+    private final SearchableComboBox<String> eventName = new SearchableComboBox<>();
     private final RSyntaxTextArea methodBody = new RSyntaxTextArea();
 
     public List<AbstractMap.SimpleEntry<String, String>> mappingEntries;
@@ -64,6 +62,8 @@ public class TriggerImplementationModElementGUI
     @InjectField Container container;
     @InjectField Logger LOG;
     private JToolBar methodToolBar;
+
+    private MCreator selectedGeneratorMCreator;
 
     public TriggerImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Name", "Map" });
@@ -94,11 +94,12 @@ public class TriggerImplementationModElementGUI
 
         addConfigurationWithHelpEntry("enable_custom", enableCustom);
 
+        eventName.setEditable(true);
         eventName.setValidator(() -> {
-            if (eventName.getText().contains("$")) {
+            if (eventName.getSelectedItem().contains("$")) {
                 return new ValidationResult(ValidationResult.Type.ERROR, "Invalid char $");
             }
-            if (eventName.getText() == null || eventName.getText().isEmpty()) {
+            if (eventName.getSelectedItem() == null || eventName.getSelectedItem().isEmpty()) {
                 return new ValidationResult(ValidationResult.Type.ERROR, "Not empty");
             }
             return ValidationResult.PASSED;
@@ -182,7 +183,7 @@ public class TriggerImplementationModElementGUI
         this.generator.setSelectedItem(generatableElement.generatorName);
         this.triggerFileName.setSelectedItem(generatableElement.triggerFileName);
         this.enableCustom.setSelected(generatableElement.enableCustom);
-        this.eventName.setText(generatableElement.eventName);
+        this.eventName.setSelectedItem(generatableElement.eventName);
         this.methodBody.setText(generatableElement.methodBody);
         this.mappingEntries = Objects.requireNonNullElse(generatableElement.mappingEntries, new ArrayList<>());
         this.relatedSource.setText(generatableElement.relatedClassSource);
@@ -194,7 +195,7 @@ public class TriggerImplementationModElementGUI
         element.searchable = getTriggerModElement().getModElement().getName();
         element.generatorName = generator.getSelectedItem();
         element.enableCustom = enableCustom.isSelected();
-        element.eventName = eventName.getText();
+        element.eventName = eventName.getSelectedItem();
         element.methodBody = methodBody.getText();
         element.mappingEntries = new ArrayList<>(
                 mappingEntries.stream().map(a -> new AbstractMap.SimpleEntry<>(a.getKey(), a.getValue())).toList());
@@ -261,7 +262,7 @@ public class TriggerImplementationModElementGUI
     }
 
     public String getEventName() {
-        return eventName.getText();
+        return eventName.getSelectedItem();
     }
 
     @Override public String getFreemakerContent() {
@@ -281,8 +282,9 @@ public class TriggerImplementationModElementGUI
     }
 
     @Override public TemplateGenerator getTemplateGenerator() {
-        for (MCreator openMCreator : PluginMain.getINSTANCE().getApplication().getOpenMCreators()) {
+        for (MCreator openMCreator : mcreator.getApplication().getOpenMCreators()) {
             if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())){
+                selectedGeneratorMCreator = openMCreator;
                 return openMCreator.getGenerator().getTemplateGeneratorFromName("triggers");
             }
         }
@@ -360,11 +362,10 @@ public class TriggerImplementationModElementGUI
         return dependencies.stream().map(TriggerModElement.Dependency::toDependency).toList();
     }
 
-    @Override public JTextArea getResultArea() {
+    @Override public JScrollPane getResultArea() {
         var rsy = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
         rsy.setSyntaxEditingStyle("text/java");
-        RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy,this);
-        return rsy;
+        return RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy,this);
     }
 
     private class MappingTableModel extends AbstractTableModel {

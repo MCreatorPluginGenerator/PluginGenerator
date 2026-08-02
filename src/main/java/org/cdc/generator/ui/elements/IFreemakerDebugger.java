@@ -58,6 +58,7 @@ public interface IFreemakerDebugger {
                 }
                 propertiesTextArea.setText(writer.toString());
             }
+            result.setText("");
             var templateGenerator = getTemplateGenerator();
             if (templateGenerator != null) {
                 var map = new HashMap<String, Object>();
@@ -73,7 +74,11 @@ public interface IFreemakerDebugger {
                         map.put(key, objectObjectEntry.getValue());
                     }
                 }
-                map.putAll(getDefaultParameterMap());
+                var pro = getDefaultParameterMap();
+                if (pro == null){
+                    return;
+                }
+                map.putAll(pro);
 
                 try {
                     var str = templateGenerator.generateFromString(getFreemakerContent(properties), map);

@@ -335,6 +335,9 @@ public class TriggerImplementationModElementGUI
     @Override public Map<String, Object> getDefaultParameterMap() {
         var additionalData = new HashMap<String, Object>();
         try {
+            if (getTriggerModElement().isEmpty()){
+                return null;
+            }
             BlocklyToProcedure blocklyToJava = getBlocklyToProcedure(additionalData);
             additionalData.put("name","Example");
             additionalData.put("dependencies", reloadDependencies());

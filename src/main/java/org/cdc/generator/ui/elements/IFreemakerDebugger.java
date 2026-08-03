@@ -48,19 +48,19 @@ public interface IFreemakerDebugger {
         toolbar.add(generate);
 
         generate.addActionListener(_ -> {
-            if (propertiesTextArea.getText().isBlank()) {
-                var writer = new StringWriter();
-                try {
-                    var prop = getDefaultParametersProperties();
-                    if (prop != null)
-                        prop.store(writer, "Edit the value to change the result type indicator: /*@type*/");
-                } catch (IOException ignored) {
-                }
-                propertiesTextArea.setText(writer.toString().replace(System.lineSeparator(),"\n"));
-            }
             result.setText("");
             var templateGenerator = getTemplateGenerator();
             if (templateGenerator != null) {
+                if (propertiesTextArea.getText().isBlank()) {
+                    var writer = new StringWriter();
+                    try {
+                        var prop = getDefaultParametersProperties();
+                        if (prop != null)
+                            prop.store(writer, "Edit the value to change the result type indicator: /*@type*/");
+                    } catch (IOException ignored) {
+                    }
+                    propertiesTextArea.setText(writer.toString().replace(System.lineSeparator(),"\n"));
+                }
                 var map = new HashMap<String, Object>();
                 var properties = new Properties();
                 try {
@@ -94,6 +94,7 @@ public interface IFreemakerDebugger {
                     e.printStackTrace(new PrintWriter(writer1));
                     mCreator.getGradleConsole().append(writer1.toString());
                     mCreator.getGradleConsole().append(map.toString());
+                    result.setText("Error: A exception was thrown, please read the console.");
                 }
             } else {
                 result.setText("Error: " + L10N.t("warnings.should_open_a_selected_generator_workspace"));

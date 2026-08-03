@@ -318,7 +318,7 @@ public class PluginProcedureImplementationModElementGUI
 
         return """
                 public class ExampleClass{
-                    /*This a example code. Do not use it*/
+                    /*This is a example code. Do not use it*/
                     public static void execute(%s){
                     %s
                     }
@@ -331,17 +331,20 @@ public class PluginProcedureImplementationModElementGUI
 
         StringBuilder str = new StringBuilder();
         getPluginProcedureModElement().ifPresent(element -> {
+            var typeMapping = selectedGeneratorMCreator.getGenerator().getMappings().getMapping("types");
             for (String input : element.inputs) {
                 properties.setProperty("input$" + input, input);
-                str.append(",Object ").append(input);
+                str.append(", Object ").append(input);
             }
             for (String field : element.fields) {
                 properties.setProperty("field$" + field, field);
-                str.append(",Object ").append(field);
+                str.append(", Object ").append(field);
             }
             for (String statement : element.statements) {
-                properties.setProperty("statement$" + statement, statement+".doSomething();");
-                str.append(",Object ").append(statement);
+                properties.setProperty("statement$" + statement, statement+";//This is a new line");
+            }
+            for (PluginProcedureModElement.Dependency dependency : element.dependencies) {
+                str.append(", ").append(typeMapping.get(dependency.getType())).append(" ").append(dependency.getName());
             }
         });
         properties.setProperty(METHOD_PARAMETER_KEY, "Event event" + str);

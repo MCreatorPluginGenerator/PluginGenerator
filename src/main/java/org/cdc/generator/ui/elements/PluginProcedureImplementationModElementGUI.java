@@ -329,18 +329,22 @@ public class PluginProcedureImplementationModElementGUI
     @Override public Properties getDefaultParametersProperties() {
         var properties = new Properties();
 
+        StringBuilder str = new StringBuilder();
         getPluginProcedureModElement().ifPresent(element -> {
             for (String input : element.inputs) {
                 properties.setProperty("input$" + input, input);
+                str.append(",Object ").append(input);
             }
             for (String field : element.fields) {
                 properties.setProperty("field$" + field, field);
+                str.append(",Object ").append(field);
             }
             for (String statement : element.statements) {
-                properties.setProperty("statement$" + statement, statement);
+                properties.setProperty("statement$" + statement, statement+".doSomething();");
+                str.append(",Object ").append(statement);
             }
         });
-        properties.setProperty(METHOD_PARAMETER_KEY, "Event event");
+        properties.setProperty(METHOD_PARAMETER_KEY, "Event event" + str);
         return properties;
     }
 

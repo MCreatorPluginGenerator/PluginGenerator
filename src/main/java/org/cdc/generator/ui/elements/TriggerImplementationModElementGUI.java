@@ -23,6 +23,7 @@ import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.ComboBoxUtil;
+import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
@@ -303,7 +304,13 @@ public class TriggerImplementationModElementGUI
     public String getFreemakerContent0() {
         try {
             List<GeneratorFile> files = modElement.getGenerator().generateElement(getElementFromGUI(), false, false);
-            return files.getFirst().contents();
+            var content = files.getFirst().contents();
+            var countDivi = FTLUtils.countBracket(content);
+            if (countDivi %2 ==0) {
+                return content;
+            } else {
+                return content +"}";
+            }
         } catch (Exception e){
             StringWriter stringWriter = new StringWriter();
             e.printStackTrace(new PrintWriter(stringWriter));

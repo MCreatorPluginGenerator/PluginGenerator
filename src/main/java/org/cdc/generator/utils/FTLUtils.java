@@ -8,7 +8,8 @@ public class FTLUtils {
     private static final Pattern cast = Pattern.compile("(/\\*@[a-zA-Z]+?\\*/)+");
 
     public static boolean isInputProcedure(String code) {
-        return !code.endsWith("}") && !code.endsWith(";");
+        code = code.replaceAll("[{}]","").trim();
+        return !code.endsWith(";");
     }
 
     public static String getFileNameWithoutExtensions(String name) {
@@ -34,6 +35,16 @@ public class FTLUtils {
             return code.contains("package ");
         }
         return false;
+    }
+
+    public static int countBracket(String str){
+        Pattern pattern = Pattern.compile("[{}]");
+        var matcher = pattern.matcher(str);
+        int count = 0;
+        while (matcher.find()){
+            count++;
+        }
+        return count;
     }
 
     public static String generateCodeHead(String code, String comment){

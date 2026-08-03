@@ -56,7 +56,7 @@ public interface IFreemakerDebugger {
                         prop.store(writer, "Edit the value to change the result type indicator: /*@type*/");
                 } catch (IOException ignored) {
                 }
-                propertiesTextArea.setText(writer.toString());
+                propertiesTextArea.setText(writer.toString().replace(System.lineSeparator(),"\n"));
             }
             result.setText("");
             var templateGenerator = getTemplateGenerator();

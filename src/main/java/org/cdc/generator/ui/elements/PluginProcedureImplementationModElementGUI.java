@@ -346,7 +346,7 @@ public class PluginProcedureImplementationModElementGUI
 
     @Override public Map<String, Object> getDefaultParameterMap() {
         var dataModel = new HashMap<String, Object>();
-        dataModel.put("cbi", (int) (Math.random() * 100));
+        dataModel.put("cbi", Math.round(Math.random() * 100));
         dataModel.put("addTemplate", new CallPrinter("addTemplate", mcreator));
         dataModel.put("addAdditionalCode", new CallPrinter("addAdditionalCode", mcreator));
         return dataModel;

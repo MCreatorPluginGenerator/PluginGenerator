@@ -311,14 +311,17 @@ public class PluginMain extends JavaPlugin {
             }
 
             if (!Launcher.version.isDevelopment()) {
-                var runPlugins = workspaceDecorator.getWorkspacePluginsFile();
+                var runPlugins = workspaceDecorator.getWorkspaceRunPluginsFile();
                 if (runPlugins.isDirectory()) {
                     FileIO.deleteDir(runPlugins);
+                } else if (runPlugins.isFile()) {
+                    runPlugins.delete();
                 }
+                runPlugins.mkdirs();
 
                 for (Plugin instancePlugin : PluginLoader.INSTANCE.getPlugins()) {
                     try {
-                        Files.copy(instancePlugin.getFile().toPath(), runPlugins.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(instancePlugin.getFile().toPath(), runPlugins.toPath().resolve(instancePlugin.getFile().getName()), StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

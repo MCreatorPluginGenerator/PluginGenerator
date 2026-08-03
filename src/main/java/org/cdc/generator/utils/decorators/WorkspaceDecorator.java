@@ -119,7 +119,7 @@ public class WorkspaceDecorator {
         return new File(getWorkspaceFolder(), ".mcreator/libs");
     }
 
-    public File getWorkspacePluginsFile(){
+    public File getWorkspaceRunPluginsFile(){
         return new File(getWorkspaceFolder(), "run/plugins");
     }
 }

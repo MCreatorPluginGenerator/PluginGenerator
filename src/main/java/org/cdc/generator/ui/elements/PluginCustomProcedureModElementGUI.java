@@ -129,7 +129,7 @@ public class PluginCustomProcedureModElementGUI
                 mcreator, modElement1, false);
         element.procedureFileName.setSelectedItem(this.name.getText());
         element.generator.setSelectedItem(generator);
-        element.parentFolder.setText("aitasks");
+        element.parentFolder.setText(parentFolder.getText());
         element.showView();
     }
 

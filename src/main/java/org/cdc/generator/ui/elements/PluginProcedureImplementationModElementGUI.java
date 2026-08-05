@@ -262,7 +262,7 @@ public class PluginProcedureImplementationModElementGUI
 
     public Optional<PluginProcedureModElement> getPluginProcedureModElement() {
         if (procedureFileName.getSelectedItem() == null) {
-            return null;
+            return Optional.empty();
         }
         for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
             if (modElement.getRegistryName().equals(procedureFileName.getSelectedItem())) {

@@ -273,7 +273,7 @@ public class PluginMain extends JavaPlugin {
                 LOG.debug("Try to add weight_0 to dependants");
                 workspaceDecorator.addWeight(0);
 
-                warnSnapshot();
+                warnSnapshot(workspaceDecorator);
             }
 
             var libs = workspaceDecorator.getWorkspaceLibraryFile();
@@ -321,7 +321,9 @@ public class PluginMain extends JavaPlugin {
 
                 for (Plugin instancePlugin : PluginLoader.INSTANCE.getPlugins()) {
                     try {
-                        Files.copy(instancePlugin.getFile().toPath(), runPlugins.toPath().resolve(instancePlugin.getFile().getName()), StandardCopyOption.REPLACE_EXISTING);
+                        Files.copy(instancePlugin.getFile().toPath(),
+                                runPlugins.toPath().resolve(instancePlugin.getFile().getName()),
+                                StandardCopyOption.REPLACE_EXISTING);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
@@ -330,11 +332,16 @@ public class PluginMain extends JavaPlugin {
         });
     }
 
-    private void warnSnapshot() {
+    private void warnSnapshot(WorkspaceDecorator workspaceDecorator) {
         SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(null,
-                    "This wouldn't have been possible without the incredible support from the community. If you encounter any bugs, please report them on my plugin page.",
-                    "You are using snapshot", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, L10N.t("dialogs.your_snapshot.thank_you"),
+                    "You are using snapshot plugin", JOptionPane.WARNING_MESSAGE);
+            var opt = JOptionPane.showConfirmDialog(null,
+                    L10N.t("dialogs.your_snapshot.support_current_version", Launcher.version.majorlong + ""),
+                    "Initializing", JOptionPane.OK_CANCEL_OPTION);
+            if (opt == JOptionPane.OK_OPTION) {
+                workspaceDecorator.addSupportedVersion(Launcher.version.majorlong);
+            }
         });
     }
 

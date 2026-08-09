@@ -32,10 +32,9 @@ import org.cdc.generator.init.Menus;
 import org.cdc.generator.init.ResourcePanels;
 import org.cdc.generator.ui.InformationDock;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
+import org.cdc.generator.utils.DialogUtils;
 import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
-import org.cdc.generator.utils.WorkspaceUtils;
-import org.cdc.generator.utils.ZipUtils;
 import org.cdc.generator.utils.decorators.WorkspaceDecorator;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.writers.JSONWriter;
@@ -44,7 +43,6 @@ import org.cdc.js.JavaScriptBridge;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -273,41 +271,8 @@ public class PluginMain extends JavaPlugin {
                 LOG.debug("Try to add weight_0 to dependants");
                 workspaceDecorator.addWeight(0);
 
-                warnSnapshot(workspaceDecorator);
-            }
-
-            var libs = workspaceDecorator.getWorkspaceLibraryFile();
-            var oldLibs = new File(WorkspaceUtils.getWorkspaceFolder(mcreator), "libs");
-            if (oldLibs.isDirectory()) {
-                FileIO.deleteDir(oldLibs);
-            }
-            if (libs.isDirectory() && !Launcher.version.isDevelopment()) {
-                FileIO.deleteDir(libs);
-                LOG.debug("Plugin maker has removed all old jars");
-            }
-
-            var mcreatorJar = new File("mcreator.jar");
-            var mcreatorExe = new File("mcreator.exe");
-            var mcreatorLibJar = new File(libs, "mcreator.jar");
-            if (mcreatorJar.isFile()) {
-                FileIO.copyFile(mcreatorJar, mcreatorLibJar);
-                LOG.debug("Plugin maker has copied main mcreator lib, type: jar");
-            } else if (mcreatorExe.isFile()) {
-                try {
-                    var pureMCreatorJar = ZipUtils.tryToConvertExeToJar(mcreatorExe);
-                    FileIO.copyFile(pureMCreatorJar, mcreatorJar);
-                    FileIO.copyFile(pureMCreatorJar, mcreatorLibJar);
-                    LOG.debug("Plugin maker has copied main mcreator libs, type: exe");
-                    Files.deleteIfExists(pureMCreatorJar.toPath());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-
-            var mcreatorLibs = new File("lib");
-            if (mcreatorLibs.isDirectory()) {
-                FileIO.copyDirectory(mcreatorLibs, libs);
-                LOG.debug("Plugin maker has copied all mcreator libs");
+                warnSnapshot();
+                DialogUtils.initWorkspace(mcreator, workspaceDecorator);
             }
 
             if (!Launcher.version.isDevelopment()) {
@@ -332,16 +297,10 @@ public class PluginMain extends JavaPlugin {
         });
     }
 
-    private void warnSnapshot(WorkspaceDecorator workspaceDecorator) {
+    private void warnSnapshot() {
         SwingUtilities.invokeLater(() -> {
             JOptionPane.showMessageDialog(null, L10N.t("dialogs.your_snapshot.thank_you"),
                     "You are using snapshot plugin", JOptionPane.WARNING_MESSAGE);
-            var opt = JOptionPane.showConfirmDialog(null,
-                    L10N.t("dialogs.your_snapshot.support_current_version", Launcher.version.majorlong + ""),
-                    "Initializing", JOptionPane.OK_CANCEL_OPTION);
-            if (opt == JOptionPane.OK_OPTION) {
-                workspaceDecorator.addSupportedVersion(Launcher.version.majorlong);
-            }
         });
     }
 

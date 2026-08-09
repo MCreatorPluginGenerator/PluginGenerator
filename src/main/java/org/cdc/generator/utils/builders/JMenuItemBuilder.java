@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 public class JMenuItemBuilder {
     private String parentMenuName;
     private String name;
+    private String tooltipText;
     private ActionListener actionListener;
 
     public JMenuItemBuilder() {
@@ -65,12 +66,20 @@ public class JMenuItemBuilder {
         return this;
     }
 
+    public JMenuItemBuilder setToolTipText(String toolTipText){
+        this.tooltipText = toolTipText;
+        return this;
+    }
+
     public JMenuItem build() {
         JMenuItem menuitem = null;
         if (parentMenuName != null){
             menuitem = new JMenuItem(L10N.t("menus." + parentMenuName + "." + name));
         } else {
             menuitem = new JMenuItem(name);
+        }
+        if (tooltipText != null){
+            menuitem.setToolTipText(tooltipText);
         }
         menuitem.setName(name);
         menuitem.addActionListener(actionListener);

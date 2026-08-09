@@ -101,10 +101,20 @@ public class Menus {
                         if (!workspace.hasSupportedVersion(key)) {
                             workspace.addSupportedVersion(key);
                             mcreator.getToolkit().beep();
-                            mcreator.getStatusBar().setPersistentMessage("Appended " + WorkspaceUtils.supportedVersionDependant(key));
+                            mcreator.getStatusBar()
+                                    .setPersistentMessage("Appended " + WorkspaceUtils.supportedVersionDependant(key));
                         }
                     }).build()));
         }).build());
+        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("clear_all_supportedversions")
+                .setActionListener(_ -> {
+                    workspace.clearAllSupportedVersions();
+                }).build());
+        if (workspace.isInDevelopment()) {
+            PLUGIN_MAKER.add(new JMenuItemBuilder().setName("Development: Reinit").setActionListener(_ -> {
+                workspace.reinit(mcreator);
+            }).build());
+        }
         DATALIST_UTILS.add(
                 new JMenuBuilder().setParentMenuName("datalist_utils").setName("calculate_types").setReload(jMenu -> {
                     if (mcreator.getTabs().getCurrentTab()

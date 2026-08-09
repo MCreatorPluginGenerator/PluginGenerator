@@ -1,7 +1,6 @@
 package org.cdc.generator;
 
 import com.google.gson.JsonObject;
-import net.mcreator.Launcher;
 import net.mcreator.io.FileIO;
 import net.mcreator.plugin.DynamicURLClassLoader;
 import net.mcreator.plugin.JavaPlugin;
@@ -275,7 +274,7 @@ public class PluginMain extends JavaPlugin {
                 DialogUtils.initWorkspace(mcreator, workspaceDecorator);
             }
 
-            if (!Launcher.version.isDevelopment()) {
+            if (!workspaceDecorator.isInDevelopment()) {
                 var runPlugins = workspaceDecorator.getWorkspaceRunPluginsFile();
                 if (runPlugins.isDirectory()) {
                     FileIO.deleteDir(runPlugins);

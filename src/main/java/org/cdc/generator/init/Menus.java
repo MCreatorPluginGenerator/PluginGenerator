@@ -110,6 +110,10 @@ public class Menus {
                 .setActionListener(_ -> {
                     workspace.clearAllSupportedVersions();
                 }).build());
+        PLUGIN_MAKER.add(new JMenuItemBuilder().setName("Convert mcreator instance to java plugin libraries").setActionListener(_->{
+            var file = FileDialogs.getSaveDialog(mcreator,"mcreator",new String[]{"exe"});
+            workspace.injectMCreatorLibraries(file.getParentFile());
+        }).build());
         if (workspace.isInDevelopment()) {
             PLUGIN_MAKER.add(new JMenuItemBuilder().setName("Development: Reinit").setActionListener(_ -> {
                 workspace.reinit(mcreator);

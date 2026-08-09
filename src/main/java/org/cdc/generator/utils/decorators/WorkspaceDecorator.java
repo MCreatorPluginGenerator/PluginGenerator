@@ -94,6 +94,7 @@ public class WorkspaceDecorator {
     public void clearAllWeights(){
         getDependants().stream()
                 .filter(str -> str.startsWith("weight_")).forEach(a-> workspace.getWorkspaceSettings().dependants.remove(a));
+        LOG.debug("Clear all weight depends");
     }
 
     public void addWeight(int weight){
@@ -108,6 +109,7 @@ public class WorkspaceDecorator {
     public void clearAllSupportedVersions(){
         getDependants().stream()
                 .filter(str -> str.startsWith("mcreator")).forEach(a-> workspace.getWorkspaceSettings().dependants.remove(a));
+        LOG.debug("Clear all supported versions");
     }
 
     public void addSupportedVersion(long versionLong){
@@ -142,6 +144,7 @@ public class WorkspaceDecorator {
     }
 
     public void reinit(MCreator mcreator){
+        clearAllWeights();
         mcreator.closeThisMCreator(true);
     }
 
@@ -155,7 +158,7 @@ public class WorkspaceDecorator {
         if (oldLibs.isDirectory()) {
             FileIO.deleteDir(oldLibs);
         }
-        if (libs.isDirectory() && !Launcher.version.isDevelopment()) {
+        if (libs.isDirectory() && isInDevelopment()) {
             FileIO.deleteDir(libs);
             LOG.debug("Plugin maker has removed all old jars");
         }

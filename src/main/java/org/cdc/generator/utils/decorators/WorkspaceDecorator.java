@@ -158,9 +158,15 @@ public class WorkspaceDecorator {
         if (oldLibs.isDirectory()) {
             FileIO.deleteDir(oldLibs);
         }
-        if (libs.isDirectory() && isInDevelopment()) {
-            FileIO.deleteDir(libs);
-            LOG.debug("Plugin maker has removed all old jars");
+        if (libs.exists()) {
+            if (libs.isDirectory() && !isInDevelopment()) {
+                FileIO.deleteDir(libs);
+                LOG.debug("Plugin maker has removed all old jars");
+            }
+        } else {
+            if (libs.mkdirs()){
+                LOG.debug("Created libs path");
+            }
         }
 
         var mcreatorJar = new File(mcreatorPath,"mcreator.jar");

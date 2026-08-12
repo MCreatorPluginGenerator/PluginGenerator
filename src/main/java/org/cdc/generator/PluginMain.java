@@ -71,7 +71,7 @@ public class PluginMain extends JavaPlugin {
 
         Container.getInstance().registerObject("pluginMain", () -> INSTANCE);
 
-        addListener(MCreatorLoadedEvent.class, this::initPluginMakerWorkspace);
+        addListener(MCreatorLoadedEvent.class, event -> initPluginMakerWorkspace(event.getMCreator()));
 
         addListener(PreGeneratorsLoadingEvent.class, event -> {
             try {
@@ -245,8 +245,7 @@ public class PluginMain extends JavaPlugin {
 
     private final HashMap<MCreator, InformationDock> dockHashMap = new HashMap<>();
 
-    private void initPluginMakerWorkspace(MCreatorLoadedEvent event) {
-        var mcreator = event.getMCreator();
+    private void initPluginMakerWorkspace(MCreator mcreator) {
 
         var informationDock = new InformationDock(mcreator);
         dockHashMap.put(mcreator, informationDock);

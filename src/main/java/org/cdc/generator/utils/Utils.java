@@ -186,10 +186,11 @@ public class Utils {
         dimension.width *= 2;
         panel.setMaximumSize(dimension);
         panel.setOpaque(true);
-
-        if (defaultValue != null){
-            searchbar.setText(defaultValue);
-        }
+        SwingUtilities.invokeLater(()->{
+            if (defaultValue != null){
+                searchbar.setText(defaultValue);
+            }
+        });
         return panel;
     }
 

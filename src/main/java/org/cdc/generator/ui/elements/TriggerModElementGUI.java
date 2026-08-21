@@ -16,6 +16,7 @@ import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.APIListField;
 import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
+import org.cdc.generator.ui.renderer.VariableTypeColorize;
 import org.cdc.generator.utils.ElementsUtils;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
@@ -128,9 +129,11 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
                         typeComboBox.addItem(supportedType.name());
                     }
                     typeComboBox.setSelectedItem(value);
+                    typeComboBox.setRenderer(new VariableTypeColorize());
                 } else if (columnName.equals("Name")
                         && PluginMakerPreference.INSTANCE.triggerDependencyUsingNameToType.get()) {
                     value = value + ":" + row.getType();
+                    typeComboBox.setRenderer(new DefaultListCellRenderer());
                 }
                 return super.getTableCellEditorComponent(table, value, isSelected, rowIndex, columnIndex);
             }

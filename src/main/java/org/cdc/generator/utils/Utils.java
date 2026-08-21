@@ -57,7 +57,7 @@ public class Utils {
         if (updateInfo != null) {
             for (Map.Entry<String, Release> s : updateInfo.getReleases().entrySet()) {
                 list.add(Rules.versionStringToVersionLong(s.getKey()));
-                list.add(Rules.versionStringToVersionLong(s.getKey()+s.getValue().getLatestBuild()));
+                list.add(Rules.versionStringToVersionLong(s.getKey() + s.getValue().getLatestBuild()));
             }
         } else {
             list.add(Launcher.version.majorlong);
@@ -103,6 +103,11 @@ public class Utils {
     }
 
     public static JPanel initSearchComponent(ArrayList<Integer> lastSearchResult, ISearchable searchable) {
+        return initSearchComponent(lastSearchResult, searchable, null);
+    }
+
+    public static JPanel initSearchComponent(ArrayList<Integer> lastSearchResult, ISearchable searchable,
+            String defaultValue) {
         if (lastSearchResult.size() != 1) {
             lastSearchResult.add(-1);
         }
@@ -181,6 +186,10 @@ public class Utils {
         dimension.width *= 2;
         panel.setMaximumSize(dimension);
         panel.setOpaque(true);
+
+        if (defaultValue != null){
+            searchbar.setText(defaultValue);
+        }
         return panel;
     }
 

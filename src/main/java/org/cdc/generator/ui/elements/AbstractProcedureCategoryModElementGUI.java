@@ -8,6 +8,7 @@ import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.ProcedureCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.ui.SearchableComboBox;
+import org.cdc.generator.ui.renderer.ToolBoxIdRenderer;
 import org.cdc.generator.utils.ComboBoxUtil;
 import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.Rules;
@@ -51,6 +52,7 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
 
         parentCategory.setSelectedItem(Constants.NONE);
         parentCategory.setEditable(true);
+        parentCategory.setRenderer(new ToolBoxIdRenderer(mcreator));
         addConfigurationWithHelpEntry("parent_category", parentCategory);
 
         //        addConfigurationWithHelpEntry("custom_parent_category", customCategory);

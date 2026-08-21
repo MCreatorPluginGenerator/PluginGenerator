@@ -32,6 +32,8 @@ import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.ui.TypeListField;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.ui.renderer.CustomWarningStringListCellRenderer;
+import org.cdc.generator.ui.renderer.ToolBoxIdRenderer;
+import org.cdc.generator.ui.renderer.VariableTypeColorize;
 import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IArg0Type;
@@ -153,21 +155,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
 
         toolboxId.setSelectedItem("other");
         toolboxId.setEditable(true);
-        toolboxId.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
-                    boolean cellHasFocus) {
-                JLabel jLabel = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected,
-                        cellHasFocus);
-                var key = L10NHelper.getBlocklyCategoryKey(jLabel.getText());
-                var text = Objects.requireNonNullElse(L10N.t(key),
-                        L10NHelper.getDefaultTranslation(mcreator, key, jLabel.getText()));
-                if (!text.isEmpty()) {
-                    jLabel.setText(text);
-                }
-                return jLabel;
-            }
-        });
+        toolboxId.setRenderer(new ToolBoxIdRenderer(mcreator));
         addConfigurationWithHelpEntry("toolbox_id", toolboxId);
 
         group.setValidator(new NotEmptyValidator(group::getText));
@@ -253,9 +241,11 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
                     for (VariableType supportedType : ElementsUtils.getAllSupportedVariableTypes()) {
                         typeComboBox.addItem(supportedType.name());
                     }
+                    typeComboBox.setRenderer(new VariableTypeColorize());
                 } else if (columnName.equals("Dependency name")
                         && PluginMakerPreference.INSTANCE.triggerDependencyUsingNameToType.get()) {
                     value = value + ":" + row.getType();
+                    typeComboBox.setRenderer(new DefaultListCellRenderer());
                 }
                 return super.getTableCellEditorComponent(table, value, isSelected, rowIndex, columnIndex);
             }

@@ -169,7 +169,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
         bar.add(addrow);
         JButton remrow = createJTableRemoveRowButton();
         bar.add(remrow);
-        bar.add(Utils.initSearchComponent(lastSearchResult, this));
+        bar.add(Utils.initSearchComponent(lastSearchResult, this,"Builtin=false"));
 
         addrow.addActionListener(e -> {
             entries.add(entries.isEmpty() ?

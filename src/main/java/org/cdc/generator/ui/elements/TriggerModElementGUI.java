@@ -23,9 +23,9 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.VariableType;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
 import org.cdc.generator.utils.validators.DuplicatedElementValidator;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -60,7 +60,7 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
     // the 0 is the last search index
     protected final ArrayList<Integer> lastSearchResult;
 
-    public TriggerModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public TriggerModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Name", "Type" });
         this.dependencies = new ArrayList<>();
         this.lastSearchResult = new ArrayList<>();
@@ -163,11 +163,11 @@ public class TriggerModElementGUI extends AbstractConfigurationTableModElementGU
 
         bar.add(Utils.initSearchComponent(lastSearchResult, this));
 
-        addrow.addActionListener(a -> {
+        addrow.addActionListener(_ -> {
             addDependency("name" + dependencies.size(), "type");
             refreshTable();
         });
-        remrow.addActionListener(a -> {
+        remrow.addActionListener(_ -> {
             jTable.editCellAt(-1, 0);
             var stack = new Stack<Integer>();
             Arrays.stream(jTable.getSelectedRows()).forEach(stack::add);

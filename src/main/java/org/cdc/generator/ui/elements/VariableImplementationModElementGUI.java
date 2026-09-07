@@ -13,10 +13,7 @@ import org.cdc.generator.elements.VariableImplementationModElement;
 import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.SearchableComboBox;
-import org.cdc.generator.utils.ComboBoxUtil;
-import org.cdc.generator.utils.DialogUtils;
-import org.cdc.generator.utils.Utils;
-import org.cdc.generator.utils.YamlUtils;
+import org.cdc.generator.utils.*;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
@@ -26,9 +23,9 @@ import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
@@ -47,7 +44,7 @@ public class VariableImplementationModElementGUI
     final SearchableComboBox<String> variableElementName = new SearchableComboBox<>();
     final VTextField defaultValue = new VTextField();
 
-    private List<VariableImplementationModElement.VariableScope> scopeList = new ArrayList<>();
+    private final List<VariableImplementationModElement.VariableScope> scopeList = new ArrayList<>();
 
     private final Map<String, MethodHandle> cacheHandles = new HashMap<>();
     // Access the mcreator private field.
@@ -56,7 +53,7 @@ public class VariableImplementationModElementGUI
     @InjectField private Logger LOGGER;
     @InjectField private Container container;
 
-    public VariableImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public VariableImplementationModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Scope name", "Init", "Get", "Set", "Read", "Write" });
 
         if (editingMode && isUnique()) {
@@ -74,6 +71,7 @@ public class VariableImplementationModElementGUI
         addGeneratorConfiguration(generator);
 
         variableElementName.setEditable(false);
+        variableElementName.setSelectedItem(Constants.NONE);
         variableElementName.setValidator(new NotEmptyValidator(variableElementName::getSelectedItem));
         variableElementName.setRenderer(new DefaultListCellRenderer() {
             @Override

@@ -15,9 +15,9 @@ import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -46,7 +46,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
 
     @InjectField Logger LOG;
 
-    public MappingsModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public MappingsModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Name", "Mapping" });
 
         this.mappingEntries = new ArrayList<>();
@@ -109,9 +109,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
                         appendName.setContentAreaFilled(false);
                         appendName.setOpaque(false);
                         appendName.setHorizontalTextPosition(SwingConstants.LEFT);
-                        appendName.addActionListener(event -> {
-                            jTextArea.insert(a, jTextArea.getCaretPosition());
-                        });
+                        appendName.addActionListener(_ -> jTextArea.insert(a, jTextArea.getCaretPosition()));
                         placeholder.add(appendName);
                     });
                     int op = DialogUtils.showOptionPaneWithTextAreaAndToolBar(jTextArea, placeholder, mcreator,
@@ -139,7 +137,7 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
                 return super.getTableCellEditorComponent(jTable, value1, isSelected, rowIndex, column);
             }
         });
-        syncDatalist.addActionListener(e -> {
+        syncDatalist.addActionListener(_ -> {
             var datalist = mcreator.getWorkspace().getModElementByName(datalistName.getSelectedItem());
             //
             MappingsModElementGUI.this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));

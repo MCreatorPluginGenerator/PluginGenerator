@@ -23,6 +23,7 @@ import org.cdc.generator.elements.TriggerModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.ComboBoxUtil;
+import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
@@ -35,9 +36,8 @@ import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
+import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -70,7 +70,7 @@ public class TriggerImplementationModElementGUI
 
     private MCreator selectedGeneratorMCreator;
 
-    public TriggerImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public TriggerImplementationModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Name", "Map" });
 
         this.mappingEntries = new ArrayList<>();
@@ -93,6 +93,7 @@ public class TriggerImplementationModElementGUI
         addGeneratorConfiguration(generator);
 
         triggerFileName.setEditable(true);
+        triggerFileName.setSelectedItem(Constants.NONE);
         triggerFileName.setValidator(new NotEmptyValidator(triggerFileName::getSelectedItem));
         addElementSelectorConfiguration("trigger_element_name", triggerFileName,
                 () -> getTriggerModElement().get().getModElement());
@@ -101,11 +102,11 @@ public class TriggerImplementationModElementGUI
 
         eventName.setEditable(true);
         eventName.setValidator(() -> {
-            if (eventName.getSelectedItem().contains("$")) {
-                return new ValidationResult(ValidationResult.Type.ERROR, "Invalid char $");
-            }
             if (eventName.getSelectedItem() == null || eventName.getSelectedItem().isEmpty()) {
                 return new ValidationResult(ValidationResult.Type.ERROR, "Not empty");
+            }
+            if (eventName.getSelectedItem().contains("$")) {
+                return new ValidationResult(ValidationResult.Type.ERROR, "Invalid char $");
             }
             return ValidationResult.PASSED;
         });
@@ -133,7 +134,7 @@ public class TriggerImplementationModElementGUI
         });
         panel.setBorder(BorderFactory.createTitledBorder("Body (ctrl+1 to auto complete)"));
 
-        generator.addItemListener(eventName -> reloadToolBar());
+        generator.addItemListener(_ -> reloadToolBar());
         addPage(PanelUtils.northAndCenterElement(buildConfiguration(2), panel)).validate(generator)
                 .validate(triggerFileName).validate(eventName).lazyValidate(
                         () -> methodBody.getText().contains("@Placeholder") ?
@@ -146,7 +147,7 @@ public class TriggerImplementationModElementGUI
         toolBar.setOpaque(false);
         JButton remrow = createRemoveRowButton();
 
-        remrow.addActionListener(a -> {
+        remrow.addActionListener(_ -> {
             jTable.editCellAt(-1, 0);
             var stack = new Stack<Integer>();
             Arrays.stream(jTable.getSelectedRows()).forEach(stack::add);
@@ -213,7 +214,7 @@ public class TriggerImplementationModElementGUI
         var triggerModElement = getTriggerModElement();
 
         element.triggerFileName = triggerFileName.getSelectedItem();
-        triggerModElement.ifPresent(value -> element.searchable = value.getModElement().getName());
+        triggerModElement.ifPresent(value1 -> element.searchable = value1.getModElement().getName());
         element.generatorName = generator.getSelectedItem();
         element.enableCustom = enableCustom.isSelected();
         element.eventName = eventName.getSelectedItem();
@@ -225,14 +226,14 @@ public class TriggerImplementationModElementGUI
         return element;
     }
 
-    @Override public @Nullable URI contextURL() throws URISyntaxException {
+    @Override public URI contextURL() throws URISyntaxException {
         return new URI(
                 "https://mcreator.net/wiki/creating-global-triggers#:~:text=true%22%2C%0A%20%20%22has_result%22%3A%20%22true%22%0A%7D-,Make%20the%20code%20of%20your%20global%20trigger,-The%20folder");
     }
 
     public Optional<TriggerModElement> getTriggerModElement() {
         if (triggerFileName.getSelectedItem() == null) {
-            return null;
+            return Optional.empty();
         }
         for (ModElement modElement : mcreator.getWorkspace().getModElements()) {
             if (modElement.getRegistryName().equals(triggerFileName.getSelectedItem())) {

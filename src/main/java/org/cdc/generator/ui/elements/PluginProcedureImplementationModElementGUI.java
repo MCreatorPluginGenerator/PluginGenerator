@@ -29,9 +29,9 @@ import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.ioc.InjectField;
 import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -59,7 +59,7 @@ public class PluginProcedureImplementationModElementGUI
 
     private MCreator selectedGeneratorMCreator;
 
-    public PluginProcedureImplementationModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
+    public PluginProcedureImplementationModElementGUI(MCreator mcreator, @Nonnull ModElement modElement,
             boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
@@ -76,7 +76,7 @@ public class PluginProcedureImplementationModElementGUI
         this.initGUI();
         this.finalizeGUI();
 
-        procedureFileName.addItemListener(a -> reloadComplete());
+        procedureFileName.addItemListener(_ -> reloadComplete());
         reloadComplete();
     }
 
@@ -107,7 +107,7 @@ public class PluginProcedureImplementationModElementGUI
                 () -> getPluginProcedureModElement().orElseThrow().getModElement());
 
         addConfigurationWithHelpEntry("is_template", isTemplate);
-        isTemplate.addActionListener(a -> {
+        isTemplate.addActionListener(_ -> {
             templateFolder.setEnabled(isTemplate.isSelected());
         });
         templateFolder.setEnabled(false);
@@ -116,7 +116,7 @@ public class PluginProcedureImplementationModElementGUI
         var toolbar = new JToolBar();
         JButton generate = new JButton(UIRES.get("18px.import"));
         generate.setToolTipText("Generate code");
-        generate.addActionListener(e -> {
+        generate.addActionListener(_ -> {
             JsonArray inputs = new JsonArray();
             getPluginProcedureModElement().ifPresent(procedureModElement -> {
                 for (String input : procedureModElement.inputs) {

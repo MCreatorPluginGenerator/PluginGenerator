@@ -6,12 +6,13 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.ProcedureCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
-import org.jspecify.annotations.NonNull;
+
+import javax.annotation.Nonnull;
 
 public class ProcedureCategoryModElementGUI
         extends AbstractProcedureCategoryModElementGUI<ProcedureCategoryModElement> {
 
-    public ProcedureCategoryModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public ProcedureCategoryModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode);
 
         this.initGUI();

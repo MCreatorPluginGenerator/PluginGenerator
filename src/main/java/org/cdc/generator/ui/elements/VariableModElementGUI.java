@@ -16,9 +16,9 @@ import org.cdc.generator.utils.ComboBoxUtil;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -42,7 +42,7 @@ public class VariableModElementGUI extends AbstractConfigurationTableModElementG
     private final VTextField callAndGetLocalization;
     private final VTextField returnLocalization;
 
-    public VariableModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public VariableModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
         this.requiredApis = new APIListField(mcreator);

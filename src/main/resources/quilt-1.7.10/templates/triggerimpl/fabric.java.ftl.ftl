@@ -1,3 +1,4 @@
+<!-- fabric template -->
 <#noparse><#include "procedures.java.ftl">
 public ${name}Procedure() {</#noparse>
 	${data.eventName}.register(

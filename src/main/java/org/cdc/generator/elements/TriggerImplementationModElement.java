@@ -48,6 +48,9 @@ public class TriggerImplementationModElement extends GeneratableElement implemen
     }
 
     @UsedByReflection public String getEventNameUsedAsMethodName() {
+        if (eventName == null){
+            return null;
+        }
         if (eventName.contains(".")) {
             var sp = eventName.split("\\.");
             return Arrays.stream(sp).filter(a -> a.endsWith("Event") || List.of("Pre", "Post").contains(a))

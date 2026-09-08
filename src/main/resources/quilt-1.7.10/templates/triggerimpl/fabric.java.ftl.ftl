@@ -1,5 +1,5 @@
-<!-- fabric template -->
-<#noparse><#include "procedures.java.ftl">
+<#noparse><#-- fabric template -->
+<#include "procedures.java.ftl">
 public ${name}Procedure() {</#noparse>
 	${data.eventName}.register(
 	    <#list data.getMethodBodyLines() as line>

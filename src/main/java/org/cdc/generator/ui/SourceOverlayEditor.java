@@ -24,6 +24,7 @@ import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.views.editor.image.ImageMakerView;
 import net.mcreator.ui.views.editor.image.metadata.MetadataManager;
 import net.mcreator.ui.workspace.IReloadableFilterable;
+import net.mcreator.util.DesktopUtils;
 import net.mcreator.workspace.Workspace;
 import org.apache.commons.io.FilenameUtils;
 import org.cdc.framework.annotaion.AIGenerated;
@@ -40,9 +41,8 @@ import java.awt.event.MouseEvent;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
@@ -184,6 +184,7 @@ import java.util.zip.ZipFile;
         });
         folderBar.add(addFolder);
 
+
         // ---- 面包屑 ----
         breadCrumb = new JFileBreadCrumb(mcreator, overlayRoot, overlayRoot);
 
@@ -300,6 +301,7 @@ import java.util.zip.ZipFile;
     @Override public void reloadElements() {
         FilterTreeNode root = new FilterTreeNode("");
         FileTree<SourceEntryNode> fileTree = new FileTree<>(new FileNode<>("", ""));
+        Set<String> names = new HashSet<>();
 
         if (source.isDirectory()) {
             // 目录模式：递归遍历所有文件
@@ -311,6 +313,7 @@ import java.util.zip.ZipFile;
                     File overrideFolder = new File(overlayRoot, relativePath);
                     SourceEntryNode node = new SourceEntryNode(relativePath, isDirectory, null, path.toFile(),
                             overrideFolder);
+                    names.add(relativePath);
                     if (isDirectory) {
                         fileTree.addElement(relativePath + "/", node);
                     } else {
@@ -330,13 +333,14 @@ import java.util.zip.ZipFile;
                     ZipEntry entry = entries.nextElement();
                     if (entry.getName().startsWith(this.root)) {
                         var isDir = entry.isDirectory();
-                        String path = entry.getName().substring(this.root.length() + 1);
-                        File overrideFile = new File(overlayRoot, path);
-                        SourceEntryNode node = new SourceEntryNode(path, isDir, entry, null, overrideFile);
+                        String relativePath = entry.getName().substring(this.root.length() + 1);
+                        File overrideFile = new File(overlayRoot, relativePath);
+                        SourceEntryNode node = new SourceEntryNode(relativePath, isDir, entry, null, overrideFile);
+                        names.add(relativePath);
                         if (isDir) {
-                            fileTree.addElement(path + "/", node);
+                            fileTree.addElement(relativePath + "/", node);
                         } else {
-                            fileTree.addElement(path, node);
+                            fileTree.addElement(relativePath, node);
                         }
                         // 若覆盖文件存在，监听其所在文件夹
                         if (overrideFile.isFile()) {
@@ -359,10 +363,12 @@ import java.util.zip.ZipFile;
                 File overrideFolder = new File(overlayRoot, relativePath);
                 SourceEntryNode node = new SourceEntryNode(relativePath, isDirectory, null, path.toFile(),
                         overrideFolder);
-                if (isDirectory) {
-                    fileTree.addElement(relativePath + "/", node);
-                } else {
-                    fileTree.addElement(relativePath, node);
+                if (!names.contains(relativePath)) {
+                    if (isDirectory) {
+                        fileTree.addElement(relativePath + "/", node);
+                    } else {
+                        fileTree.addElement(relativePath, node);
+                    }
                 }
             });
         } catch (IOException e) {
@@ -430,6 +436,7 @@ import java.util.zip.ZipFile;
                 String ext = node.getExtension();
                 boolean isText = TEXT_EXTENSIONS.contains(ext);
                 boolean isImage = "png".equals(ext);
+                boolean isFont = "ttf".equals(ext);
 
                 if (isImage || isText) {
                     editButton.setEnabled(true);
@@ -448,6 +455,8 @@ import java.util.zip.ZipFile;
                     showImagePreview(node);
                 } else if (isText) {
                     showTextPreview(node);
+                } else if (isFont){
+                    showFontPreview(node);
                 } else {
                     previewPanel.add(new JLabel("Preview not supported for ." + ext));
                 }
@@ -506,6 +515,107 @@ import java.util.zip.ZipFile;
         }
     }
 
+    /**
+     * 预览字体文件（TTF/OTF），显示字体名称、样式和示例文本。
+     */
+    private void showFontPreview(SourceEntryNode node) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        panel.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // 读取原始字体
+        Font originalFont = null;
+        try {
+            byte[] data = readSourceContent(node);
+            if (data != null) {
+                originalFont = Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(data));
+            }
+        } catch (Exception ignored) {}
+
+        // 读取覆盖字体
+        Font overrideFont = null;
+        if (node.hasOverride()) {
+            try {
+                overrideFont = Font.createFont(Font.TRUETYPE_FONT, node.overrideFile);
+            } catch (Exception ignored) {}
+        }
+
+        int row = 0;
+        if (originalFont != null) {
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            gbc.gridwidth = 2;
+            gbc.weightx = 1.0;
+            JLabel originalTitle = new JLabel(originalLabel.getText());
+            originalTitle.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
+            panel.add(originalTitle, gbc);
+            row++;
+
+            // 字体信息
+            gbc.gridy = row;
+            gbc.gridwidth = 2;
+            String info = String.format("Name: %s, Style: %s, Size: %d",
+                    originalFont.getName(),
+                    originalFont.isBold() ? "Bold" : (originalFont.isItalic() ? "Italic" : "Plain"),
+                    originalFont.getSize());
+            JLabel infoLabel = new JLabel(info);
+            infoLabel.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
+            panel.add(infoLabel, gbc);
+            row++;
+
+            // 示例文本
+            gbc.gridy = row;
+            gbc.gridwidth = 2;
+            JTextArea example = new JTextArea("The quick brown fox jumps over the lazy dog.\n0123456789!@#$%^&*() 你好中文");
+            example.setFont(originalFont.deriveFont(24f)); // 使用适当大小
+            example.setEditable(false);
+            example.setBackground(Theme.current().getBackgroundColor());
+            example.setForeground(Theme.current().getForegroundColor());
+            example.setBorder(BorderFactory.createLineBorder(Theme.current().getForegroundColor()));
+            panel.add(example, gbc);
+            row++;
+        }
+
+        if (overrideFont != null) {
+            gbc.gridx = 0;
+            gbc.gridy = row;
+            gbc.gridwidth = 2;
+            JLabel overrideTitle = new JLabel(overrideLabel.getText());
+            overrideTitle.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
+            panel.add(overrideTitle, gbc);
+            row++;
+
+            gbc.gridy = row;
+            gbc.gridwidth = 2;
+            String info = String.format("Name: %s, Style: %s, Size: %d",
+                    overrideFont.getName(),
+                    overrideFont.isBold() ? "Bold" : (overrideFont.isItalic() ? "Italic" : "Plain"),
+                    overrideFont.getSize());
+            JLabel infoLabel = new JLabel(info);
+            infoLabel.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
+            panel.add(infoLabel, gbc);
+            row++;
+
+            gbc.gridy = row;
+            gbc.gridwidth = 2;
+            JTextArea example = new JTextArea("The quick brown fox jumps over the lazy dog.\n0123456789!@#$%^&*() 你好中文");
+            example.setFont(overrideFont.deriveFont(24f));
+            example.setEditable(false);
+            example.setBackground(Theme.current().getBackgroundColor());
+            example.setForeground(Theme.current().getForegroundColor());
+            example.setBorder(BorderFactory.createLineBorder(Theme.current().getForegroundColor()));
+            panel.add(example, gbc);
+        }
+
+        if (originalFont == null && overrideFont == null) {
+            panel.add(new JLabel("Cannot preview font."));
+        }
+
+        previewPanel.add(panel);
+    }
+
     private void showTextPreview(SourceEntryNode node) {
         String originalText = null;
         try {
@@ -552,7 +662,10 @@ import java.util.zip.ZipFile;
 
         // 创建新的覆盖文件
         String ext = selectedNode.getExtension();
-        if ("png".equals(ext)) {
+        if ("ttf".equals(ext)) {
+            FileIO.writeStringToFile("",overrideFile);
+            DesktopUtils.openSafe(overrideFile,true);
+        } if ("png".equals(ext)) {
             ImageMakerView view = new ImageMakerView(mcreator);
             new NewImageDialog(mcreator, view).setVisible(true);
             view.setSaveLocation(overrideFile);

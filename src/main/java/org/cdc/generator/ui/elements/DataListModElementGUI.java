@@ -1,6 +1,5 @@
 package org.cdc.generator.ui.elements;
 
-import com.google.common.io.Files;
 import net.mcreator.minecraft.DataListEntry;
 import net.mcreator.minecraft.DataListLoader;
 import net.mcreator.ui.MCreator;
@@ -10,6 +9,7 @@ import net.mcreator.ui.validation.component.VTextField;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.workspace.elements.ModElement;
 import org.apache.logging.log4j.Logger;
+import org.cdc.framework.utils.Files;
 import org.cdc.generator.elements.DataListModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.ResourcePanelIcons;
@@ -19,9 +19,9 @@ import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.DuplicatedElementValidator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -57,7 +57,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
 
     @InjectField Logger LOG;
 
-    public DataListModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public DataListModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode,
                 new String[] { "Name", "Readable name", "Type", "Texture", "Description", "Others" });
 

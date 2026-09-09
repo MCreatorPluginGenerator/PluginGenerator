@@ -220,6 +220,11 @@ public class Utils {
         return optional.map(Plugin::getFile).orElse(null);
     }
 
+    public static File tryToFindThemePlugin() {
+        var optional = PluginLoader.INSTANCE.getPlugins().stream().filter(a -> a.getID().equals("themes")).findFirst();
+        return optional.map(Plugin::getFile).orElse(null);
+    }
+
     public static Map.Entry<String, String> splitSearch(String text) {
         if (text.contains("=")) {
             var sp = text.split("=", 2);

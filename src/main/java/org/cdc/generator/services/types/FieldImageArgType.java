@@ -1,10 +1,10 @@
 package org.cdc.generator.services.types;
 
-import com.google.common.io.Files;
 import com.google.gson.JsonObject;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.validation.component.VComboBox;
+import org.cdc.framework.utils.Files;
 import org.cdc.generator.utils.Arg0InputType;
 import org.cdc.generator.utils.ioc.InjectField;
 

@@ -7,10 +7,10 @@ import net.mcreator.ui.component.tree.FilterTreeNode;
 import net.mcreator.ui.component.tree.FilteredTreeModel;
 import net.mcreator.ui.component.tree.JFileTree;
 import net.mcreator.ui.init.L10N;
-import net.mcreator.ui.minecraft.recourcepack.ResourcePackTreeCellRenderer;
 import net.mcreator.ui.workspace.IReloadableFilterable;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.util.DesktopUtils;
+import org.cdc.generator.ui.renderer.FileTreeDirectoryAndFileCellRenderer;
 import org.cdc.generator.utils.Utils;
 
 import javax.swing.*;
@@ -35,7 +35,7 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
         super(new BorderLayout());
         this.model = new FilteredTreeModel(new FilterTreeNode(""));
         this.tree = new JFileTree(model);
-        tree.setCellRenderer(new ResourcePackTreeCellRenderer());
+        tree.setCellRenderer(new FileTreeDirectoryAndFileCellRenderer());
 
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem copyName = new JMenuItem(L10N.t("workspace.resources.tab.core_pack.menus.copy_name"));

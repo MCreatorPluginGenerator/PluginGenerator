@@ -11,7 +11,6 @@ import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.ui.workspace.resources.AbstractResourcePanel;
 import net.mcreator.ui.workspace.resources.ResourceFilterModel;
-import org.apache.logging.log4j.core.util.FileUtils;
 
 import javax.swing.*;
 import java.io.File;
@@ -34,9 +33,9 @@ public class ResourcePanelTemplates extends AbstractResourcePanel<File> {
                     new ExtensionFilter("Templates", "png", "ptpl", "aitpl", "cmdtpl", "ftpl", "json"));
             if (files.length > 0) {
                 var file = files[0];
-                switch (FileUtils.getFileExtension(file)) {
+                switch (org.cdc.framework.utils.Files.getFileExtension(file)) {
                 case "aitpl", "cmdtpl", "ftpl", "ptpl" -> FileIO.copyFile(file,
-                        new File(templatesFile, FileUtils.getFileExtension(file) + "/" + file.getName()));
+                        new File(templatesFile, org.cdc.framework.utils.Files.getFileExtension(file) + "/" + file.getName()));
                 case "png" -> FileIO.copyFile(file, new File(templatesFile, "textures/" + file.getName()));
                 case "json" -> FileIO.copyFile(file, new File(templatesFile, "animations/" + file.getName()));
                 }

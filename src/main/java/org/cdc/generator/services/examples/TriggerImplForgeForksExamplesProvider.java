@@ -26,8 +26,8 @@ public class TriggerImplForgeForksExamplesProvider implements IExamplesProvider 
     public void provideExamples(Consumer<JComponent> componentConsumer, Consumer<Object> exampleConsumer,
             String[] args) {
         JButton generate = new JButton(UIRES.get("16px.forge"));
-        generate.setToolTipText("Generate forge code");
-        generate.addActionListener(e -> {
+        generate.setToolTipText("Generate forge fork code");
+        generate.addActionListener(_ -> {
             var mappingEntries = modElementGui.getMappingEntries();
             var map = new HashMap<String,String>();
             modElementGui.getTriggerModElement().ifPresent(triggerModElement -> {

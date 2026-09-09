@@ -1,6 +1,5 @@
 package org.cdc.generator.ui;
 
-import com.google.common.io.Files;
 import net.mcreator.io.FileIO;
 import net.mcreator.ui.component.util.ComponentUtils;
 import net.mcreator.ui.component.util.ListUtil;
@@ -13,6 +12,7 @@ import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.ui.workspace.resources.AbstractResourcePanel;
 import net.mcreator.ui.workspace.resources.ResourceFilterModel;
 import net.mcreator.util.image.ImageUtils;
+import org.cdc.framework.utils.Files;
 import org.cdc.generator.elements.DataListModElement;
 import org.cdc.generator.ui.elements.DataListModElementGUI;
 

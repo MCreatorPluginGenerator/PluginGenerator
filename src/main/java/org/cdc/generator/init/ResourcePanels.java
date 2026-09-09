@@ -6,8 +6,11 @@ import net.mcreator.ui.workspace.WorkspacePanel;
 import org.cdc.generator.ui.ResourcePanelCorePack;
 import org.cdc.generator.ui.ResourcePanelModTypes;
 import org.cdc.generator.ui.ResourcePanelTemplates;
+import org.cdc.generator.ui.SourceOverlayEditor;
+import org.cdc.generator.utils.Utils;
 
 import javax.swing.*;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -25,7 +28,6 @@ public class ResourcePanels {
 
     private static void register(String name, Function<WorkspacePanel, JPanel> resourcePanel) {
         nameToPanels.put(name, resourcePanel);
-
     }
 
     public static void register(MCreator mCreator) {
@@ -33,6 +35,9 @@ public class ResourcePanels {
             nameToPanels.forEach((a, b) -> {
                 modMaker.resourcesPan.addResourcesTab(L10N.t("workspace.resources.tab." + a), b.apply(modMaker));
             });
+
+            var theme = Utils.tryToFindThemePlugin();
+            modMaker.resourcesPan.addResourcesTab("Theme editor",new SourceOverlayEditor(mCreator,theme,"themes",new File(mCreator.getGenerator().getResourceRoot(),"themes")));
         }
     }
 }

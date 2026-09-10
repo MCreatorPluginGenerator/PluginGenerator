@@ -164,7 +164,8 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
         });
         createMenu.add(createPng);
 
-        JButton addFile = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.add_file", UIRES.get("16px.add"));
+        JButton addFile = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.add_file",
+                UIRES.get("16px.add"));
         addFile.addActionListener(e -> {
             if (getCurrentFolder() != null) {
                 createMenu.show(addFile, 5, addFile.getHeight() + 5);
@@ -172,7 +173,8 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
         });
         folderBar.add(addFile);
 
-        JButton addFolder = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.add_folder", UIRES.get("16px.directory"));
+        JButton addFolder = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.add_folder",
+                UIRES.get("16px.directory"));
         addFolder.addActionListener(e -> {
             File currentFolder = getCurrentFolder();
             if (currentFolder != null) {
@@ -185,18 +187,19 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
         });
         folderBar.add(addFolder);
 
-
         // ---- 面包屑 ----
         breadCrumb = new JFileBreadCrumb(mcreator, overlayRoot, overlayRoot);
 
         // ---- 文件操作工具栏 ----
         TransparentToolBar fileBar = new TransparentToolBar();
 
-        editButton = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.edit_override", UIRES.get("16px.edit"));
+        editButton = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.edit_override",
+                UIRES.get("16px.edit"));
         editButton.addActionListener(e -> editOrCreateOverride());
         fileBar.add(editButton);
 
-        importButton = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.import_override", UIRES.get("16px.open"));
+        importButton = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.import_override",
+                UIRES.get("16px.open"));
         importButton.addActionListener(e -> importOverride());
         fileBar.add(importButton);
 
@@ -311,7 +314,8 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
                 walker.forEach(path -> {
                     boolean isDirectory = Files.isDirectory(path);
                     String relativePath = start.relativize(path).toString().replace('\\', '/');
-                    File overrideFolder = new File(overlayRoot, relativePath);
+                    File overrideFolder = new File(overlayRoot,
+                            relativePath.replaceFirst("default_dark", workspace.getWorkspaceSettings().getModID()));
                     SourceEntryNode node = new SourceEntryNode(relativePath, isDirectory, null, path.toFile(),
                             overrideFolder);
                     names.add(relativePath);
@@ -335,7 +339,8 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
                     if (entry.getName().startsWith(this.root)) {
                         var isDir = entry.isDirectory();
                         String relativePath = entry.getName().substring(this.root.length() + 1);
-                        File overrideFile = new File(overlayRoot, relativePath);
+                        File overrideFile = new File(overlayRoot,
+                                relativePath.replaceFirst("default_dark", workspace.getWorkspaceSettings().getModID()));
                         SourceEntryNode node = new SourceEntryNode(relativePath, isDir, entry, null, overrideFile);
                         names.add(relativePath);
                         if (isDir) {
@@ -441,7 +446,9 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
 
                 if (isImage || isText) {
                     editButton.setEnabled(true);
-                    editButton.setText(node.hasOverride() ? L10N.t("mcreator.resourcepack.edit_override") : L10N.t("mcreator.resourcepack.edit_vanilla"));
+                    editButton.setText(node.hasOverride() ?
+                            L10N.t("mcreator.resourcepack.edit_override") :
+                            L10N.t("mcreator.resourcepack.edit_vanilla"));
                 } else {
                     editButton.setEnabled(false);
                 }
@@ -456,7 +463,7 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
                     showImagePreview(node);
                 } else if (isText) {
                     showTextPreview(node);
-                } else if (isFont){
+                } else if (isFont) {
                     showFontPreview(node);
                 } else {
                     previewPanel.add(new JLabel("Preview not supported for ." + ext));
@@ -525,93 +532,66 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        gbc.weightx = 1.0;
 
-        // 读取原始字体
+        // 读取字体：先读字节再创建字体，避免文件句柄被占用
         Font originalFont = null;
         try {
             byte[] data = readSourceContent(node);
-            if (data != null) {
+            if (data != null)
                 originalFont = Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(data));
-            }
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
 
-        // 读取覆盖字体
         Font overrideFont = null;
         if (node.hasOverride()) {
-            try {
-                overrideFont = Font.createFont(Font.TRUETYPE_FONT, node.overrideFile);
-            } catch (Exception ignored) {}
-        }
-
-        int row = 0;
-        if (originalFont != null) {
-            gbc.gridx = 0;
-            gbc.gridy = row;
-            gbc.gridwidth = 2;
-            gbc.weightx = 1.0;
-            JLabel originalTitle = new JLabel(originalLabel.getText());
-            originalTitle.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
-            panel.add(originalTitle, gbc);
-            row++;
-
-            // 字体信息
-            gbc.gridy = row;
-            gbc.gridwidth = 2;
-            String info = String.format("Name: %s, Style: %s, Size: %d",
-                    originalFont.getName(),
-                    originalFont.isBold() ? "Bold" : (originalFont.isItalic() ? "Italic" : "Plain"),
-                    originalFont.getSize());
-            JLabel infoLabel = new JLabel(info);
-            infoLabel.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
-            panel.add(infoLabel, gbc);
-            row++;
-
-            // 示例文本
-            gbc.gridy = row;
-            gbc.gridwidth = 2;
-            JTextArea example = new JTextArea("The quick brown fox jumps over the lazy dog.\n0123456789!@#$%^&*() 你好中文");
-            example.setFont(originalFont.deriveFont(24f)); // 使用适当大小
-            example.setEditable(false);
-            example.setBackground(Theme.current().getBackgroundColor());
-            example.setForeground(Theme.current().getForegroundColor());
-            example.setBorder(BorderFactory.createLineBorder(Theme.current().getForegroundColor()));
-            panel.add(example, gbc);
-            row++;
-        }
-
-        if (overrideFont != null) {
-            gbc.gridx = 0;
-            gbc.gridy = row;
-            gbc.gridwidth = 2;
-            JLabel overrideTitle = new JLabel(overrideLabel.getText());
-            overrideTitle.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
-            panel.add(overrideTitle, gbc);
-            row++;
-
-            gbc.gridy = row;
-            gbc.gridwidth = 2;
-            String info = String.format("Name: %s, Style: %s, Size: %d",
-                    overrideFont.getName(),
-                    overrideFont.isBold() ? "Bold" : (overrideFont.isItalic() ? "Italic" : "Plain"),
-                    overrideFont.getSize());
-            JLabel infoLabel = new JLabel(info);
-            infoLabel.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
-            panel.add(infoLabel, gbc);
-            row++;
-
-            gbc.gridy = row;
-            gbc.gridwidth = 2;
-            JTextArea example = new JTextArea("The quick brown fox jumps over the lazy dog.\n0123456789!@#$%^&*() 你好中文");
-            example.setFont(overrideFont.deriveFont(24f));
-            example.setEditable(false);
-            example.setBackground(Theme.current().getBackgroundColor());
-            example.setForeground(Theme.current().getForegroundColor());
-            example.setBorder(BorderFactory.createLineBorder(Theme.current().getForegroundColor()));
-            panel.add(example, gbc);
+            try (FileInputStream fis = new FileInputStream(node.overrideFile)) {
+                overrideFont = Font.createFont(Font.TRUETYPE_FONT, new ByteArrayInputStream(fis.readAllBytes()));
+            } catch (Exception ignored) {
+            }
         }
 
         if (originalFont == null && overrideFont == null) {
             panel.add(new JLabel("Cannot preview font."));
+            previewPanel.add(panel);
+            return;
+        }
+
+        String exampleText = "The quick brown fox jumps over the lazy dog.\n0123456789!@#$%^&*() " + L10N.t(
+                "notification.plugin_updates.msg");
+
+        var sections = new Object[][] { { originalLabel.getText(), originalFont },
+                { overrideLabel.getText(), overrideFont } };
+
+        int row = 0;
+        for (Object[] section : sections) {
+            String title = (String) section[0];
+            Font font = (Font) section[1];
+            if (font == null)
+                continue;
+
+            gbc.gridy = row++;
+            JLabel titleLabel = new JLabel(title);
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
+            panel.add(titleLabel, gbc);
+
+            gbc.gridy = row++;
+            String style = font.isBold() ? "Bold" : (font.isItalic() ? "Italic" : "Plain");
+            JLabel infoLabel = new JLabel(
+                    String.format("Name: %s, Style: %s, Size: %d", font.getName(), style, font.getSize()));
+            infoLabel.setBorder(BorderFactory.createEmptyBorder(2, 7, 2, 7));
+            panel.add(infoLabel, gbc);
+
+            gbc.gridy = row++;
+            JTextArea example = new JTextArea(exampleText);
+            example.setFont(font.deriveFont(24f));
+            example.setEditable(false);
+            example.setBackground(Theme.current().getBackgroundColor());
+            example.setForeground(Theme.current().getForegroundColor());
+            example.setBorder(BorderFactory.createLineBorder(Theme.current().getForegroundColor()));
+            panel.add(example, gbc);
         }
 
         previewPanel.add(panel);
@@ -655,7 +635,7 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
 
         mcreator.getWorkspace().getHistoryManager().checkpoint("source_edit", selectedNode.getName());
 
-        File overrideFile = selectedNode.overrideFile();
+        File overrideFile = selectedNode.overrideFile;
         if (overrideFile.exists()) {
             FileOpener.openFile(mcreator, overrideFile);
             return;

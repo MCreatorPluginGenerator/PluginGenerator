@@ -1,6 +1,9 @@
 package org.cdc.generator.utils;
 
+import java.util.List;
+
 public class Constants {
+    public static final List<String> TEXT_EXTENSIONS = List.of("json", "txt", "svg", "css", "html", "xml");
     public static final String NONE = "(None)";
     public static final String[] mappingPlaceholders = new String[] { "@NAME", "@UPPERNAME", "@name", "@SnakeCaseName",
             "@registryname", "@REGISTRYNAME" };

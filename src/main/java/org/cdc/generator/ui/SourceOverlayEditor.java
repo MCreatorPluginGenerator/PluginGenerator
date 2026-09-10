@@ -19,12 +19,13 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.component.util.TreeUtils;
 import net.mcreator.ui.dialogs.file.FileDialogs;
 import net.mcreator.ui.dialogs.imageeditor.NewImageDialog;
+import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.views.editor.image.ImageMakerView;
 import net.mcreator.ui.views.editor.image.metadata.MetadataManager;
+import net.mcreator.ui.workspace.AbstractWorkspacePanel;
 import net.mcreator.ui.workspace.IReloadableFilterable;
-import net.mcreator.util.DesktopUtils;
 import net.mcreator.workspace.Workspace;
 import org.apache.commons.io.FilenameUtils;
 import org.cdc.framework.annotaion.AIGenerated;
@@ -48,6 +49,8 @@ import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
+
 /**
  * 通用源覆盖编辑器。
  * 支持两种源模式：
@@ -58,8 +61,6 @@ import java.util.zip.ZipFile;
  * 提供树形浏览、预览（图片/文本）、编辑、导入、删除覆盖等功能。
  */
 @AIGenerated public class SourceOverlayEditor extends JPanel implements IReloadableFilterable {
-
-    private static final List<String> TEXT_EXTENSIONS = List.of("json", "txt", "svg", "css", "html", "xml");
 
     private final MCreator mcreator;
     private final Workspace workspace;
@@ -131,11 +132,11 @@ import java.util.zip.ZipFile;
         TransparentToolBar folderBar = new TransparentToolBar();
 
         JPopupMenu createMenu = new JPopupMenu();
-        JMenuItem createJson = new JMenuItem("New JSON file");
+        JMenuItem createJson = new JMenuItem(L10N.t("action.browser.new_json_file"));
         createJson.addActionListener(e -> {
             File currentFolder = getCurrentFolder();
             if (currentFolder != null) {
-                String fileName = JOptionPane.showInputDialog(mcreator, "Enter JSON file name:");
+                String fileName = JOptionPane.showInputDialog(mcreator, L10N.t("workspace_file_browser.new_json"));
                 if (fileName != null && !fileName.isBlank()) {
                     fileName = fileName.replaceAll("[^a-zA-Z0-9_/.-]", "_");
                     File target = new File(currentFolder, fileName + (fileName.contains(".") ? "" : ".json"));
@@ -146,11 +147,11 @@ import java.util.zip.ZipFile;
         });
         createMenu.add(createJson);
 
-        JMenuItem createPng = new JMenuItem("New image file");
+        JMenuItem createPng = new JMenuItem(L10N.t("action.browser.new_image_file"));
         createPng.addActionListener(e -> {
             File currentFolder = getCurrentFolder();
             if (currentFolder != null) {
-                String fileName = JOptionPane.showInputDialog(mcreator, "Enter image file name:");
+                String fileName = JOptionPane.showInputDialog(mcreator, L10N.t("workspace_file_browser.new_image"));
                 if (fileName != null && !fileName.isBlank()) {
                     fileName = fileName.replaceAll("[^a-zA-Z0-9_/.-]", "_");
                     File target = new File(currentFolder, fileName + (fileName.contains(".") ? "" : ".png"));
@@ -163,7 +164,7 @@ import java.util.zip.ZipFile;
         });
         createMenu.add(createPng);
 
-        JButton addFile = createToolBarButton("Add file", UIRES.get("16px.add"));
+        JButton addFile = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.add_file", UIRES.get("16px.add"));
         addFile.addActionListener(e -> {
             if (getCurrentFolder() != null) {
                 createMenu.show(addFile, 5, addFile.getHeight() + 5);
@@ -171,7 +172,7 @@ import java.util.zip.ZipFile;
         });
         folderBar.add(addFile);
 
-        JButton addFolder = createToolBarButton("Add folder", UIRES.get("16px.directory"));
+        JButton addFolder = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.add_folder", UIRES.get("16px.directory"));
         addFolder.addActionListener(e -> {
             File currentFolder = getCurrentFolder();
             if (currentFolder != null) {
@@ -191,15 +192,15 @@ import java.util.zip.ZipFile;
         // ---- 文件操作工具栏 ----
         TransparentToolBar fileBar = new TransparentToolBar();
 
-        editButton = createToolBarButton("Edit", UIRES.get("16px.edit"));
+        editButton = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.edit_override", UIRES.get("16px.edit"));
         editButton.addActionListener(e -> editOrCreateOverride());
         fileBar.add(editButton);
 
-        importButton = createToolBarButton("Import", UIRES.get("16px.open"));
+        importButton = AbstractWorkspacePanel.createToolBarButton("mcreator.resourcepack.import_override", UIRES.get("16px.open"));
         importButton.addActionListener(e -> importOverride());
         fileBar.add(importButton);
 
-        deleteButton = createToolBarButton("Delete", UIRES.get("16px.delete"));
+        deleteButton = AbstractWorkspacePanel.createToolBarButton("common.delete_selected", UIRES.get("16px.delete"));
         deleteButton.addActionListener(e -> deleteOverride());
         fileBar.add(deleteButton);
 
@@ -233,7 +234,7 @@ import java.util.zip.ZipFile;
 
         tree.addMouseListener(new MouseAdapter() {
             @Override public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1) {
                     editOrCreateOverride();
                 }
             }
@@ -440,7 +441,7 @@ import java.util.zip.ZipFile;
 
                 if (isImage || isText) {
                     editButton.setEnabled(true);
-                    editButton.setText(node.hasOverride() ? "Edit Override" : "Create Override");
+                    editButton.setText(node.hasOverride() ? L10N.t("mcreator.resourcepack.edit_override") : L10N.t("mcreator.resourcepack.edit_vanilla"));
                 } else {
                     editButton.setEnabled(false);
                 }
@@ -660,23 +661,12 @@ import java.util.zip.ZipFile;
             return;
         }
 
-        // 创建新的覆盖文件
-        String ext = selectedNode.getExtension();
-        if ("ttf".equals(ext)) {
-            FileIO.writeStringToFile("",overrideFile);
-            DesktopUtils.openSafe(overrideFile,true);
-        } if ("png".equals(ext)) {
-            ImageMakerView view = new ImageMakerView(mcreator);
-            new NewImageDialog(mcreator, view).setVisible(true);
-            view.setSaveLocation(overrideFile);
-            reloadElements();
-        } else if (TEXT_EXTENSIONS.contains(ext)) {
-            FileIO.writeStringToFile("", overrideFile);
-            FileOpener.openFile(mcreator, overrideFile);
-            reloadElements();
-        } else {
-            Toolkit.getDefaultToolkit().beep();
+        try {
+            FileIO.writeBytesToFile(readSourceContent(selectedNode), overrideFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        FileOpener.openFile(mcreator, overrideFile);
     }
 
     // ------------------------------------------------------------------------
@@ -766,15 +756,6 @@ import java.util.zip.ZipFile;
             return new File(overlayRoot, selectedNode.path);
         }
         return selectedNode.overrideFile().getParentFile();
-    }
-
-    private static JButton createToolBarButton(String tooltip, Icon icon) {
-        JButton button = new JButton(icon);
-        button.setToolTipText(tooltip);
-        button.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
-        button.setContentAreaFilled(false);
-        button.setFocusPainted(false);
-        return button;
     }
 
     /**

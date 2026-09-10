@@ -3,6 +3,7 @@ package org.cdc.generator.ui;
 import net.mcreator.io.tree.FileNode;
 import net.mcreator.io.tree.FileTree;
 import net.mcreator.io.zip.ZipIO;
+import net.mcreator.ui.FileOpener;
 import net.mcreator.ui.component.tree.FilterTreeNode;
 import net.mcreator.ui.component.tree.FilteredTreeModel;
 import net.mcreator.ui.component.tree.JFileTree;
@@ -16,6 +17,8 @@ import org.cdc.generator.utils.Utils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -55,13 +58,32 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
         openInExplorer.addActionListener(_ -> {
             if (tree.getLastSelectedPathComponent() != null) {
                 FilterTreeNode selection = (FilterTreeNode) tree.getLastSelectedPathComponent();
-                DesktopUtils.openSafe(new File(parent,
-                        Arrays.stream(selection.getPath()).filter(a -> a instanceof FilterTreeNode)
-                                .map(a -> ((FilterTreeNode) a).getUserObject().toString())
-                                .collect(Collectors.joining(File.separator))), true);
+                if (selection.getUserObject() instanceof FileNode<?> fileNode) {
+                    DesktopUtils.openSafe(new File(parent, fileNode.incrementalPath), true);
+                } else {
+                    DesktopUtils.openSafe(new File(parent,
+                            Arrays.stream(selection.getPath()).filter(a -> a instanceof FilterTreeNode)
+                                    .map(a -> ((FilterTreeNode) a).getUserObject().toString())
+                                    .collect(Collectors.joining(File.separator))), true);
+                }
             }
         });
         popupMenu.add(openInExplorer);
+
+        tree.addMouseListener(new MouseAdapter() {
+            @Override public void mousePressed(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+                    if (tree.getLastSelectedPathComponent() != null
+                            && tree.getLastSelectedPathComponent() instanceof FilterTreeNode node
+                            && node.getChildCount() == 0) {
+                        if (node.getUserObject() instanceof FileNode<?> fileNode) {
+                            FileOpener.openFile(workspacePanel.getMCreator(),
+                                    new File(parent, fileNode.incrementalPath));
+                        }
+                    }
+                }
+            }
+        });
 
         tree.setComponentPopupMenu(popupMenu);
 

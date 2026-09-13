@@ -26,6 +26,7 @@ import org.cdc.generator.utils.ComboBoxUtil;
 import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
+import org.cdc.generator.utils.builders.JButtonBuilder;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
@@ -146,6 +147,10 @@ public class TriggerImplementationModElementGUI
         JToolBar toolBar = new JToolBar();
         toolBar.setOpaque(false);
         JButton remrow = createRemoveRowButton();
+        JButton refresh = new JButtonBuilder().setIconFromUIRE("impfile").setTooltipText("Refresh(only append)").build();
+
+        toolBar.add(refresh);
+        toolBar.add(remrow);
 
         remrow.addActionListener(_ -> {
             jTable.editCellAt(-1, 0);
@@ -162,7 +167,14 @@ public class TriggerImplementationModElementGUI
                 jTable.repaint();
             });
         });
-        toolBar.add(remrow);
+        refresh.addActionListener(_ -> {
+            refreshMap();
+            SwingUtilities.invokeLater(() -> {
+                jTable.revalidate();
+                jTable.repaint();
+            });
+        });
+
 
         addPage("Map", toolbarAndTable(toolBar));
 
@@ -175,7 +187,9 @@ public class TriggerImplementationModElementGUI
 
         addPage("Related source", scrollPanelForSource);
 
-        addPage("Debugger",getDebuggerComponent(mcreator)).lazyValidate(()->debuged.isSelected()?new AggregatedValidationResult.PASS():new AggregatedValidationResult.FAIL("You must use the debugger and check the debuged"));
+        addPage("Debugger", getDebuggerComponent(mcreator)).lazyValidate(() -> debuged.isSelected() ?
+                new AggregatedValidationResult.PASS() :
+                new AggregatedValidationResult.FAIL("You must use the debugger and check the debuged"));
     }
 
     private void reloadToolBar() {
@@ -252,14 +266,17 @@ public class TriggerImplementationModElementGUI
         }
         ComboBoxUtil.updateComboBoxContents(triggerFileName, stringArrayList);
 
+        refreshMap();
+    }
+
+    private void refreshMap() {
         var map = getMappingEntries();
-        getTriggerModElement().ifPresent(a->{
+        getTriggerModElement().ifPresent(a -> {
             for (TriggerModElement.Dependency dependency : a.dependencies_provided) {
                 if (!map.containsKey(dependency.getName()))
                     mappingEntries.add(new AbstractMap.SimpleEntry<>(dependency.getName(), dependency.getType()));
             }
         });
-
     }
 
     private CompletionProvider createCompletionProvider() {
@@ -298,7 +315,8 @@ public class TriggerImplementationModElementGUI
     @Override
     public void modifyToolBar(MCreator mCreator, JToolBar toolbar, JTextArea propertiesTextArea, JTextArea result,
             Supplier<MCreator> mCreatorSupplier) {
-        IFreemakerDebugger.super.modifyToolBar(mCreator, toolbar, propertiesTextArea, result,()->selectedGeneratorMCreator);
+        IFreemakerDebugger.super.modifyToolBar(mCreator, toolbar, propertiesTextArea, result,
+                () -> selectedGeneratorMCreator);
         toolbar.add(debuged);
     }
 
@@ -307,12 +325,12 @@ public class TriggerImplementationModElementGUI
             List<GeneratorFile> files = modElement.getGenerator().generateElement(getElementFromGUI(), false, false);
             var content = files.getFirst().contents();
             var countDivi = FTLUtils.countBracket(content);
-            if (countDivi %2 ==0) {
+            if (countDivi % 2 == 0) {
                 return content;
             } else {
-                return content +"}";
+                return content + "}";
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             StringWriter stringWriter = new StringWriter();
             e.printStackTrace(new PrintWriter(stringWriter));
             mcreator.getGradleConsole().append(stringWriter.toString());
@@ -320,9 +338,9 @@ public class TriggerImplementationModElementGUI
         return "";
     }
 
-    private void findGeneratorMCreator(){
+    private void findGeneratorMCreator() {
         for (MCreator openMCreator : mcreator.getApplication().getOpenMCreators()) {
-            if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())){
+            if (openMCreator.getGenerator().getGeneratorName().equals(generator.getSelectedItem())) {
                 selectedGeneratorMCreator = openMCreator;
             }
         }
@@ -330,7 +348,7 @@ public class TriggerImplementationModElementGUI
 
     @Override public TemplateGenerator getTemplateGenerator() {
         findGeneratorMCreator();
-        if (selectedGeneratorMCreator!= null){
+        if (selectedGeneratorMCreator != null) {
             return selectedGeneratorMCreator.getGenerator().getTemplateGeneratorFromName("triggers");
         }
         return null;
@@ -343,11 +361,11 @@ public class TriggerImplementationModElementGUI
     @Override public Map<String, Object> getDefaultParameterMap() {
         var additionalData = new HashMap<String, Object>();
         try {
-            if (getTriggerModElement().isEmpty()){
+            if (getTriggerModElement().isEmpty()) {
                 return null;
             }
             BlocklyToProcedure blocklyToJava = getBlocklyToProcedure(additionalData);
-            additionalData.put("name","Example");
+            additionalData.put("name", "Example");
             additionalData.put("dependencies", reloadDependencies());
             additionalData.put("procedurecode", ProcedureCodeOptimizer.removeMarkers(blocklyToJava.getGeneratedCode()));
             additionalData.put("additional_code",
@@ -356,7 +374,7 @@ public class TriggerImplementationModElementGUI
             additionalData.put("localvariables", blocklyToJava.getLocalVariables());
             additionalData.put("procedureblocks", blocklyToJava.getUsedBlocks());
             additionalData.put("extra_templates_code", blocklyToJava.getExtraTemplatesCode());
-        } catch (Exception e){
+        } catch (Exception e) {
             StringWriter stringWriter = new StringWriter();
             e.printStackTrace(new PrintWriter(stringWriter));
             mcreator.getGradleConsole().append(stringWriter.toString());
@@ -382,7 +400,7 @@ public class TriggerImplementationModElementGUI
 
     private List<Dependency> reloadDependencies() {
         var dependencies = new ArrayList<TriggerModElement.Dependency>();
-        getTriggerModElement().ifPresent(modElement->{
+        getTriggerModElement().ifPresent(modElement -> {
             dependencies.addAll(modElement.dependencies_provided);
 
             int idx = dependencies.indexOf(new TriggerModElement.Dependency("z", "number"));
@@ -416,7 +434,7 @@ public class TriggerImplementationModElementGUI
     @Override public JScrollPane getResultArea() {
         var rsy = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
         rsy.setSyntaxEditingStyle("text/java");
-        return RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy,this);
+        return RSyntaxTextAreaFactory.createDefaultTextScrollPane(rsy, this);
     }
 
     private class MappingTableModel extends AbstractTableModel {

@@ -212,7 +212,7 @@ public class PluginProcedureImplementationModElementGUI
         }
         complete.addCompletion(new TemplateCompletion(complete, "head", "head", "<@head>${cursor}</@head>"));
         complete.addCompletion(new TemplateCompletion(complete, "tail", "tail", "<@tail>${cursor}</@tail>"));
-        complete.addCompletion(new BasicCompletion(complete, "addTemplate"));
+        complete.addCompletion(new TemplateCompletion(complete,"addTemplate","addTemplate-template","<@addTemplate file=\"${cursor}\">"));
         Utils.initCompletionWithGenerator(complete, mcreator.getGenerator());
 
         return complete;

@@ -16,6 +16,7 @@ import org.cdc.generator.ui.HelpTableHeader;
 import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.ComboBoxUtil;
 import org.cdc.generator.utils.Utils;
+import org.cdc.generator.utils.builders.JButtonBuilder;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.jspecify.annotations.NonNull;
 
@@ -96,7 +97,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
                 }
             }
         });
-        jTable.setTableHeader(new HelpTableHeader(jTable.getColumnModel(), this,getHelpEntryAndLocalizationPrefix()));
+        jTable.setTableHeader(new HelpTableHeader(jTable.getColumnModel(), this, getHelpEntryAndLocalizationPrefix()));
         jTable.setFillsViewportHeight(true);
         jTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         jTable.setOpaque(false);
@@ -219,12 +220,10 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     }
 
     protected JButton createRemoveRowButton() {
-        JButton remrow = new JButton(UIRES.get("16px.delete"));
-        remrow.setContentAreaFilled(false);
-        remrow.setOpaque(false);
+        JButton remrow = new JButtonBuilder().setIconFromUIRE("16px.delete").setContentAreaFilled(false)
+                .setOpaque(false).setTooltipText("Remove (Shortcut: Delete)").build();
         ComponentUtils.deriveFont(remrow, 11);
         remrow.setBorder(BorderFactory.createEmptyBorder(1, 1, 0, 1));
-        remrow.setToolTipText("Remove (Shortcut: Delete)");
         return remrow;
     }
 

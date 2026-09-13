@@ -236,12 +236,9 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     }
 
     protected JButton createAddButton() {
-        JButton addrow = new JButton(UIRES.get("16px.add"));
-        addrow.setContentAreaFilled(false);
-        addrow.setOpaque(false);
+        JButton addrow = new JButtonBuilder().setContentAreaFilled(false).setOpaque(false).setIconFromUIRE("16px.add").setTooltipText("Add").build();
         ComponentUtils.deriveFont(addrow, 11);
         addrow.setBorder(BorderFactory.createEmptyBorder(1, 1, 0, 2));
-        addrow.setToolTipText("Add");
         return addrow;
     }
 

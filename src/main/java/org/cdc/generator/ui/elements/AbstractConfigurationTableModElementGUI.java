@@ -246,6 +246,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         return L10N.checkbox("elementgui.common.enable");
     }
 
+    // only check once
     private Boolean cachedBoolean;
 
     protected boolean isUnique() {

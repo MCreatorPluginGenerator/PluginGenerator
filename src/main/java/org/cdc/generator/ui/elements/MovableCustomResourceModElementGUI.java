@@ -24,15 +24,15 @@ import java.net.URISyntaxException;
 public class MovableCustomResourceModElementGUI
         extends AbstractConfigurationTableModElementGUI<MovableCustomResourceModElement> {
 
-    private VComboBox<String> folder;
-    private RSyntaxTextArea content;
+    private final VComboBox<String> folder;
+    private final RSyntaxTextArea content;
 
     public MovableCustomResourceModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
         folder = new VComboBox<>();
         folder.addItem("blockly/js/" + modElement.getRegistryName() + ".js");
-        folder.addItem("themes/" + mcreator.getWorkspaceSettings().getModID() + "/theme.json");
+        folder.addItem("themes/" + mcreator.getWorkspaceSettings().getModID() + "/" + modElement.getRegistryName());
         for (String allSupportedGenerator : Utils.getAllSupportedGenerators()) {
             var head = allSupportedGenerator + "/";
             folder.addItem(head + modElement.getRegistryName());

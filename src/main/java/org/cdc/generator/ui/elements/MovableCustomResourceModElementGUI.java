@@ -5,6 +5,7 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.validation.component.VComboBox;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.MovableCustomResourceModElement;
+import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -29,7 +30,14 @@ public class MovableCustomResourceModElementGUI
     public MovableCustomResourceModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
-        folder = new VComboBox<>(new String[]{"blockly/js/","themes/"});
+        folder = new VComboBox<>();
+        folder.addItem("blockly/js/" + modElement.getRegistryName() + ".js");
+        folder.addItem("themes/" + mcreator.getWorkspaceSettings().getModID() + "/theme.json");
+        for (String allSupportedGenerator : Utils.getAllSupportedGenerators()) {
+            var head = allSupportedGenerator + "/";
+            folder.addItem(head + modElement.getRegistryName());
+            folder.addItem(head + "templates/" + modElement.getRegistryName());
+        }
         content = RSyntaxTextAreaFactory.createDefaultRSyntaxTextArea();
 
         if (editingMode) {
@@ -69,7 +77,7 @@ public class MovableCustomResourceModElementGUI
 
     @Override public MovableCustomResourceModElement getElementFromGUI() {
         var element = new MovableCustomResourceModElement(modElement);
-        element.folder = folder.getSelectedItem().replace('\\','/');
+        element.folder = folder.getSelectedItem().replace('\\', '/');
         element.content = content.getText();
         return element;
     }

@@ -210,9 +210,18 @@ public class PluginProcedureImplementationModElementGUI
                                     + _modelement.getProcedureFileName() + ".java.ftl\"/>"));
                 }
         }
+        complete.addCompletion(new ShorthandCompletion(complete, "atfloat", "/*@float*/", "/*@float*/"));
+        complete.addCompletion(new ShorthandCompletion(complete, "atint", "/*@int*/", "/*@int*/"));
+        complete.addCompletion(
+                new ShorthandCompletion(complete, "atBlockState", "/*@BlockState*/","/*@BlockState*/"));
+        complete.addCompletion(
+                new ShorthandCompletion(complete, "atItemStack",  "/*@ItemStack*/","/*@ItemStack*/"));
+
+        complete.addCompletion(new TemplateCompletion(complete, "atObject", "atObject", "/*@${cursor}*/"));
         complete.addCompletion(new TemplateCompletion(complete, "head", "head", "<@head>${cursor}</@head>"));
         complete.addCompletion(new TemplateCompletion(complete, "tail", "tail", "<@tail>${cursor}</@tail>"));
-        complete.addCompletion(new TemplateCompletion(complete,"addTemplate","addTemplate-template","<@addTemplate file=\"${cursor}\">"));
+        complete.addCompletion(new TemplateCompletion(complete, "addTemplate", "addTemplate-template",
+                "<@addTemplate file=\"${cursor}\">"));
         Utils.initCompletionWithGenerator(complete, mcreator.getGenerator());
 
         return complete;
@@ -341,7 +350,7 @@ public class PluginProcedureImplementationModElementGUI
                 str.append(", Object ").append(field);
             }
             for (String statement : element.statements) {
-                properties.setProperty("statement$" + statement, statement+";//This is a new line");
+                properties.setProperty("statement$" + statement, statement + ";//This is a new line");
             }
             for (PluginProcedureModElement.Dependency dependency : element.dependencies) {
                 str.append(", ").append(typeMapping.get(dependency.getType())).append(" ").append(dependency.getName());

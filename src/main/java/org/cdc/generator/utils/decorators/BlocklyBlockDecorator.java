@@ -64,9 +64,8 @@ public class BlocklyBlockDecorator implements IProcedureBlock {
     }
 
     @Override public void openPreviewOrEdit() {
-        File tempFile;
         try {
-            tempFile = File.createTempFile("preview", ".json");
+            var tempFile = File.createTempFile("preview", ".json");
             tempFile.deleteOnExit();
             var gson = new GsonBuilder().setPrettyPrinting().create();
             FileIO.writeStringToFile(gson.toJson(toolboxBlock.getBlocklyJSON()), tempFile);
@@ -74,11 +73,10 @@ public class BlocklyBlockDecorator implements IProcedureBlock {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override public String getName() {
-        return toolboxBlock.getName();
+        return toolboxBlock.getMachineName();
     }
 
     @Override public String getParentFolder() {

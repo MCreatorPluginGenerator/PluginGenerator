@@ -28,26 +28,26 @@ public class TriggerImplGoldenFabricExamplesProvider implements IExamplesProvide
         generate.addActionListener(e -> {
             var mappingEntries = modElementGui.getMappingEntries();
             var map = new HashMap<String, String>();
-            modElementGui.getTriggerModElement().ifPresent(triggerModElement -> {
-                for (TriggerModElement.Dependency dependency : triggerModElement.dependencies_provided) {
-                    if (mappingEntries.containsKey(dependency.getName())) {
-                        map.put(dependency.getName(), mappingEntries.get(dependency.getName()));
-                    } else {
-                        map.put(dependency.getName(), dependency.getType());
-                    }
+            var triggerModElement = modElementGui.getTriggerDecorator();
+            for (TriggerModElement.Dependency dependency : triggerModElement.getDependencies()) {
+                if (mappingEntries.containsKey(dependency.getName())) {
+                    map.put(dependency.getName(), mappingEntries.get(dependency.getName()));
+                } else {
+                    map.put(dependency.getName(), dependency.getType());
                 }
-            });
+            }
+
             String head = "(@Placeholder@" + String.join(",", map.keySet()) + """
-                         ) -> {
-                        """;
+                     ) -> {
+                    """;
             // try generate parameters from related resource
             if (!modElementGui.getRelatedSourceText().isEmpty()) {
                 var type = Roaster.parse(modElementGui.getRelatedSourceText());
-                if (type instanceof JavaInterface<?> javaInterface){
+                if (type instanceof JavaInterface<?> javaInterface) {
                     var first = javaInterface.getMethods().getFirst();
                     head = "(" + String.join(",", first.getParameters().stream().map(Parameter::getName).toList()) + """
-                        ) -> {
-                        """;
+                            ) -> {
+                            """;
                 }
             }
             var str = head + BuilderUtils.generateTriggerDependencies(map, false);

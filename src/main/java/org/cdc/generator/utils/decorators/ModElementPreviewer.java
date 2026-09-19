@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
  * &#064;CreatedIn  2026/9/19
  */
 public class ModElementPreviewer implements IPreviewable {
-    private final ModElement modElement;
-    private final MCreator mcreator;
+    protected final ModElement modElement;
+    protected final MCreator mcreator;
 
     public ModElementPreviewer(@Nullable GeneratableElement generatableElement,MCreator mCreator){
         this(generatableElement == null?null:generatableElement.getModElement(),mCreator);

@@ -16,8 +16,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
-@Description("TriggerImplExamples")
-public class TriggerImplForgeForksExamplesProvider implements IExamplesProvider {
+@Description("TriggerImplExamples") public class TriggerImplForgeForksExamplesProvider implements IExamplesProvider {
     Pattern methodNamePattern = Pattern.compile("(?<=\\.).+?(?=\\(\\))");
 
     @InjectField TriggerImplementationModElementGUI modElementGui;
@@ -29,21 +28,20 @@ public class TriggerImplForgeForksExamplesProvider implements IExamplesProvider 
         generate.setToolTipText("Generate forge fork code");
         generate.addActionListener(_ -> {
             var mappingEntries = modElementGui.getMappingEntries();
-            var map = new HashMap<String,String>();
-            modElementGui.getTriggerModElement().ifPresent(triggerModElement -> {
-                for (TriggerModElement.Dependency dependency : triggerModElement.dependencies_provided) {
-                    if (mappingEntries.containsKey(dependency.getName())){
-                        map.put(dependency.getName(),mappingEntries.get(dependency.getName()));
-                    } else {
-                        map.put(dependency.getName(), dependency.getType());
-                    }
+            var map = new HashMap<String, String>();
+            var triggerModElement = modElementGui.getTriggerDecorator();
+            for (TriggerModElement.Dependency dependency : triggerModElement.getDependencies()) {
+                if (mappingEntries.containsKey(dependency.getName())) {
+                    map.put(dependency.getName(), mappingEntries.get(dependency.getName()));
+                } else {
+                    map.put(dependency.getName(), dependency.getType());
                 }
-            });
+            }
 
-            if (!modElementGui.getRelatedSourceText().isEmpty()){
+            if (!modElementGui.getRelatedSourceText().isEmpty()) {
                 var java = Roaster.parse(modElementGui.getRelatedSourceText());
-                if (java instanceof JavaClass<?> javaClass){
-                    for (Map.Entry<String,String> value : map.entrySet()) {
+                if (java instanceof JavaClass<?> javaClass) {
+                    for (Map.Entry<String, String> value : map.entrySet()) {
                         var name1 = methodNamePattern.matcher(value.getValue());
                         if (name1.find()) {
                             var name = name1.group();

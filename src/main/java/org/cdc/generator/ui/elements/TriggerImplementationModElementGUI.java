@@ -3,6 +3,8 @@ package org.cdc.generator.ui.elements;
 import jdk.jfr.Description;
 import net.mcreator.blockly.data.BlocklyLoader;
 import net.mcreator.blockly.data.Dependency;
+import net.mcreator.blockly.data.ExternalTrigger;
+import net.mcreator.blockly.data.ExternalTriggerLoader;
 import net.mcreator.blockly.java.BlocklyToProcedure;
 import net.mcreator.blockly.java.ProcedureCodeOptimizer;
 import net.mcreator.generator.GeneratorFile;
@@ -27,10 +29,12 @@ import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.builders.JButtonBuilder;
-import org.cdc.generator.utils.decorators.ModElementPreviewer;
+import org.cdc.generator.utils.decorators.BlocklyTriggerDecorator;
+import org.cdc.generator.utils.decorators.TriggerDecorator;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
+import org.cdc.generator.utils.interfaces.ITrigger;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
@@ -97,7 +101,7 @@ public class TriggerImplementationModElementGUI
         triggerFileName.setEditable(true);
         triggerFileName.setSelectedItem(Constants.NONE);
         triggerFileName.setValidator(new NotEmptyValidator(triggerFileName::getSelectedItem));
-        addElementSelectorConfiguration("trigger_element_name", triggerFileName, () -> new ModElementPreviewer(getTriggerModElement().orElse(null), mcreator));
+        addElementSelectorConfiguration("trigger_element_name", triggerFileName, this::getTriggerDecorator);
 
         addConfigurationWithHelpEntry("enable_custom", enableCustom);
 
@@ -225,10 +229,8 @@ public class TriggerImplementationModElementGUI
 
     @Override public TriggerImplementationModElement getElementFromGUI() {
         var element = new TriggerImplementationModElement(modElement);
-        var triggerModElement = getTriggerModElement();
-
         element.triggerFileName = triggerFileName.getSelectedItem();
-        triggerModElement.ifPresent(value1 -> element.searchable = value1.getModElement().getName());
+        getTriggerModElement().ifPresent(value1 -> element.searchable = value1.getModElement().getName());
         element.generatorName = generator.getSelectedItem();
         element.enableCustom = enableCustom.isSelected();
         element.eventName = eventName.getSelectedItem();
@@ -254,8 +256,27 @@ public class TriggerImplementationModElementGUI
                 return Optional.ofNullable((TriggerModElement) modElement.getGeneratableElement());
             }
         }
-        LOG.error("Can not find trigger {}", triggerFileName.getSelectedItem());
         return Optional.empty();
+    }
+
+    public ITrigger getTriggerDecorator() {
+        var opt = getTriggerModElement();
+        if (opt.isEmpty()) {
+            String folder = "triggers";
+            var list = BlocklyLoader.INSTANCE.getAllExternalTriggerLoaders().values().stream()
+                    .sorted(Comparator.comparingInt(a -> a.getResourceFolder().equals(folder) ? -1 : 0)).toList();
+            for (ExternalTriggerLoader externalTriggerLoader : list) {
+                var triggers = externalTriggerLoader.getExternalTriggers();
+                for (ExternalTrigger trigger : triggers) {
+                    if (trigger.getID().equals(triggerFileName.getSelectedItem())) {
+                        return new BlocklyTriggerDecorator(trigger, mcreator);
+                    }
+                }
+            }
+        } else {
+            return new TriggerDecorator(opt.get(), mcreator);
+        }
+        return TriggerDecorator.getNULLInstance();
     }
 
     @Override public void reloadDataLists() {
@@ -271,12 +292,11 @@ public class TriggerImplementationModElementGUI
 
     private void refreshMap() {
         var map = getMappingEntries();
-        getTriggerModElement().ifPresent(a -> {
-            for (TriggerModElement.Dependency dependency : a.dependencies_provided) {
-                if (!map.containsKey(dependency.getName()))
-                    mappingEntries.add(new AbstractMap.SimpleEntry<>(dependency.getName(), dependency.getType()));
-            }
-        });
+        var a = getTriggerDecorator();
+        for (TriggerModElement.Dependency dependency : a.getDependencies()) {
+            if (!map.containsKey(dependency.getName()))
+                mappingEntries.add(new AbstractMap.SimpleEntry<>(dependency.getName(), dependency.getType()));
+        }
     }
 
     private CompletionProvider createCompletionProvider() {
@@ -361,9 +381,6 @@ public class TriggerImplementationModElementGUI
     @Override public Map<String, Object> getDefaultParameterMap() {
         var additionalData = new HashMap<String, Object>();
         try {
-            if (getTriggerModElement().isEmpty()) {
-                return null;
-            }
             BlocklyToProcedure blocklyToJava = getBlocklyToProcedure(additionalData);
             additionalData.put("name", "Example");
             additionalData.put("dependencies", reloadDependencies());
@@ -399,34 +416,32 @@ public class TriggerImplementationModElementGUI
     }
 
     private List<Dependency> reloadDependencies() {
-        var dependencies = new ArrayList<TriggerModElement.Dependency>();
-        getTriggerModElement().ifPresent(modElement -> {
-            dependencies.addAll(modElement.dependencies_provided);
+        var modElement = getTriggerDecorator();
+        var dependencies = new ArrayList<>(modElement.getDependencies());
 
-            int idx = dependencies.indexOf(new TriggerModElement.Dependency("z", "number"));
-            if (idx != -1) {
-                TriggerModElement.Dependency dependency = dependencies.remove(idx);
-                dependencies.addFirst(dependency);
-            }
+        int idx = dependencies.indexOf(new TriggerModElement.Dependency("z", "number"));
+        if (idx != -1) {
+            TriggerModElement.Dependency dependency = dependencies.remove(idx);
+            dependencies.addFirst(dependency);
+        }
 
-            idx = dependencies.indexOf(new TriggerModElement.Dependency("y", "number"));
-            if (idx != -1) {
-                TriggerModElement.Dependency dependency = dependencies.remove(idx);
-                dependencies.addFirst(dependency);
-            }
+        idx = dependencies.indexOf(new TriggerModElement.Dependency("y", "number"));
+        if (idx != -1) {
+            TriggerModElement.Dependency dependency = dependencies.remove(idx);
+            dependencies.addFirst(dependency);
+        }
 
-            idx = dependencies.indexOf(new TriggerModElement.Dependency("x", "number"));
-            if (idx != -1) {
-                TriggerModElement.Dependency dependency = dependencies.remove(idx);
-                dependencies.addFirst(dependency);
-            }
+        idx = dependencies.indexOf(new TriggerModElement.Dependency("x", "number"));
+        if (idx != -1) {
+            TriggerModElement.Dependency dependency = dependencies.remove(idx);
+            dependencies.addFirst(dependency);
+        }
 
-            idx = dependencies.indexOf(new TriggerModElement.Dependency("world", "world"));
-            if (idx != -1) {
-                TriggerModElement.Dependency dependency = dependencies.remove(idx);
-                dependencies.addFirst(dependency);
-            }
-        });
+        idx = dependencies.indexOf(new TriggerModElement.Dependency("world", "world"));
+        if (idx != -1) {
+            TriggerModElement.Dependency dependency = dependencies.remove(idx);
+            dependencies.addFirst(dependency);
+        }
 
         return dependencies.stream().map(TriggerModElement.Dependency::toDependency).toList();
     }

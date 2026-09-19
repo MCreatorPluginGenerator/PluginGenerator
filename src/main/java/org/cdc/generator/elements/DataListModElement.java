@@ -40,7 +40,7 @@ public class DataListModElement extends GeneratableElement {
             dataListEntry1.description = dataListEntry.getDescription();
             var ma = new HashMap<String, String>();
             if (dataListEntry.getOther() instanceof Map<?, ?> map) {
-                map.forEach((key, value) -> ma.put(key.toString(), value.toString()));
+                map.forEach((key, value1) -> ma.put(key.toString(), value1.toString()));
             }
             dataListEntry1.setOthers(ma);
             return dataListEntry1;

@@ -2,10 +2,7 @@ package org.cdc.generator.utils;
 
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Locale;
@@ -41,11 +38,10 @@ public class MCreatorCorePackBrowser {
         if (s.length == 1){
             return new FileInputStream(path);
         } else if (s.length == 2){
-            ZipFile zipFile = new ZipFile(s[0]);
-            var ent = zipFile.getEntry(s[1]);
-            var input = zipFile.getInputStream(ent);
-            zipFile.close();
-            return input;
+            try (ZipFile zipFile = new ZipFile(s[0])) {
+                var ent = zipFile.getEntry(s[1]);
+                return new ByteArrayInputStream(zipFile.getInputStream(ent).readAllBytes());
+            }
         }
         return null;
     }

@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Locale;
 import java.util.zip.ZipFile;
 
@@ -52,13 +53,13 @@ public class MCreatorCorePackBrowser {
     public File generatePreviewFile(String path) throws IOException {
         var temp = File.createTempFile("preview","."+ FilenameUtils.getExtension(path));
         temp.deleteOnExit();
-        Files.copy(readPath(path),temp.toPath());
+        Files.copy(readPath(path),temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
         return temp;
     }
 
     private String[] split(String rawPath) {
         if (rawPath == null || rawPath.isBlank()) {
-            throw new IllegalArgumentException("路径不能为空");
+            throw new IllegalArgumentException("The path can not be null or empty");
         }
 
         String lower = rawPath.toLowerCase(Locale.ROOT);

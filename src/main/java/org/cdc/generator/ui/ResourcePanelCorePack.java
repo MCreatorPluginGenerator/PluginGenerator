@@ -7,6 +7,7 @@ import net.mcreator.ui.FileOpener;
 import net.mcreator.ui.component.tree.FilterTreeNode;
 import net.mcreator.ui.component.tree.FilteredTreeModel;
 import net.mcreator.ui.component.tree.JFileTree;
+import net.mcreator.ui.component.util.TreeUtils;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.ui.workspace.IReloadableFilterable;
 import net.mcreator.ui.workspace.WorkspacePanel;
@@ -31,15 +32,17 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
 
     private final JFileTree tree;
     private final FilteredTreeModel model;
+    private final WorkspacePanel workspacePanel;
 
     private File parent;
 
-    private MCreatorCorePackBrowser corePackBrowser;
+    private final MCreatorCorePackBrowser corePackBrowser;
 
     public ResourcePanelCorePack(WorkspacePanel workspacePanel) {
         super(new BorderLayout());
         this.model = new FilteredTreeModel(new FilterTreeNode(""));
         this.tree = new JFileTree(model);
+        this.workspacePanel = workspacePanel;
         tree.setCellRenderer(new FileTreeDirectoryAndFileCellRenderer());
 
         this.corePackBrowser = MCreatorCorePackBrowser.getInstance();
@@ -131,7 +134,8 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
     }
 
     @Override public void refilterElements() {
-
+        String term = workspacePanel.getSearchTerm();
+        TreeUtils.selectNodeByUserObject(tree,a->a.incrementalPath.contains(term),FileNode.class);
     }
 
 

@@ -7,11 +7,9 @@ import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.utils.interfaces.IAPIProvider;
 import org.cdc.generator.utils.interfaces.ITypeProvider;
 
-import java.lang.reflect.Modifier;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Stream;
 
 public class ElementsUtils {
     public static String getDataListName(Workspace workspace, String name) {
@@ -58,8 +56,7 @@ public class ElementsUtils {
         return set;
     }
 
-    public static String getExternalBlockColour(String blockName,
-            BlocklyEditorType blocklyEditorType) {
+    public static String getExternalBlockColour(String blockName, BlocklyEditorType blocklyEditorType) {
         if (blocklyEditorType != null) {
             var blocks = BlocklyLoader.INSTANCE.getBlockLoader(blocklyEditorType).getDefinedBlocks();
             if (blocks.containsKey(blockName)) {
@@ -67,18 +64,12 @@ public class ElementsUtils {
             }
         } else {
             AtomicReference<String> colour = new AtomicReference<>("");
-            Stream.of(BlocklyEditorType.class.getFields()).forEach(a->{
-                if (Modifier.isStatic(a.getModifiers())){
-                    try {
-                        BlocklyEditorType blocklyEditorType1 = (BlocklyEditorType) a.get(null);
-                        var color = getExternalBlockColour(blockName, blocklyEditorType1);
-                        if (!color.isEmpty())
-                            colour.set(getExternalBlockColour(blockName, blocklyEditorType1));
-                    } catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            });
+            for (String type : BlocklyEditorType.getTypes()) {
+                var blocklyEditorType1 = BlocklyEditorType.fromName(type);
+                var color = getExternalBlockColour(blockName, blocklyEditorType1);
+                if (!color.isEmpty())
+                    colour.set(getExternalBlockColour(blockName, blocklyEditorType1));
+            }
             return colour.get();
         }
         return "";

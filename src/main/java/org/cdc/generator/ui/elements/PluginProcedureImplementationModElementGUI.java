@@ -286,12 +286,17 @@ public class PluginProcedureImplementationModElementGUI
     public IProcedureBlock getPluginProcedureDecorator() {
         var optional = getPluginProcedureModElement();
         if (optional.isEmpty()) {
-            for (String type : BlocklyEditorType.getTypes()) {
+            var types = new ArrayList<>(BlocklyEditorType.getTypes());
+            types.remove(parentFolder.getText());
+            types.addFirst(parentFolder.getText());
+            for (String type : types) {
                 var blocklyType = BlocklyEditorType.fromName(type);
-                var blocks = BlocklyLoader.INSTANCE.getBlockLoader(blocklyType).getDefinedBlocks();
-                var blockName = procedureFileName.getSelectedItem();
-                if (blocks.containsKey(blockName)) {
-                    return new BlocklyBlockDecorator(blocks.get(blockName), mcreator, blocklyType);
+                if (blocklyType != null) {
+                    var blocks = BlocklyLoader.INSTANCE.getBlockLoader(blocklyType).getDefinedBlocks();
+                    var blockName = procedureFileName.getSelectedItem();
+                    if (blocks.containsKey(blockName)) {
+                        return new BlocklyBlockDecorator(blocks.get(blockName), mcreator, blocklyType);
+                    }
                 }
             }
             return PluginProcedureModElementDecorator.getNULLInstance();

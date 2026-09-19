@@ -11,6 +11,7 @@ import org.cdc.generator.elements.MappingsModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.*;
+import org.cdc.generator.utils.decorators.ModElementPreviewer;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
@@ -66,8 +67,8 @@ public class MappingsModElementGUI extends AbstractConfigurationTableModElementG
 
         datalistName.setEditable(false);
         datalistName.setValidator(new NotEmptyValidator(datalistName::getSelectedItem));
-        addElementSelectorConfiguration("datalist_name", datalistName,
-                () -> mcreator.getWorkspace().getModElementByName(datalistName.getSelectedItem()));
+        addElementSelectorConfiguration("datalist_name", datalistName, () -> new ModElementPreviewer(
+                mcreator.getWorkspace().getModElementByName(datalistName.getSelectedItem()), mcreator));
 
         JToolBar bar = new JToolBar();
         bar.setBorder(BorderFactory.createEmptyBorder(2, 0, 5, 0));

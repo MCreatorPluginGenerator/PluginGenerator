@@ -60,7 +60,7 @@ public class ElementsUtils {
 
     public static String getExternalBlockColour(String blockName,
             BlocklyEditorType blocklyEditorType) {
-        if (blocklyEditorType!= null) {
+        if (blocklyEditorType != null) {
             var blocks = BlocklyLoader.INSTANCE.getBlockLoader(blocklyEditorType).getDefinedBlocks();
             if (blocks.containsKey(blockName)) {
                 return blocks.get(blockName).getBlocklyJSON().get("colour").getAsString();

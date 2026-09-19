@@ -14,6 +14,7 @@ import org.cdc.generator.elements.VariableModElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.*;
+import org.cdc.generator.utils.decorators.ModElementPreviewer;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
@@ -88,15 +89,16 @@ public class VariableImplementationModElementGUI
                 return jLabel;
             }
         });
-        addElementSelectorConfiguration("variable_element_name", variableElementName,
-                () -> mcreator.getWorkspace().getModElementByName(variableElementName.getSelectedItem()));
+        addElementSelectorConfiguration("variable_element_name", variableElementName, () -> new ModElementPreviewer(
+                mcreator.getWorkspace().getModElementByName(variableElementName.getSelectedItem()), mcreator));
 
         defaultValue.setText("null");
         var notempty = new NotEmptyValidator(defaultValue::getText);
         defaultValue.setValidator(() -> {
-            VariableModElement element = (VariableModElement) mcreator.getWorkspace().getModElementByName(variableElementName.getSelectedItem()).getGeneratableElement();
+            VariableModElement element = (VariableModElement) mcreator.getWorkspace()
+                    .getModElementByName(variableElementName.getSelectedItem()).getGeneratableElement();
             if (element != null && defaultValue.getText().equals("null") && !element.nullable) {
-                return new ValidationResult(ValidationResult.Type.WARNING,"Your variable is not nullable");
+                return new ValidationResult(ValidationResult.Type.WARNING, "Your variable is not nullable");
             }
             return notempty.validate();
         });
@@ -147,8 +149,8 @@ public class VariableImplementationModElementGUI
                                     "set" + columnName, MethodType.methodType(Void.TYPE, String.class));
                         }
                         cacheHandles.put(columnName, set);
-                        if (jTextArea.getText().isBlank()){
-                            set.invoke(row,null);
+                        if (jTextArea.getText().isBlank()) {
+                            set.invoke(row, null);
                         } else {
                             set.invoke(row, jTextArea.getText());
                         }
@@ -177,12 +179,14 @@ public class VariableImplementationModElementGUI
         this.generator.setSelectedItem(generatableElement.getGeneratorName());
         this.variableElementName.setSelectedItem(generatableElement.variableElementName);
         this.defaultValue.setText(generatableElement.defaultValue);
-        this.scopeList.addAll(generatableElement.scopes.stream().map(VariableImplementationModElement.VariableScope::clone).toList());
+        this.scopeList.addAll(
+                generatableElement.scopes.stream().map(VariableImplementationModElement.VariableScope::clone).toList());
         var scopes = Utils.getAllVariableScope();
-        if (scopeList.size() != scopes.size()){
-            var set = scopeList.stream().map(VariableImplementationModElement.VariableScope::getName).collect(Collectors.toSet());
+        if (scopeList.size() != scopes.size()) {
+            var set = scopeList.stream().map(VariableImplementationModElement.VariableScope::getName)
+                    .collect(Collectors.toSet());
             for (String scope : scopes) {
-                if (set.contains(scope)){
+                if (set.contains(scope)) {
                     continue;
                 }
                 scopeList.add(new VariableImplementationModElement.VariableScope(scope));
@@ -200,7 +204,8 @@ public class VariableImplementationModElementGUI
     }
 
     @Override public @Nullable URI contextURL() throws URISyntaxException {
-        return new URI("https://mcreator.net/wiki/creating-new-variable-types#:~:text=false-,Making%20the%20code,-Files%20and%20folders");
+        return new URI(
+                "https://mcreator.net/wiki/creating-new-variable-types#:~:text=false-,Making%20the%20code,-Files%20and%20folders");
     }
 
     @Override public void reloadDataLists() {

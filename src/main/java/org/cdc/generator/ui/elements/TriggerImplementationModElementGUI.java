@@ -27,6 +27,7 @@ import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.builders.JButtonBuilder;
+import org.cdc.generator.utils.decorators.ModElementPreviewer;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
@@ -96,8 +97,7 @@ public class TriggerImplementationModElementGUI
         triggerFileName.setEditable(true);
         triggerFileName.setSelectedItem(Constants.NONE);
         triggerFileName.setValidator(new NotEmptyValidator(triggerFileName::getSelectedItem));
-        addElementSelectorConfiguration("trigger_element_name", triggerFileName,
-                () -> getTriggerModElement().get().getModElement());
+        addElementSelectorConfiguration("trigger_element_name", triggerFileName, () -> new ModElementPreviewer(getTriggerModElement().orElse(null), mcreator));
 
         addConfigurationWithHelpEntry("enable_custom", enableCustom);
 
@@ -147,7 +147,8 @@ public class TriggerImplementationModElementGUI
         JToolBar toolBar = new JToolBar();
         toolBar.setOpaque(false);
         JButton remrow = createRemoveRowButton();
-        JButton refresh = new JButtonBuilder().setIconFromUIRE("impfile").setTooltipText("Refresh(only append)").build();
+        JButton refresh = new JButtonBuilder().setIconFromUIRE("impfile").setTooltipText("Refresh(only append)")
+                .build();
 
         toolBar.add(refresh);
         toolBar.add(remrow);
@@ -174,7 +175,6 @@ public class TriggerImplementationModElementGUI
                 jTable.repaint();
             });
         });
-
 
         addPage("Map", toolbarAndTable(toolBar));
 

@@ -17,6 +17,7 @@ import org.cdc.generator.ui.preferences.PluginMakerPreference;
 import org.cdc.generator.utils.ComboBoxUtil;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.builders.JButtonBuilder;
+import org.cdc.generator.utils.interfaces.IPreviewable;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.jspecify.annotations.NonNull;
 
@@ -179,11 +180,11 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     }
 
     protected void addElementSelectorConfiguration(String name, JComponent component,
-            Supplier<ModElement> elementNameSupplier) {
+            Supplier<IPreviewable> elementPreviewProvider) {
         var edit = new JButton(UIRES.get("16px.edit"));
         edit.addMouseListener(new MouseAdapter() {
             @Override public void mouseEntered(MouseEvent e) {
-                var el = elementNameSupplier.get();
+                var el = elementPreviewProvider.get();
                 if (el != null) {
                     edit.setToolTipText("Edit the element " + el.getName());
                 }
@@ -191,11 +192,11 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
         });
 
         edit.addActionListener(a -> {
-            var element = elementNameSupplier.get();
+            var element = elementPreviewProvider.get();
             if (element != null) {
-                element.getType().getModElementGUI(mcreator, element, true).showView();
+                element.openPreviewOrEdit();
             } else {
-                JOptionPane.showMessageDialog(this, "Can not open " + elementNameSupplier.get());
+                JOptionPane.showMessageDialog(this, "Can not open or preview");
             }
         });
         addConfigurationWithHelpEntry(name, PanelUtils.centerAndEastElement(component, edit));

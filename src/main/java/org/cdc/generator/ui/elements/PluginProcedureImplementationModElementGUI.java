@@ -6,9 +6,11 @@ import freemarker.template.TemplateDirectiveBody;
 import freemarker.template.TemplateDirectiveModel;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import net.mcreator.blockly.data.BlocklyLoader;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.generator.template.TemplateGenerator;
 import net.mcreator.ui.MCreator;
+import net.mcreator.ui.blockly.BlocklyEditorType;
 import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.validation.AggregatedValidationResult;
@@ -17,15 +19,17 @@ import net.mcreator.workspace.elements.ModElement;
 import org.cdc.framework.utils.BuilderUtils;
 import org.cdc.generator.elements.PluginProcedureImplementationModElement;
 import org.cdc.generator.elements.PluginProcedureModElement;
-import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.SearchableComboBox;
 import org.cdc.generator.utils.ComboBoxUtil;
 import org.cdc.generator.utils.FTLUtils;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
+import org.cdc.generator.utils.decorators.BlocklyBlockDecorator;
+import org.cdc.generator.utils.decorators.PluginProcedureModElementDecorator;
 import org.cdc.generator.utils.factories.AutoCompletionFactory;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
+import org.cdc.generator.utils.interfaces.IProcedureBlock;
 import org.cdc.generator.utils.ioc.InjectField;
 import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -98,13 +102,13 @@ public class PluginProcedureImplementationModElementGUI
         procedureFileName.setValidator(Rules.getFileNameValidator(procedureFileName::getSelectedItem));
         procedureFileName.addItemListener(a -> {
             if (a.getStateChange() == ItemEvent.SELECTED && procedureFileName.isPopupVisible()) {
-                IBlocklyElement blocklyElement = (IBlocklyElement) getPluginProcedureModElement().get();
-                parentFolder.setText(blocklyElement.getBlocklyFolder());
+                var blocklyElement = getPluginProcedureDecorator();
+                parentFolder.setText(blocklyElement.getParentFolder());
                 LOG.debug("Select folder {}", parentFolder.getText());
             }
         });
         addElementSelectorConfiguration("pluginprocedure_element_name", procedureFileName,
-                () -> getPluginProcedureModElement().orElseThrow().getModElement());
+                this::getPluginProcedureDecorator);
 
         addConfigurationWithHelpEntry("is_template", isTemplate);
         isTemplate.addActionListener(_ -> {
@@ -118,28 +122,28 @@ public class PluginProcedureImplementationModElementGUI
         generate.setToolTipText("Generate code");
         generate.addActionListener(_ -> {
             JsonArray inputs = new JsonArray();
-            getPluginProcedureModElement().ifPresent(procedureModElement -> {
-                for (String input : procedureModElement.inputs) {
-                    inputs.add(input);
-                }
-                JsonArray fields = new JsonArray();
-                for (String input : procedureModElement.fields) {
-                    fields.add(input);
-                }
-                JsonArray statements = new JsonArray();
-                for (String statement : procedureModElement.statements) {
-                    statements.add(statement);
-                }
-                String comment = BuilderUtils.generateInputsComment(inputs) + System.lineSeparator()
-                        + BuilderUtils.generateFieldsComment(fields) + System.lineSeparator()
-                        + BuilderUtils.generateStatementsComment(statements) + System.lineSeparator();
-                var text = content.getText();
-                if (!text.endsWith(";") && !text.startsWith("(")) {
-                    text = "(" + text + ")";
-                }
-                content.setText(comment + "\n" + text);
-                LOG.debug("Generated procedure impl code: {}", content.getText());
-            });
+            var procedureModElement = getPluginProcedureDecorator();
+            for (String input : procedureModElement.getInputs()) {
+                inputs.add(input);
+            }
+            JsonArray fields = new JsonArray();
+            for (String input : procedureModElement.getFields()) {
+                fields.add(input);
+            }
+            JsonArray statements = new JsonArray();
+            for (String statement : procedureModElement.getStatements()) {
+                statements.add(statement);
+            }
+            String comment = BuilderUtils.generateInputsComment(inputs) + System.lineSeparator()
+                    + BuilderUtils.generateFieldsComment(fields) + System.lineSeparator()
+                    + BuilderUtils.generateStatementsComment(statements) + System.lineSeparator();
+            var text = content.getText();
+            if (!text.endsWith(";") && !text.startsWith("(")) {
+                text = "(" + text + ")";
+            }
+            content.setText(comment + "\n" + text);
+            LOG.debug("Generated procedure impl code: {}", content.getText());
+
         });
         toolbar.add(generate);
 
@@ -182,23 +186,22 @@ public class PluginProcedureImplementationModElementGUI
 
     private CompletionProvider createCompletionProvider() {
         var complete = new DefaultCompletionProvider();
-        getPluginProcedureModElement().ifPresent(element -> {
-            for (String input : element.inputs) {
-                complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getInputPlaceHolder(input)));
-                complete.addCompletion(new BasicCompletion(complete, "input$" + input));
-            }
-            for (String field : element.fields) {
-                complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getFieldPlaceHolder(field)));
-                complete.addCompletion(new BasicCompletion(complete, "field$" + field));
-            }
-            for (String statement : element.statements) {
-                complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getStatementPlaceHolder(statement)));
-                complete.addCompletion(new BasicCompletion(complete, "statement$" + statement));
-            }
-            for (PluginProcedureModElement.Dependency dependency : element.dependencies) {
-                complete.addCompletion(new BasicCompletion(complete, dependency.getName(), dependency.getType()));
-            }
-        });
+        var element = getPluginProcedureDecorator();
+        for (String input : element.getInputs()) {
+            complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getInputPlaceHolder(input)));
+            complete.addCompletion(new BasicCompletion(complete, "input$" + input));
+        }
+        for (String field : element.getFields()) {
+            complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getFieldPlaceHolder(field)));
+            complete.addCompletion(new BasicCompletion(complete, "field$" + field));
+        }
+        for (String statement : element.getStatements()) {
+            complete.addCompletion(new BasicCompletion(complete, BuilderUtils.getStatementPlaceHolder(statement)));
+            complete.addCompletion(new BasicCompletion(complete, "statement$" + statement));
+        }
+        for (PluginProcedureModElement.Dependency dependency : element.getDependencies()) {
+            complete.addCompletion(new BasicCompletion(complete, dependency.getName(), dependency.getType()));
+        }
 
         //addTemplate
         for (GeneratableElement generatableElement : mcreator.getWorkspaceInfo()
@@ -212,10 +215,8 @@ public class PluginProcedureImplementationModElementGUI
         }
         complete.addCompletion(new ShorthandCompletion(complete, "atfloat", "/*@float*/", "/*@float*/"));
         complete.addCompletion(new ShorthandCompletion(complete, "atint", "/*@int*/", "/*@int*/"));
-        complete.addCompletion(
-                new ShorthandCompletion(complete, "atBlockState", "/*@BlockState*/","/*@BlockState*/"));
-        complete.addCompletion(
-                new ShorthandCompletion(complete, "atItemStack",  "/*@ItemStack*/","/*@ItemStack*/"));
+        complete.addCompletion(new ShorthandCompletion(complete, "atBlockState", "/*@BlockState*/", "/*@BlockState*/"));
+        complete.addCompletion(new ShorthandCompletion(complete, "atItemStack", "/*@ItemStack*/", "/*@ItemStack*/"));
 
         complete.addCompletion(new TemplateCompletion(complete, "atObject", "atObject", "/*@${cursor}*/"));
         complete.addCompletion(new TemplateCompletion(complete, "head", "head", "<@head>${cursor}</@head>"));
@@ -282,6 +283,23 @@ public class PluginProcedureImplementationModElementGUI
         return Optional.empty();
     }
 
+    public IProcedureBlock getPluginProcedureDecorator() {
+        var optional = getPluginProcedureModElement();
+        if (optional.isEmpty()) {
+            for (String type : BlocklyEditorType.getTypes()) {
+                var blocklyType = BlocklyEditorType.fromName(type);
+                var blocks = BlocklyLoader.INSTANCE.getBlockLoader(blocklyType).getDefinedBlocks();
+                var blockName = procedureFileName.getSelectedItem();
+                if (blocks.containsKey(blockName)) {
+                    return new BlocklyBlockDecorator(blocks.get(blockName), mcreator, blocklyType);
+                }
+            }
+            return PluginProcedureModElementDecorator.getNULLInstance();
+        } else {
+            return new PluginProcedureModElementDecorator(optional.get(), mcreator);
+        }
+    }
+
     @Override public TemplateGenerator getTemplateGenerator() {
         findGeneratorMCreator();
         if (selectedGeneratorMCreator != null) {
@@ -339,23 +357,23 @@ public class PluginProcedureImplementationModElementGUI
         var properties = new Properties();
 
         StringBuilder str = new StringBuilder();
-        getPluginProcedureModElement().ifPresent(element -> {
-            var typeMapping = selectedGeneratorMCreator.getGenerator().getMappings().getMapping("types");
-            for (String input : element.inputs) {
-                properties.setProperty("input$" + input, input);
-                str.append(", Object ").append(input);
-            }
-            for (String field : element.fields) {
-                properties.setProperty("field$" + field, field);
-                str.append(", Object ").append(field);
-            }
-            for (String statement : element.statements) {
-                properties.setProperty("statement$" + statement, statement + ";//This is a new line");
-            }
-            for (PluginProcedureModElement.Dependency dependency : element.dependencies) {
-                str.append(", ").append(typeMapping.get(dependency.getType())).append(" ").append(dependency.getName());
-            }
-        });
+        var element = getPluginProcedureDecorator();
+        var typeMapping = selectedGeneratorMCreator.getGenerator().getMappings().getMapping("types");
+        for (String input : element.getInputs()) {
+            properties.setProperty("input$" + input, input);
+            str.append(", Object ").append(input);
+        }
+        for (String field : element.getFields()) {
+            properties.setProperty("field$" + field, field);
+            str.append(", Object ").append(field);
+        }
+        for (String statement : element.getStatements()) {
+            properties.setProperty("statement$" + statement, statement + ";//This is a new line");
+        }
+        for (PluginProcedureModElement.Dependency dependency : element.getDependencies()) {
+            str.append(", ").append(typeMapping.get(dependency.getType())).append(" ").append(dependency.getName());
+        }
+
         properties.setProperty(METHOD_PARAMETER_KEY, "Event event" + str);
         return properties;
     }

@@ -21,6 +21,8 @@ public class YamlUtils {
         if (str == null) {
             return List.of();
         }
+        // deal windows bug.
+        str = str.replace("\r\n","\n");
         return new ArrayList<>(Arrays.asList(str.split(lineSeparator)));
     }
 }

@@ -58,7 +58,7 @@ public class APIModElement extends GeneratableElement {
             return gradle;
         }
 
-        @org.cdc.framework.annotaion.UsedByReflection public List<String> getYamlGradle() {
+        @UsedByReflection public List<String> getYamlGradle() {
             return YamlUtils.splitString(this.gradle);
         }
 

@@ -143,8 +143,10 @@ public class PluginMain extends JavaPlugin {
             }
 
             if (!notGenerate.isEmpty()) {
+                // for console
                 mcreator.getGradleConsole().append("");
                 mcreator.getGradleConsole().appendPlainText("some elements didn't generate properly.", Color.BLUE);
+                // for dock
                 dockHashMap.get(mcreator).getDuplicatedElements().putAll(duplicatedElements);
                 dockHashMap.get(mcreator).getNotGenerate().addAll(notGenerate);
                 mcreator.getLeftDockRegion().setDockVisibility("information_dock", true);

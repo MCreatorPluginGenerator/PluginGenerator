@@ -40,8 +40,8 @@ import org.cdc.generator.utils.interfaces.IArg0Type;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -86,7 +86,7 @@ public abstract class AbstractProceduresModElementGUI<E extends GeneratableEleme
     protected JSplitPane splitPane;
     protected JToolBar dependenciesToolBar;
 
-    public AbstractProceduresModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
+    public AbstractProceduresModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Dependency name", "Type" });
         this.inputsInline = createDefaultCheckBox();
         this.color = new JColor(mcreator, false, false);

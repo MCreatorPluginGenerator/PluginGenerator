@@ -3,8 +3,8 @@ package org.cdc.generator.utils.decorators;
 import net.mcreator.ui.MCreator;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.utils.interfaces.IProcedureBlock;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 

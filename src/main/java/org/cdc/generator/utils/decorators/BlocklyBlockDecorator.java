@@ -8,8 +8,8 @@ import net.mcreator.ui.MCreator;
 import net.mcreator.ui.blockly.BlocklyEditorType;
 import org.cdc.generator.elements.PluginProcedureModElement;
 import org.cdc.generator.utils.interfaces.IProcedureBlock;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -24,7 +24,7 @@ public class BlocklyBlockDecorator implements IProcedureBlock {
     private final MCreator mcreator;
     private final BlocklyEditorType blocklyEditorType;
 
-    public BlocklyBlockDecorator(@Nonnull ToolboxBlock toolboxBlock, MCreator mCreator,
+    public BlocklyBlockDecorator(@NotNull ToolboxBlock toolboxBlock, MCreator mCreator,
             BlocklyEditorType blocklyEditorType) {
         this.toolboxBlock = toolboxBlock;
         this.mcreator = mCreator;

@@ -1,6 +1,6 @@
 package org.cdc.js;
 
-import com.google.j2objc.annotations.UsedByReflection;
+import org.cdc.framework.annotaion.UsedByReflection;
 import org.cdc.generator.utils.ElementsUtils;
 
 import java.awt.*;

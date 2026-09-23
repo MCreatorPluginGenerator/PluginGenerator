@@ -6,11 +6,10 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.PluginCmdArgsCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
-
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class PluginCmdArgsCategoryModElementGUI extends AbstractProcedureCategoryModElementGUI<PluginCmdArgsCategoryModElement>{
-    public PluginCmdArgsCategoryModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
+    public PluginCmdArgsCategoryModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode);
 
         initGUI();

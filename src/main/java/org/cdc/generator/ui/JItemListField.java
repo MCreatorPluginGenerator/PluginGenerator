@@ -38,8 +38,8 @@ import net.mcreator.ui.validation.optionpane.VOptionPane;
 import net.mcreator.ui.validation.validators.ResourceLocationValidator;
 import net.mcreator.util.image.IconUtils;
 import net.mcreator.workspace.elements.ModElement;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

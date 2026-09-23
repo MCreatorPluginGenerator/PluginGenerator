@@ -6,8 +6,7 @@ import net.mcreator.element.ModElementTypeLoader;
 import org.cdc.generator.elements.*;
 import org.cdc.generator.ui.elements.*;
 import org.cdc.generator.utils.ioc.Container;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 @SuppressWarnings("unused") public class ModElementTypes {
     public static final ModElementType<DataListModElement> DATA_LIST = register("plugindatalist", 'd',

@@ -1,11 +1,11 @@
 package org.cdc.generator.elements;
 
-import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
+import org.cdc.framework.annotaion.UsedByReflection;
 import org.cdc.generator.elements.interfaces.IColorElement;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 import java.util.List;
 

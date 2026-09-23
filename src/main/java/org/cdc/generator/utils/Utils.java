@@ -26,7 +26,6 @@ import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
 import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.ui.elements.IQuickCreateImplModElement;
 import org.cdc.generator.ui.elements.ISearchable;
-import org.fife.rsta.ac.js.completion.JavaScriptShorthandCompletion;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.autocomplete.ShorthandCompletion;
@@ -248,7 +247,7 @@ public class Utils {
             for (Method method : value1.getClass().getMethods()) {
                 if (method.getReturnType() != Void.TYPE) {
                     provider.addCompletion(
-                            new JavaScriptShorthandCompletion(provider, key + ".", key + "." + method.getName() + "(",
+                            new ShorthandCompletion(provider, key + ".", key + "." + method.getName() + "(",
                                     method.getName()));
                 }
             }

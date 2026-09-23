@@ -42,8 +42,8 @@ import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -76,7 +76,7 @@ public class TriggerImplementationModElementGUI
 
     private MCreator selectedGeneratorMCreator;
 
-    public TriggerImplementationModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
+    public TriggerImplementationModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Name", "Map" });
 
         this.mappingEntries = new ArrayList<>();

@@ -9,6 +9,7 @@ repositories {
     maven {
         url "https://jitpack.io"
     }
+    mavenLocal()
 }
 
 group = 'org.cdc.pluginmaker'
@@ -21,14 +22,22 @@ configurations {
 }
 
 dependencies {
-    implementation project(':MCreator')
+    implementation "org.jboss.forge.roaster:roaster-api:2.31.1.Final"
+    implementation "org.jboss.forge.roaster:roaster-jdt:2.31.1.Final"
+    implementation "org.snakeyaml:snakeyaml-engine:3.0.1"
+    implementation "com.fifesoft:rsyntaxtextarea:3.6.3"
+    implementation "com.fifesoft:autocomplete:3.3.3"
+    implementation "commons-io:commons-io:2.22.0"
+    implementation "org.apache.commons:commons-lang3:3.20.0"
+    implementation "org.apache.commons:commons-text:1.15.0"
+    implementation "com.formdev:flatlaf:3.7.1:no-natives"
+    implementation "org.apache.logging.log4j:log4j-core:2.26.1"
+    implementation "org.freemarker:freemarker:2.3.34"
+    implementation 'net.mcreator:MCreator:2026.2'
+    implementation("com.google.code.gson:gson:2.14.0") {
+        dep -> dep.exclude group: 'com.google.errorprone', module: 'error_prone_annotations'
+    }
 
-    project(':MCreator').afterEvaluate(() ->
-            project(":MCreator").configurations.named("implementation").get().dependencies.each {
-                //noinspection ForeignDelegate
-                implementation it
-            }
-    )
     compileOnly 'org.jetbrains:annotations:26.1.0'
 //    jarInJar('com.github.javaparser:javaparser-symbol-solver-core:3.28.1'){
 //        exclude group:'org.javassist'
@@ -53,33 +62,5 @@ tasks.jar {
 
     from(project.configurations.jarInJar) {
         into 'META-INF/jarinjar'
-    }
-}
-
-tasks.register('runMCreatorWithPlugin', JavaExec) {
-    dependsOn jar
-
-    environment('MCREATOR_PLUGINS_FOLDER', file('./build/libs'))
-
-    jvmArgs '--add-opens', 'java.base/java.lang=ALL-UNNAMED'
-
-    classpath = project(':MCreator').sourceSets.main.runtimeClasspath
-
-    mainClass = 'net.mcreator.Launcher'
-
-    workingDir = mcreator_path
-}
-
-subprojects { subproject ->
-    subproject.plugins.withType(JavaPlugin).tap {
-        configureEach {
-            test {
-                dependsOn rootProject.jar
-
-                environment('MCREATOR_PLUGINS_FOLDER', new File(mcreator_path, '/build/libs'))
-
-                workingDir = mcreator_path
-            }
-        }
     }
 }

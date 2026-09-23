@@ -4,8 +4,7 @@ import net.mcreator.element.GeneratableElement;
 import net.mcreator.ui.MCreator;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.utils.interfaces.IPreviewable;
-
-import javax.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * &#064;Developer  user

@@ -1,8 +1,8 @@
 package org.cdc.generator.elements;
 
-import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
+import org.cdc.framework.annotaion.UsedByReflection;
 
 import java.util.List;
 import java.util.Locale;

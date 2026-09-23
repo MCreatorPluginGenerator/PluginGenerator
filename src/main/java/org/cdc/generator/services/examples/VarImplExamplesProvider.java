@@ -7,7 +7,7 @@ import net.mcreator.workspace.elements.VariableTypeLoader;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
 import org.cdc.generator.utils.ioc.InjectField;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.util.List;
@@ -50,7 +50,7 @@ import java.util.function.Consumer;
         componentConsumer.accept(custom);
     }
 
-    private @NonNull JButton getCustom(Consumer<Object> exampleConsumer) {
+    private @NotNull JButton getCustom(Consumer<Object> exampleConsumer) {
         JButton custom = new JButton("Custom");
         custom.setOpaque(false);
         custom.addActionListener(a -> {
@@ -72,7 +72,7 @@ import java.util.function.Consumer;
         JOptionPane.showMessageDialog(null, "Generator is invalid", "Invalid generator", JOptionPane.WARNING_MESSAGE);
     }
 
-    private static @NonNull List<String> getVariableScope(String variableName, String scopeName, String phaseName,
+    private static @NotNull List<String> getVariableScope(String variableName, String scopeName, String phaseName,
             GeneratorConfiguration generator) {
         return Utils.convertYamlToList(generator.getVariableTypes()
                 .getScopeDefinition(VariableTypeLoader.INSTANCE.fromName(variableName), scopeName).get(phaseName));

@@ -1,9 +1,9 @@
 package org.cdc.generator.elements;
 
-import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
 import net.mcreator.workspace.references.ModElementReference;
+import org.cdc.framework.annotaion.UsedByReflection;
 import org.cdc.generator.elements.interfaces.IGeneratorElement;
 import org.cdc.generator.elements.interfaces.IUniqueElement;
 import org.cdc.generator.utils.Constants;

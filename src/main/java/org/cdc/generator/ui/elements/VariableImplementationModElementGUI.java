@@ -24,9 +24,9 @@ import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
@@ -54,7 +54,7 @@ public class VariableImplementationModElementGUI
     @InjectField private Logger LOGGER;
     @InjectField private Container container;
 
-    public VariableImplementationModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
+    public VariableImplementationModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[] { "Scope name", "Init", "Get", "Set", "Read", "Write" });
 
         if (editingMode && isUnique()) {

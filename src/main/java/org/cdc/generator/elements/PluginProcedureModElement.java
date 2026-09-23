@@ -1,8 +1,8 @@
 package org.cdc.generator.elements;
 
-import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
+import org.cdc.framework.annotaion.UsedByReflection;
 import org.cdc.generator.elements.interfaces.IBlocklyElement;
 import org.cdc.generator.elements.interfaces.IColorElement;
 import org.cdc.generator.services.types.ArgTypeProxy;

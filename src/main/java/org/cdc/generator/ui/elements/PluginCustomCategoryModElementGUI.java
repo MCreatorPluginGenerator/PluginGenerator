@@ -6,7 +6,7 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.PluginCustomCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
@@ -15,7 +15,7 @@ public class PluginCustomCategoryModElementGUI
 
     private JTextField parentFolder = new JTextField();
 
-    public PluginCustomCategoryModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public PluginCustomCategoryModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode);
 
         if (editingMode) {

@@ -19,7 +19,7 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.builders.JButtonBuilder;
 import org.cdc.generator.utils.interfaces.IPreviewable;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
@@ -48,7 +48,7 @@ public abstract class AbstractConfigurationTableModElementGUI<E extends Generata
     private JButton removeRow;
     private JButton addRow;
 
-    public AbstractConfigurationTableModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
+    public AbstractConfigurationTableModElementGUI(MCreator mcreator, @NotNull ModElement modElement,
             boolean editingMode, String[] columns) {
         super(mcreator, modElement, editingMode);
         this.columns = columns;

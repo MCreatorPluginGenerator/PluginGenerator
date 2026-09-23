@@ -15,7 +15,7 @@ import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.interfaces.IExamplesProvider;
 import org.cdc.generator.utils.ioc.InjectField;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.Nullable;
 
 import javax.swing.*;
@@ -44,7 +44,7 @@ public class APIModElementGUI extends AbstractConfigurationTableModElementGUI<AP
 
     @InjectField private PluginMakerPreference preferences;
 
-    public APIModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public APIModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode,
                 new String[] { "Generator", "Required when enable", "Update files", "Version range", "Gradle" });
 

@@ -13,9 +13,9 @@ import org.cdc.generator.utils.ComboBoxUtil;
 import org.cdc.generator.utils.Constants;
 import org.cdc.generator.utils.Rules;
 import org.cdc.generator.utils.Utils;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import javax.swing.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,7 +30,7 @@ public abstract class AbstractProcedureCategoryModElementGUI<E extends Generatab
     protected final SearchableComboBox<String> parentCategory;
     protected final JCheckBox isApi;
 
-    public AbstractProcedureCategoryModElementGUI(MCreator mcreator, @NonNull ModElement modElement,
+    public AbstractProcedureCategoryModElementGUI(MCreator mcreator, @NotNull ModElement modElement,
             boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
         this.name = new VTextField();

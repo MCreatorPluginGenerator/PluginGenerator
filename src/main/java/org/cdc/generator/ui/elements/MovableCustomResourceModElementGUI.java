@@ -9,8 +9,8 @@ import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.validators.NotEmptyValidator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
@@ -27,7 +27,7 @@ public class MovableCustomResourceModElementGUI
     private final VComboBox<String> folder;
     private final RSyntaxTextArea content;
 
-    public MovableCustomResourceModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public MovableCustomResourceModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 
         folder = new VComboBox<>();

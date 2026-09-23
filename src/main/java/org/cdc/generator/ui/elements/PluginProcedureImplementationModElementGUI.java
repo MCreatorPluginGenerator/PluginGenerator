@@ -33,9 +33,9 @@ import org.cdc.generator.utils.interfaces.IProcedureBlock;
 import org.cdc.generator.utils.ioc.InjectField;
 import org.fife.ui.autocomplete.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -63,7 +63,7 @@ public class PluginProcedureImplementationModElementGUI
 
     private MCreator selectedGeneratorMCreator;
 
-    public PluginProcedureImplementationModElementGUI(MCreator mcreator, @Nonnull ModElement modElement,
+    public PluginProcedureImplementationModElementGUI(MCreator mcreator, @NotNull ModElement modElement,
             boolean editingMode) {
         super(mcreator, modElement, editingMode, null);
 

@@ -1,8 +1,8 @@
 package org.cdc.generator.elements;
 
-import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.element.GeneratableElement;
 import net.mcreator.workspace.elements.ModElement;
+import org.cdc.framework.annotaion.UsedByReflection;
 import org.cdc.generator.utils.YamlUtils;
 
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class APIModElement extends GeneratableElement {
             return gradle;
         }
 
-        @UsedByReflection public List<String> getYamlGradle() {
+        @org.cdc.framework.annotaion.UsedByReflection public List<String> getYamlGradle() {
             return YamlUtils.splitString(this.gradle);
         }
 

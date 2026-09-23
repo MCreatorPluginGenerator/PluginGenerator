@@ -12,9 +12,9 @@ import org.cdc.generator.init.ModElementTypes;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.ioc.Container;
 import org.cdc.generator.utils.ioc.InjectField;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class PluginProceduresModElementGUI extends AbstractProceduresModElementG
         implements IQuickCreateImplModElement {
     @InjectField private Container container;
 
-    public PluginProceduresModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
+    public PluginProceduresModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode);
 
         this.initGUI();

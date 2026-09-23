@@ -6,11 +6,11 @@ import net.mcreator.ui.component.util.PanelUtils;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.PluginAITasksCategoryModElement;
 import org.cdc.generator.elements.interfaces.IBlocklyCategoryElement;
-import org.jspecify.annotations.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 public class PluginAITasksCategoryModElementGUI
         extends AbstractProcedureCategoryModElementGUI<PluginAITasksCategoryModElement> {
-    public PluginAITasksCategoryModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public PluginAITasksCategoryModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode);
 
         initGUI();

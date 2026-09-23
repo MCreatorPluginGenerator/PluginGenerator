@@ -2,9 +2,9 @@ package org.cdc.generator.utils.interfaces;
 
 import com.google.gson.JsonObject;
 import net.mcreator.element.GeneratableElement;
+import net.mcreator.workspace.Workspace;
 import org.cdc.generator.PluginMain;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ServiceLoader;
 
@@ -16,9 +16,15 @@ public interface IJsonConvertor<E extends GeneratableElement> {
             PluginMain.getINSTANCE()
                     .getDependsClassLoader());
 
-    default boolean matches(Path path){
-        return Files.exists(path.getParent().resolve("plugin.json"));
-    }
+    /**
+     * @return true if the json file is the valid file related to the generable element.
+     */
+    boolean matches(Path path);
 
-    E convert(JsonObject jsonObject, Path path);
+    /**
+     *
+     * @param jsonObject json
+     * @return the element
+     */
+    E convert(JsonObject jsonObject, Workspace workspace);
 }

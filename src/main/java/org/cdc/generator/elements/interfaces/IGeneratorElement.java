@@ -1,8 +1,8 @@
 package org.cdc.generator.elements.interfaces;
 
-import com.google.j2objc.annotations.UsedByReflection;
 import net.mcreator.ui.init.UIRES;
 import net.mcreator.ui.laf.themes.Theme;
+import org.cdc.framework.annotaion.UsedByReflection;
 
 import javax.swing.*;
 import java.awt.*;

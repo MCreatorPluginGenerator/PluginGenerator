@@ -7,8 +7,8 @@ import net.mcreator.ui.views.ViewBase;
 import net.mcreator.workspace.elements.ModElement;
 import org.cdc.generator.elements.UpdateJsonModElement;
 import org.cdc.generator.init.ModElementTypes;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jspecify.annotations.NonNull;
 
 import javax.swing.*;
 import java.net.URI;
@@ -22,7 +22,7 @@ import java.util.List;
 public class UpdateLogJsonModElementGUI extends AbstractConfigurationTableModElementGUI<UpdateJsonModElement> {
     private JTextArea updateLogs;
 
-    public UpdateLogJsonModElementGUI(MCreator mcreator, @NonNull ModElement modElement, boolean editingMode) {
+    public UpdateLogJsonModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode, new String[0]);
 
         updateLogs = new JTextArea();

@@ -15,8 +15,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cdc.generator.utils.WorkspaceUtils;
 import org.cdc.generator.utils.ZipUtils;
+import org.jetbrains.annotations.NotNull;
 
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -70,7 +70,7 @@ public class WorkspaceDecorator {
         return Optional.empty();
     }
 
-    public void setComment(ModElement modElement,@Nonnull String commentContent) {
+    public void setComment(ModElement modElement,@NotNull String commentContent) {
         var registryName = modElement.getRegistryName();
         if (!comment.has(registryName)) {
             comment.add(registryName, new JsonObject());

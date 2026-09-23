@@ -19,9 +19,9 @@ import org.cdc.generator.utils.factories.RSyntaxTextAreaFactory;
 import org.cdc.generator.utils.ioc.InjectField;
 import org.cdc.generator.utils.validators.DuplicatedElementValidator;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -57,7 +57,7 @@ public class DataListModElementGUI extends AbstractConfigurationTableModElementG
 
     @InjectField Logger LOG;
 
-    public DataListModElementGUI(MCreator mcreator, @Nonnull ModElement modElement, boolean editingMode) {
+    public DataListModElementGUI(MCreator mcreator, @NotNull ModElement modElement, boolean editingMode) {
         super(mcreator, modElement, editingMode,
                 new String[] { "Name", "Readable name", "Type", "Texture", "Description", "Others" });
 

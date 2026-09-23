@@ -1,10 +1,10 @@
 package org.cdc.generator.elements.interfaces;
 
-import com.google.j2objc.annotations.UsedByReflection;
+import org.cdc.framework.annotaion.UsedByReflection;
 import org.cdc.generator.utils.Utils;
 import org.cdc.generator.utils.YamlUtils;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.awt.*;
 
 public interface IColorElement {

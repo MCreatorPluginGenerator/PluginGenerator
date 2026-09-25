@@ -1,7 +1,9 @@
 package org.cdc.generator.utils.builders;
 
 import net.mcreator.ui.init.L10N;
+import org.cdc.generator.utils.MenuProvider;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
@@ -61,5 +63,9 @@ public class JMenuBuilder {
             });
         }
         return menu;
+    }
+
+    public void build(@NotNull MenuProvider menuProvider){
+        menuProvider.add(build());
     }
 }

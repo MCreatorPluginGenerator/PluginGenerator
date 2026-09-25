@@ -37,7 +37,8 @@ public class ResourcePanels {
             });
 
             var theme = Utils.tryToFindThemePlugin();
-            modMaker.resourcesPan.addResourcesTab("Theme editor",new SourceOverlayEditor(mCreator,theme,"themes",new File(mCreator.getGenerator().getResourceRoot(),"themes")));
+            modMaker.resourcesPan.addResourcesTab("Theme editor",new SourceOverlayEditor(mCreator,theme,"themes",new File(mCreator.getGenerator().getResourceRoot(),"themes"),
+                    modMaker::getSearchTerm,a->new File(a.toString().replaceFirst("default_dark",mCreator.getWorkspaceSettings().getModID()))));
         }
     }
 }

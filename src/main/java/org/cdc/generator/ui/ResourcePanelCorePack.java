@@ -16,6 +16,7 @@ import org.cdc.generator.ui.renderer.FileTreeDirectoryAndFileCellRenderer;
 import org.cdc.generator.utils.MCreatorCorePackBrowser;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.MouseAdapter;
@@ -24,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -85,8 +87,8 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
                             && node.getChildCount() == 0) {
                         if (node.getUserObject() instanceof FileNode<?> fileNode) {
                             try {
-                                FileOpener.openFile(workspacePanel.getMCreator(),
-                                        corePackBrowser.generatePreviewFile(new File(parent,fileNode.incrementalPath).toString()));
+                                FileOpener.openFile(workspacePanel.getMCreator(), corePackBrowser.generatePreviewFile(
+                                        new File(parent, fileNode.incrementalPath).toString()));
                             } catch (IOException ex) {
                                 throw new RuntimeException(ex);
                             }
@@ -133,10 +135,24 @@ public class ResourcePanelCorePack extends JPanel implements IReloadableFilterab
         });
     }
 
+    private List<DefaultMutableTreeNode> preSearchState = null;
+
     @Override public void refilterElements() {
-        String term = workspacePanel.getSearchTerm();
-        TreeUtils.selectNodeByUserObject(tree,a->a.incrementalPath.contains(term),FileNode.class);
+        String filter = workspacePanel.getSearchTerm();
+        if (filter.length() >= 3) {
+            if (preSearchState == null)
+                preSearchState = TreeUtils.getExpansionState(tree);
+            model.setFilter(filter);
+            SwingUtilities.invokeLater(() -> TreeUtils.expandAllNodes(tree, 0, tree.getRowCount()));
+        } else {
+            model.setFilter("");
+            if (preSearchState != null) {
+                TreeUtils.setExpansionState(tree, preSearchState);
+                preSearchState = null;
+            }
+        }
     }
-
-
 }
+
+
+

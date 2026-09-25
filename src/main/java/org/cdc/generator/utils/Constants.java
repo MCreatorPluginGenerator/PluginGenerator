@@ -25,4 +25,5 @@ public class Constants {
         public static final String BKY_LOGIC_HUE = "%{BKY_LOGIC_HUE}";
         public static final String BKY_TEXTS_HUE = "%{BKY_TEXTS_HUE}";
     }
+    public static final boolean inDevelopment = System.getProperties().getProperty("IN_DEVELOPMENT","false").equals("true");
 }

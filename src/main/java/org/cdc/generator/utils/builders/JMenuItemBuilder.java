@@ -3,7 +3,9 @@ package org.cdc.generator.utils.builders;
 import net.mcreator.ui.MCreator;
 import net.mcreator.ui.init.L10N;
 import net.mcreator.util.DesktopUtils;
+import org.cdc.generator.utils.MenuProvider;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
@@ -84,5 +86,9 @@ public class JMenuItemBuilder {
         menuitem.setName(name);
         menuitem.addActionListener(actionListener);
         return menuitem;
+    }
+
+    public void build(@NotNull MenuProvider menuProvider){
+        menuProvider.add(build());
     }
 }

@@ -45,6 +45,7 @@ import java.nio.file.Files;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -68,6 +69,7 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
     private final String root;
     private final File overlayRoot;     // 覆盖根目录
     @Nullable private final Supplier<String> filterProvider;
+    @Nullable private final Function<File, File> overrideSetter;
 
     private final JFileTree tree;
     private final FilteredTreeModel model = new FilteredTreeModel(new FilterTreeNode(""));
@@ -96,7 +98,7 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
      * @param filterProvider 过滤器提供者（可选）
      */
     public SourceOverlayEditor(MCreator mcreator, File source, String root, File overlayRoot,
-            @Nullable Supplier<String> filterProvider) {
+            @Nullable Supplier<String> filterProvider, Function<File, File> overrideSetter) {
         super(new BorderLayout());
         setOpaque(false);
 
@@ -106,6 +108,7 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
         this.root = root;
         this.overlayRoot = overlayRoot;
         this.filterProvider = filterProvider;
+        this.overrideSetter = overrideSetter;
 
         if (!source.exists()) {
             throw new IllegalArgumentException("Source does not exist: " + source.getAbsolutePath());
@@ -269,7 +272,7 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
 
     // 便捷构造（无过滤器）
     public SourceOverlayEditor(MCreator mcreator, File source, String root, File overlayRoot) {
-        this(mcreator, source, root, overlayRoot, null);
+        this(mcreator, source, root, overlayRoot, null, null);
     }
 
     // ------------------------------------------------------------------------
@@ -314,8 +317,10 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
                 walker.forEach(path -> {
                     boolean isDirectory = Files.isDirectory(path);
                     String relativePath = start.relativize(path).toString().replace('\\', '/');
-                    File overrideFolder = new File(overlayRoot,
-                            relativePath.replaceFirst("default_dark", workspace.getWorkspaceSettings().getModID()));
+                    File overrideFolder = new File(overlayRoot, relativePath);
+                    if (overrideSetter != null) {
+                        overrideFolder = overrideSetter.apply(overrideFolder);
+                    }
                     SourceEntryNode node = new SourceEntryNode(relativePath, isDirectory, null, path.toFile(),
                             overrideFolder);
                     names.add(relativePath);
@@ -339,8 +344,10 @@ import static org.cdc.generator.utils.Constants.TEXT_EXTENSIONS;
                     if (entry.getName().startsWith(this.root)) {
                         var isDir = entry.isDirectory();
                         String relativePath = entry.getName().substring(this.root.length() + 1);
-                        File overrideFile = new File(overlayRoot,
-                                relativePath.replaceFirst("default_dark", workspace.getWorkspaceSettings().getModID()));
+                        File overrideFile = new File(overlayRoot, relativePath);
+                        if (overrideSetter != null) {
+                            overrideFile = overrideSetter.apply(overrideFile);
+                        }
                         SourceEntryNode node = new SourceEntryNode(relativePath, isDir, entry, null, overrideFile);
                         names.add(relativePath);
                         if (isDir) {

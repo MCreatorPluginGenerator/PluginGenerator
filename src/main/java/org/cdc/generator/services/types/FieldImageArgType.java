@@ -6,15 +6,12 @@ import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.validation.component.VComboBox;
 import org.cdc.framework.utils.Files;
 import org.cdc.generator.utils.Arg0InputType;
-import org.cdc.generator.utils.ioc.InjectField;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
 public class FieldImageArgType extends AbstractArgType {
-    @InjectField int index;
-
     public FieldImageArgType() {
         super(3, 2);
     }

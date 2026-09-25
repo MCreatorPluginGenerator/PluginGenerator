@@ -11,8 +11,11 @@ import net.mcreator.ui.laf.themes.Theme;
 import net.mcreator.ui.workspace.WorkspacePanel;
 import net.mcreator.ui.workspace.resources.AbstractResourcePanel;
 import net.mcreator.ui.workspace.resources.ResourceFilterModel;
+import net.mcreator.util.DesktopUtils;
 
 import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,8 +28,7 @@ public class ResourcePanelTemplates extends AbstractResourcePanel<File> {
     private File templatesFile;
 
     public ResourcePanelTemplates(WorkspacePanel workspacePanel) {
-        super(workspacePanel, new ResourceFilterModel<>(workspacePanel, File::getName), new Render(),
-                JList.VERTICAL);
+        super(workspacePanel, new ResourceFilterModel<>(workspacePanel, File::getName), new Render(), JList.VERTICAL);
 
         addToolBarButton("workspace.textures.import", UIRES.get("16px.open"), event -> {
             var files = FileDialogs.getFileChooserDialog(workspacePanel.getMCreator(), FileChooserType.OPEN, false, "",
@@ -34,8 +36,8 @@ public class ResourcePanelTemplates extends AbstractResourcePanel<File> {
             if (files.length > 0) {
                 var file = files[0];
                 switch (org.cdc.framework.utils.Files.getFileExtension(file)) {
-                case "aitpl", "cmdtpl", "ftpl", "ptpl" -> FileIO.copyFile(file,
-                        new File(templatesFile, org.cdc.framework.utils.Files.getFileExtension(file) + "/" + file.getName()));
+                case "aitpl", "cmdtpl", "ftpl", "ptpl" -> FileIO.copyFile(file, new File(templatesFile,
+                        org.cdc.framework.utils.Files.getFileExtension(file) + "/" + file.getName()));
                 case "png" -> FileIO.copyFile(file, new File(templatesFile, "textures/" + file.getName()));
                 case "json" -> FileIO.copyFile(file, new File(templatesFile, "animations/" + file.getName()));
                 }
@@ -45,6 +47,14 @@ public class ResourcePanelTemplates extends AbstractResourcePanel<File> {
         addToolBarButton("common.delete_selected", UIRES.get("16px.delete"), e -> {
             deleteCurrentlySelected();
             reloadElements();
+        });
+
+        elementList.addMouseListener(new MouseAdapter() {
+            @Override public void mouseReleased(MouseEvent e) {
+                if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+                    DesktopUtils.openSafe(new File(templatesFile, elementList.getSelectedValue().toString()), true);
+                }
+            }
         });
 
         this.templatesFile = new File(workspacePanel.getMCreator().getGenerator().getModAssetsRoot(), "templates");
@@ -63,7 +73,9 @@ public class ResourcePanelTemplates extends AbstractResourcePanel<File> {
         if (templatesFile.isDirectory()) {
             try {
                 templates = Files.walk(templatesFile.toPath(), 2);
-                filterModel.addAll(templates.map(Path::toFile).filter(File::isFile).toList());
+                filterModel.addAll(
+                        templates.filter(Files::isRegularFile).map(a -> templatesFile.toPath().relativize(a).toFile())
+                                .toList());
 
                 ListUtil.setSelectedValues(elementList, selected);
                 templates.close();
@@ -80,7 +92,7 @@ public class ResourcePanelTemplates extends AbstractResourcePanel<File> {
                 boolean cellHasFocus) {
             setOpaque(isSelected);
             setBackground(isSelected ? Theme.current().getAltBackgroundColor() : Theme.current().getBackgroundColor());
-            setText(ma.getPath());
+            setText(ma.toString());
             ComponentUtils.deriveFont(this, 11);
             setForeground(Theme.current().getForegroundColor());
             setVerticalTextPosition(BOTTOM);

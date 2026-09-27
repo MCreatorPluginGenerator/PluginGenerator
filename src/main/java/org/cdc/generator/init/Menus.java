@@ -26,9 +26,9 @@ import java.util.Properties;
 import java.util.function.Supplier;
 
 public class Menus {
-    public static MenuProvider PLUGIN_MAKER = register(() -> L10N.menu("menus.plugin_maker"));
-    public static MenuProvider DATALIST_UTILS = register(() -> L10N.menu("menus.datalist_utils"));
-    public static MenuProvider PLUGIN_PROCEDURE_UTILS = register(() -> L10N.menu("menus.plugin_procedure_utils"));
+    public static final MenuProvider PLUGIN_MAKER = register(() -> L10N.menu("menus.plugin_maker"));
+    public static final MenuProvider DATALIST_UTILS = register(() -> L10N.menu("menus.datalist_utils"));
+    public static final MenuProvider PLUGIN_PROCEDURE_UTILS = register(() -> L10N.menu("menus.plugin_procedure_utils"));
 
     private static ArrayList<Supplier<JMenu>> menus;
 

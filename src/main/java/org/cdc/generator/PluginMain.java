@@ -317,8 +317,8 @@ public class PluginMain extends JavaPlugin {
 
     private void registerAll(MCreator mcreator) {
         ResourcePanels.register(mcreator);
-        Menus.registerAllMenus(mcreator);
         Menus.registerAllSubMenus(mcreator);
+        Menus.registerAllMenus(mcreator);
     }
 
     public MCreatorApplication getApplication() {

@@ -232,7 +232,8 @@ public class PluginMain extends JavaPlugin {
                 mcreator = workspacePanel.getMCreator();
             }
             if (dockHashMap.containsKey(mcreator)) {
-                dockHashMap.get(mcreator).reloadTree();
+                MCreator finalMcreator = mcreator;
+                SwingUtilities.invokeLater(()->dockHashMap.get(finalMcreator).reloadTree());
             }
 
         });

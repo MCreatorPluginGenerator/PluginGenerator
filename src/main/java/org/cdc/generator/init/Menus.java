@@ -89,36 +89,46 @@ public class Menus {
                         a.add(menuItem);
                     }
                 }).build());
-        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("open_plugin_page")
-                .setOpenURL("https://mcreator.net/plugin/122734/pluginmaker").build());
-        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_repository")
-                .setOpenURL("https://mcreator.net/repository").build());
-        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")
-                .setOpenURL("https://mcreator.net/changelog").build());
-        PLUGIN_MAKER.add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("append_version").setReload(a -> {
-            Utils.getAllMCreatorVersions()
-                    .forEach(key -> a.add(new JMenuItemBuilder().setName(key + "").setActionListener(_ -> {
-                        if (!workspace.hasSupportedVersion(key)) {
-                            workspace.addSupportedVersion(key);
-                            mcreator.getToolkit().beep();
-                            mcreator.getStatusBar()
-                                    .setPersistentMessage("Appended " + WorkspaceUtils.supportedVersionDependant(key));
-                        }
-                    }).build()));
+        PLUGIN_MAKER.add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("visit").setInit(visit -> {
+            visit.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("open_plugin_page")
+                    .setOpenURL("https://mcreator.net/plugin/122734/pluginmaker").build());
+            visit.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_repository")
+                    .setOpenURL("https://mcreator.net/repository").build());
+            visit.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("visit_changelog")
+                    .setOpenURL("https://mcreator.net/changelog").build());
         }).build());
-        PLUGIN_MAKER.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("clear_all_supportedversions")
+
+        PLUGIN_MAKER.add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("manage_scope").setInit(menu -> {
+            menu.add(new JMenuBuilder().setParentMenuName("plugin_maker").setName("append_version").setReload(menu1 -> {
+                Utils.getAllMCreatorVersions()
+                        .forEach(key -> menu1.add(new JMenuItemBuilder().setName(key + "").setActionListener(_ -> {
+                            if (!workspace.hasSupportedVersion(key)) {
+                                workspace.addSupportedVersion(key);
+                                mcreator.getToolkit().beep();
+                                mcreator.getStatusBar().setPersistentMessage(
+                                        "Appended " + WorkspaceUtils.supportedVersionDependant(key));
+                            }
+                        }).build()));
+            }).build());
+            menu.add(new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("clear_all_supportedversions")
+                    .setActionListener(_ -> {
+                        workspace.clearAllSupportedVersions();
+                    }).build());
+        }).build());
+        new JMenuItemBuilder().setParentMenuName("plugin_maker").setName("generate_manifest").setActionListener(_->{
+            mcreator.getGradleConsole().append(workspace.generatePluginManifest());
+        }).build(PLUGIN_MAKER);
+        PLUGIN_MAKER.add(new JMenuItemBuilder().setName("Convert mcreator instance to java plugin libraries")
                 .setActionListener(_ -> {
-                    workspace.clearAllSupportedVersions();
+                    var file = FileDialogs.getSaveDialog(mcreator, "mcreator", new String[] { "exe" });
+                    workspace.injectMCreatorLibraries(file.getParentFile());
                 }).build());
-        PLUGIN_MAKER.add(new JMenuItemBuilder().setName("Convert mcreator instance to java plugin libraries").setActionListener(_->{
-            var file = FileDialogs.getSaveDialog(mcreator,"mcreator",new String[]{"exe"});
-            workspace.injectMCreatorLibraries(file.getParentFile());
-        }).build());
         if (workspace.isInDevelopment()) {
             PLUGIN_MAKER.add(new JMenuItemBuilder().setName("Development: Reinit").setActionListener(_ -> {
                 workspace.reinit(mcreator);
             }).build());
         }
+
         DATALIST_UTILS.add(
                 new JMenuBuilder().setParentMenuName("datalist_utils").setName("calculate_types").setReload(jMenu -> {
                     if (mcreator.getTabs().getCurrentTab()
